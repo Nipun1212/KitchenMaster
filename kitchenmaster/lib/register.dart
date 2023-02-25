@@ -152,7 +152,7 @@ class _RegisterPageState extends State<RegisterPage> {
             height: 51.5,
             child: ElevatedButton(
               onPressed: () {
-                if (regPassword.text == regConfirm) {
+                if (regPassword.text == regConfirm.text) {
                   Navigator.push(context,
                       MaterialPageRoute(builder: (context) => LoginPage()));
                   // make alert dialog to print 'successfully created account'
