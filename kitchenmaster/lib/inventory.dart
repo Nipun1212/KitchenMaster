@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors, unnecessary_new
+
 import 'package:flutter/material.dart';
 
 class InventoryPage extends StatefulWidget {
@@ -7,129 +9,129 @@ class InventoryPage extends StatefulWidget {
   State<InventoryPage> createState() => _InventoryPageState();
 }
 
-class _InventoryPageState extends State<InventoryPage> {
-  @override
-  var cards = <Card>[];
+class DynamicWidget extends StatefulWidget {
+  String name = '';
+  int count = 0;
+  TextEditingController _nameController = TextEditingController();
 
-  void initState() {
-    super.initState();
-    // cards.add(_SOFState.createCard());
+  DynamicWidget(TextEditingController n, int c) {
+    this._nameController = n;
+    this.name = n.text;
+    this.count = c;
+  }
+
+  @override
+  State<DynamicWidget> createState() => _DynamicWidgetState();
+}
+
+class _DynamicWidgetState extends State<DynamicWidget> {
+  String name = '';
+  int count = 0;
+  TextEditingController _nameController = TextEditingController();
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+        child: Center(
+            child: SizedBox(
+                width: 400,
+                height: 60,
+                child: Row(children: <Widget>[
+                  Expanded(
+                    child: TextField(
+                      controller: _nameController,
+                    ),
+                  ),
+                  IconButton(
+                      icon: const Icon(Icons.add_circle_outline),
+                      onPressed: () {
+                        setState(() {
+                          count += 1;
+                        });
+                      }),
+                  Text('$count'),
+                  IconButton(
+                      icon: const Icon(Icons.remove_circle_outline),
+                      onPressed: () {
+                        setState(() {
+                          if(count>0) {
+                            count -= 1;
+                          }
+                          // else if(count==0){
+                          // }
+                        });
+                      }),
+                ]))));
+  }
+}
+
+class _InventoryPageState extends State<InventoryPage> {
+  List<DynamicWidget> listCards = [];
+  List<TextEditingController> controllers = [];
+  TextEditingController _nameController = new TextEditingController();
+  int count = 0;
+
+  addDynamic(TextEditingController n, int c) {
+    controllers.add(n);
+    listCards.add(new DynamicWidget(n, c));
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        //     body: Center(
-        //         child: Column(children: <Widget>[
-        //   const Text('Inventory List',
-        //       textAlign: TextAlign.center,
-        //       style: TextStyle(
-        //           color: Color.fromRGBO(0, 0, 0, 1),
-        //           fontFamily: 'Inria Serif',
-        //           fontSize: 40,
-        //           letterSpacing: 0,
-        //           fontWeight: FontWeight.normal,
-        //           height: 1)),
-        //   Flexible(
-        //     child: new ListView.builder(
-        //         itemCount: cards.length,
-        //         itemBuilder: (_, index) => listDynamic[index]),
-        //   ),
-        //   ElevatedButton(
-        //     child: Text('Add entries'),
-        //     onPressed: () async {
-        //       List<InventoryEntry> persons = await Navigator.push(
-        //         context,
-        //         MaterialPageRoute(
-        //           builder: (context) => SOF(),
-        //         ),
-        //       );
-        //       if (persons != null) persons.forEach(print);
-        //     },
-        //   ),
-        // ]))
-        );
+    return MaterialApp(
+        home: Scaffold(
+            body: Column(children: <Widget>[
+              SizedBox(height: 25),
+              const Text('Inventory List',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: Color.fromRGBO(0, 0, 0, 1),
+                      fontFamily: 'Inria Serif',
+                      fontSize: 40,
+                      fontWeight: FontWeight.normal,
+                      height: 1)),
+              // SizedBox(
+              //   height: 50,
+              //   child: Card(
+              //       child: SizedBox(
+              //           width: 450,
+              //           height: 50,
+              //           child: Row(children: <Widget>[
+              //             Expanded(
+              //               child: TextField(
+              //                 controller: _nameController,
+              //               ),
+              //             ),
+              //             IconButton(
+              //                 icon: const Icon(Icons.add_circle_outline),
+              //                 onPressed: () {
+              //                   setState(() {
+              //                     count += 1;
+              //                   });
+              //                 }),
+              //             Text('$count'),
+              //             IconButton(
+              //                 icon: const Icon(Icons.remove_circle_outline),
+              //                 onPressed: () {
+              //                   setState(() {
+              //                     count -= 1;
+              //                   });
+              //                 }),
+              //           ]))),
+              // ),
+              Flexible(
+                child: new ListView.builder(
+                    itemCount: listCards.length,
+                    itemBuilder: (_, index) => listCards[index]),
+              ),
+            ]),
+            floatingActionButton: ElevatedButton(
+              child: Text('Add entries'),
+              onPressed: () {
+                TextEditingController _nameController =
+                    new TextEditingController();
+                addDynamic(_nameController, 0);
+              },
+            )));
   }
 }
-
-// class DynamicWidget extends StatelessWidget {
-//   // String name = '';
-//   var counts = <int>[];
-//   var nameFields = <TextEditingController>[];
-//   Card newcard = Card();
-
-//   DynamicWidget(Card newcard) {
-//     this.newcard = newcard;
-//   }
-
-//   Card createCard() {
-//     var nameController = TextEditingController();
-//     int count = 0;
-//     nameFields.add(nameController);
-//     counts.add(count);
-//     return Card(
-//         child: SizedBox(
-//             width: 300,
-//             height: 100,
-//             child: Row(children: <Widget>[
-//               TextField(
-//                 controller: nameController,
-//               ),
-//               IconButton(
-//                   icon: const Icon(Icons.add_circle_outline),
-//                   onPressed: () {
-//                     count += 1;
-//                   }),
-//               Text('$count'),
-//               IconButton(
-//                   icon: const Icon(Icons.remove_circle_outline),
-//                   onPressed: () {
-//                     count -= 1;
-//                   })
-//             ])));
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return createCard();
-//   }
-
-//   // @override
-//   // Widget build(BuildContext context) {
-//   //   return Scaffold(
-//   //     // appBar: AppBar(),
-//   //     body: Column(
-//   //       children: <Widget>[
-//   //         Flexible(
-//   //           child: new ListView.builder(
-//   //             itemCount: cards.length,
-//   //             itemBuilder: (BuildContext context, int index) {
-//   //               return cards[index];
-//   //             },
-//   //           ),
-//   //         ),
-//   //         Padding(
-//   //           padding: const EdgeInsets.all(16.0),
-//   //           child: ElevatedButton(
-//   //             child: Text('Add New'),
-//   //             onPressed: () => setState(() => cards.add(createCard())),
-//   //           ),
-//   //         )
-//   //       ],
-//   //     ),
-//   //     floatingActionButton:
-//   //         FloatingActionButton(child: Icon(Icons.done), onPressed: _onDone),
-//   //   );
-//   // }
-// }
-
-// class InventoryEntry {
-//   final String name;
-//   final int count;
-
-//   InventoryEntry(this.name, this.count);
-//   @override
-//   String toString() {
-//     return 'InventoryItem: name= $name, count= $count';
-//   }
-// }
