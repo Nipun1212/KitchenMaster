@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'register.dart';
-import 'homepage.dart';
+import 'inventory.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key? key}) : super(key: key);
@@ -121,7 +121,7 @@ class _LoginPageState extends State<LoginPage> {
             child: ElevatedButton(
               onPressed: () {
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => HomePage()));
+                    MaterialPageRoute(builder: (context) => InventoryPage()));
               },
               child: Text(
                 'OK',
