@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'register.dart';
 import 'inventory.dart';
+import 'profile.dart';
+import 'navBar.dart';
+
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key? key}) : super(key: key);
@@ -121,7 +124,9 @@ class _LoginPageState extends State<LoginPage> {
             child: ElevatedButton(
               onPressed: () {
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => InventoryPage()));
+                    // MaterialPageRoute(builder: (context) => InventoryPage()));
+                    // MaterialPageRoute(builder: (context) => ProfilePage()));
+                    MaterialPageRoute(builder: (context) => NavBar()));
               },
               child: Text(
                 'OK',
