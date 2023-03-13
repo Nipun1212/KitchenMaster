@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, unnecessary_new
 
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class InventoryPage extends StatefulWidget {
   InventoryPage({Key? key}) : super(key: key);
@@ -35,6 +36,14 @@ class _DynamicWidgetState extends State<DynamicWidget> {
   @override
   Widget build(BuildContext context) {
     return Card(
+        elevation: 0,
+        color: Color.fromARGB(0, 255, 255, 255),
+        // shape: RoundedRectangleBorder(
+        //   borderRadius: BorderRadius.circular(25),
+        //   side: BorderSide(
+        //     color: Color.fromARGB(97, 0, 0, 0),
+        //   ),
+        // ),
         child: Center(
             child: SizedBox(
                 width: 350,
@@ -92,8 +101,20 @@ class _InventoryPageState extends State<InventoryPage> {
       // if (listCards.isEmpty){
       //   //show error message
       // }
-      controllers.removeRange(0,controllers.length);
-      listCards.removeRange(0,listCards.length);
+      controllers.removeRange(0, controllers.length);
+      listCards.removeRange(0, listCards.length);
+    });
+  }
+
+  void removeNoName() {
+    setState(() {
+      for (var i = 0; i < listCards.length; i++) {
+        if (listCards[i].nameController.text.isEmpty) {
+          controllers.removeAt(i);
+          listCards.removeAt(i);
+          i--;
+        }
+      }
     });
   }
 
@@ -101,50 +122,71 @@ class _InventoryPageState extends State<InventoryPage> {
   Widget build(BuildContext context) {
     return MaterialApp(
         home: Scaffold(
-            body: Column(children: <Widget>[
-              SizedBox(height: 50),
-              const Text('Inventory List',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      color: Color.fromRGBO(0, 0, 0, 1),
-                      fontFamily: 'Inria Serif',
-                      fontSize: 35,
-                      fontWeight: FontWeight.normal,
-                      height: 1)),
-              ElevatedButton(
-                child: Text('Reset Inventory'),
-                onPressed: () {
-                  resetDynamic();
-                },
-              ),
-              Flexible(
-                fit: FlexFit.tight,
-                child: new ListView.builder(
-                    itemCount: listCards.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return Dismissible(
-                        onDismissed: (DismissDirection direction) {
-                          setState(() {
-                            controllers.removeAt(index);
-                            listCards.removeAt(index);
-                          });
-                        },
-                        secondaryBackground: Container(
-                          child: Center(
-                            child: Text(
-                              'Delete',
-                              style: TextStyle(color: Colors.white),
-                            ),
+            body: GestureDetector(
+              onTap: () {
+                FocusScope.of(context).requestFocus(FocusNode());
+                removeNoName();
+              },
+              child: Container(
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      // color: Color.fromARGB(100, 255, 105, 97),
+                      color: Colors.white),
+                  child: Column(children: <Widget>[
+                    SizedBox(height: 50),
+                    const Text('Inventory List',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: Color.fromRGBO(0, 0, 0, 1),
+                            fontFamily: 'Inria Serif',
+                            fontSize: 35,
+                            fontWeight: FontWeight.normal,
+                            height: 1)),
+                    SizedBox(height: 30),
+                    ElevatedButton(
+                      child: Text('Reset Inventory'),
+                      onPressed: () {
+                        resetDynamic();
+                      },
+                      style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all<Color>(Colors.black),
+                        shape: MaterialStateProperty.all(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(25),
                           ),
-                          color: Colors.red,
                         ),
-                        key: Key(listCards[index].id),
-                        child: listCards[index],
-                        background: Container(),
-                      );
-                    }),
-              ),
-            ]),
+                      ),
+                    ),
+                    Flexible(
+                      fit: FlexFit.tight,
+                      child: new ListView.builder(
+                          itemCount: listCards.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return Dismissible(
+                              onDismissed: (DismissDirection direction) {
+                                setState(() {
+                                  controllers.removeAt(index);
+                                  listCards.removeAt(index);
+                                });
+                              },
+                              secondaryBackground: Container(
+                                child: Center(
+                                  child: Text(
+                                    'Delete',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                                color: Colors.red,
+                              ),
+                              key: Key(listCards[index].id),
+                              child: listCards[index],
+                              background: Container(),
+                            );
+                          }),
+                    ),
+                  ])),
+            ),
             floatingActionButton: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -156,6 +198,7 @@ class _InventoryPageState extends State<InventoryPage> {
                     onPressed: () {
                       setState(() {});
                     },
+                    backgroundColor: Colors.black,
                   ),
                   SizedBox(width: 10),
                   FloatingActionButton.extended(
@@ -168,6 +211,7 @@ class _InventoryPageState extends State<InventoryPage> {
                       addDynamic(nameController, 0);
                       setState(() {});
                     },
+                    backgroundColor: Colors.black,
                   ),
                 ])));
   }
