@@ -1,5 +1,12 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/timezone.dart';
+import 'package:timezone/data/latest.dart' as tz;
 import 'profile.dart';
+// import 'package:firebase_messaging/firebase_messaging.dart';
 
 class AlertsPage extends StatefulWidget {
   AlertsPage({Key? key}) : super(key: key);
@@ -13,12 +20,14 @@ class DynamicWidget extends StatefulWidget {
   String frequency = '';
   TextEditingController nameController = TextEditingController();
   String id = '';
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
   DynamicWidget(TextEditingController n, String value) {
     nameController = n;
     name = n.text;
     frequency = value;
     id = UniqueKey().toString();
+    flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
   }
 
   @override
@@ -30,6 +39,100 @@ class _DynamicWidgetState extends State<DynamicWidget> {
   // void initState() {
   //   super.initState();
   // }
+
+
+  Future<void> _initializeNotifications() async {
+    var initializationSettingsAndroid =
+    AndroidInitializationSettings('@mipmap/ic_launcher');
+    var initializationSettings = InitializationSettings(
+        android: initializationSettingsAndroid //iOS: initializationSettingsIOS
+    );
+
+    await widget.flutterLocalNotificationsPlugin.initialize(initializationSettings,
+        onSelectNotification: (String? payload) async {});
+  }
+
+  // Future<void> _sendFCMTokenToServer() async {
+  //   final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
+  //   String? fcmToken = await firebaseMessaging.getToken();
+  //   // TODO: Send the FCM token to your server
+  // }
+
+  @override
+  void initState() {
+    super.initState();
+    tz.initializeTimeZones();
+    _initializeNotifications();//local notifications
+    // _sendFCMTokenToServer(); //push notification
+
+  }
+
+  void scheduleNotification(String id, String name, String frequency) async {
+    widget.flutterLocalNotificationsPlugin.cancelAll();
+
+    if (name == '' || frequency == 'none') return;
+    int freqInDays = 0;
+    switch(frequency){
+      case "daily": freqInDays = 1;
+      break;
+      case "weekly": freqInDays = 7;
+      break;
+      case "biweekly": freqInDays = 14;
+      break;
+      case "monthly": freqInDays = 30;
+      break;
+    }
+
+    var androidDetails = AndroidNotificationDetails(
+        id , name, frequency + ' reminder for ' + name,
+        importance: Importance.high,
+        priority: Priority.high,
+        styleInformation: BigTextStyleInformation(''),
+        playSound: true,
+        enableVibration: true,
+        timeoutAfter: 5000
+    );
+    //var iosDetails = IOSNotificationDetails();
+    var platformDetails =
+    NotificationDetails(android: androidDetails, //iOS: iosDetails
+    );
+
+    // Schedule the notification
+    await widget.flutterLocalNotificationsPlugin.zonedSchedule(
+      0, // notification id
+      'Grocery List Reminder', // notification title
+      'Restock ' + name + '!', // notification body
+      _nextInstanceOfTimeOfDay(freqInDays), // scheduled date and time
+      platformDetails,
+      androidAllowWhileIdle: true,
+      uiLocalNotificationDateInterpretation:
+      UILocalNotificationDateInterpretation.absoluteTime,
+      matchDateTimeComponents: DateTimeComponents.time,
+    );
+    log("showSchedule " + id+ name + frequency);
+  }
+
+  TZDateTime _nextInstanceOfTimeOfDay(int days) {
+    final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
+    tz.TZDateTime scheduledDate = tz.TZDateTime(
+      tz.local,
+      now.year,
+      now.month,
+      now.day,
+      now.hour, now.minute, now.second
+      // 16,
+      // // hour of day
+      // 15,
+      // // minute
+      // 0, // second
+    );
+    scheduledDate = scheduledDate.add(Duration(seconds: 1));
+    while (scheduledDate.isBefore(now)) {
+      scheduledDate = scheduledDate.add(Duration(days: days));
+    }
+
+    return scheduledDate;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,6 +149,15 @@ class _DynamicWidgetState extends State<DynamicWidget> {
                         hintText: "Enter Name",
                         hintStyle: TextStyle(color: Colors.black, fontSize: 18),
                       ),
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          widget.name = newValue!;
+                          scheduleNotification(
+                          widget.id,
+                          widget.name,
+                          widget.frequency.toLowerCase(),
+                          );
+                        });}
                     ),
                   ),
                   DropdownButton<String>(
@@ -71,7 +183,13 @@ class _DynamicWidgetState extends State<DynamicWidget> {
                     onChanged: (String? newValue) {
                       setState(() {
                         widget.frequency = newValue!;
+                        scheduleNotification(
+                          widget.id,
+                          widget.name,
+                          widget.frequency.toLowerCase(),
+                        );
                       });
+
                     },
                   ),
                 ]))));
@@ -79,34 +197,8 @@ class _DynamicWidgetState extends State<DynamicWidget> {
 }
 
 class _AlertsPageState extends State<AlertsPage> {
-  @override
-  void initState() {
-    super.initState();
-  }
 
-  void _onItemTapped(int index) {
-    switch (index) {
-      case 0:
-        Navigator.of(context).pushReplacement(
-            new MaterialPageRoute(builder: (context) => new ProfilePage()));
-        break;
-      case 1:
-        Navigator.of(context).pushReplacement(
-            new MaterialPageRoute(builder: (context) => new AlertsPage()));
-        break;
-      case 2:
-        // Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (context) => new InventoryPage()));
-        break;
-      case 3:
-        // Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (context) => new RecipesPage()));
-        break;
-      case 4:
-        // Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (context) => new FavouritesPage()));
-        break;
-    }
-  }
 
-  int _selectedIndex = 1;
 
   List<DynamicWidget> listCards = [];
   List<TextEditingController> controllers = [];
@@ -114,9 +206,25 @@ class _AlertsPageState extends State<AlertsPage> {
   void addDynamic(TextEditingController n, String value) {
     setState(() {
       controllers.add(n);
-      listCards.add(DynamicWidget(n, value));
+      var dynamicWidget = DynamicWidget(n, value);
+      listCards.add(dynamicWidget);
+      log("added dynamic");
+      // scheduleNotification(dynamicWidget.id, dynamicWidget.name,
+      //     dynamicWidget.frequency.toLowerCase());
     });
   }
+
+  // void editDynamic(int index, TextEditingController n, String value) {
+  //   setState(() {
+  //     var dynamicWidget = listCards[index];
+  //     controllers[index] = n;
+  //     dynamicWidget.nameController = n;
+  //     dynamicWidget.name = n.text;
+  //     dynamicWidget.frequency = value;
+  //     scheduleNotification(dynamicWidget.id, dynamicWidget.name,
+  //         dynamicWidget.frequency.toLowerCase());
+  //   });
+  // }
 
   void resetDynamic() {
     setState(() {
