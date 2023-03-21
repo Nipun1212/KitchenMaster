@@ -68,7 +68,7 @@ class _DynamicWidgetState extends State<DynamicWidget> {
   }
 
   void scheduleNotification(String id, String name, String frequency) async {
-    widget.flutterLocalNotificationsPlugin.cancelAll();
+    await widget.flutterLocalNotificationsPlugin.cancelAll();
 
     if (name == '' || frequency == 'none') return;
     int freqInDays = 0;
