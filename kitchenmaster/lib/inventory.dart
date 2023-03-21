@@ -96,6 +96,7 @@ class _InventoryPageState extends State<InventoryPage> {
 
     setState(() {
       _image = image;
+      // run image recognition
     });
   }
 
