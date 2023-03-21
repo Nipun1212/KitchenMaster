@@ -89,6 +89,16 @@ class _InventoryPageState extends State<InventoryPage> {
   List<TextEditingController> controllers = [];
   //TextEditingController nameController = new TextEditingController();
 
+  XFile? _image;
+
+  Future getImage() async {
+    var image = await ImagePicker().pickImage(source: ImageSource.gallery);
+
+    setState(() {
+      _image = image;
+    });
+  }
+
   void addDynamic(TextEditingController n, int c) {
     setState(() {
       controllers.add(n);
@@ -196,7 +206,9 @@ class _InventoryPageState extends State<InventoryPage> {
                     icon: const Icon(Icons.add_a_photo),
                     heroTag: "upload_photo",
                     onPressed: () {
-                      setState(() {});
+                      setState(() {
+                        getImage();
+                      });
                     },
                     backgroundColor: Colors.black,
                   ),
