@@ -69,3 +69,8 @@ dependencies {
 }
 
 apply plugin: 'com.google.gms.google-services'
+
+aaptOptions {
+        noCompress 'tflite'
+        noCompress 'lite'
+}

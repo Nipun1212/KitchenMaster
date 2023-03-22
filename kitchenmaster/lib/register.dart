@@ -181,7 +181,7 @@ class _RegisterPageState extends State<RegisterPage> {
   Future createUser({required String name, required String email, required String password}) async {
       final docUser = FirebaseFirestore.instance.collection('users').doc();
 
-      final user = User(
+      final user = UserInfo(
         id: docUser.id,
         name: name,
         email: email,
@@ -193,13 +193,13 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 }
 
-class User {
+class UserInfo {
   String id;
   final String name;
   final String email;
   final String password;
   
-  User({
+  UserInfo({
     this.id = '',
     required this.name,
     required this.email,

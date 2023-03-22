@@ -34,12 +34,15 @@ dependencies:
   cupertino_icons: ^1.0.2
   gestures: ^1.0.0
   persistent_bottom_nav_bar: any
-  cloud_firestore: ^4.4.3 
+  cloud_firestore: ^4.4.3
+  firebase_auth: ^4.3.0
+  tflite: ^1.1.2
+  path_provider: ^2.0.14
+  image_picker: ^0.8.7 
 
 #  firebase_messaging: ^11.2.0
   flutter_local_notifications: ^8.1.0
   timezone: ^0.7.0
-  image_picker: 
   
 dev_dependencies:
   flutter_test:
@@ -65,6 +68,8 @@ flutter:
   assets:
     - assets/logo.png
     - assets/rectangle.png
+    - assets/labels.txt
+    - assets/kitchen_master.tflite
 
   # To add assets to your application, add an assets section, like this:
   # assets:
