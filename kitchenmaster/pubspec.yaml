@@ -36,6 +36,11 @@ dependencies:
   persistent_bottom_nav_bar: any
   cloud_firestore: ^4.4.3 
 
+#  firebase_messaging: ^11.2.0
+  flutter_local_notifications: ^8.1.0
+  timezone: ^0.7.0
+  image_picker: 
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter
