@@ -30,6 +30,14 @@ class DynamicWidget extends StatefulWidget {
     flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
   }
 
+  void deleteNotifications() async {
+    await flutterLocalNotificationsPlugin.cancelAll();
+    await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin>()
+        ?.deleteNotificationChannel(name);
+  }
+
   @override
   State<DynamicWidget> createState() => _DynamicWidgetState();
 }
@@ -43,7 +51,8 @@ class _DynamicWidgetState extends State<DynamicWidget> {
 
   Future<void> _initializeNotifications() async {
     var initializationSettingsAndroid =
-    AndroidInitializationSettings('@mipmap/ic_launcher');
+    // AndroidInitializationSettings('@mipmap/ic_launcher');
+    AndroidInitializationSettings('@drawable/logo');
     var initializationSettings = InitializationSettings(
         android: initializationSettingsAndroid //iOS: initializationSettingsIOS
     );
@@ -66,9 +75,17 @@ class _DynamicWidgetState extends State<DynamicWidget> {
     // _sendFCMTokenToServer(); //push notification
 
   }
+  //
+  // void deleteNotifications(String channelId) async {
+  //   await widget.flutterLocalNotificationsPlugin
+  //       .resolvePlatformSpecificImplementation<
+  //       AndroidFlutterLocalNotificationsPlugin>()
+  //       ?.deleteNotificationChannel(channelId);
+  // }
 
   void scheduleNotification(String id, String name, String frequency) async {
-    await widget.flutterLocalNotificationsPlugin.cancelAll();
+    // await widget.flutterLocalNotificationsPlugin.cancelAll();
+    widget.deleteNotifications();
 
     if (name == '' || frequency == 'none') return;
     int freqInDays = 0;
@@ -84,13 +101,14 @@ class _DynamicWidgetState extends State<DynamicWidget> {
     }
 
     var androidDetails = AndroidNotificationDetails(
-        id , name, frequency + ' reminder for ' + name,
+        name , name, frequency + ' reminder for ' + name,
         importance: Importance.high,
         priority: Priority.high,
         styleInformation: BigTextStyleInformation(''),
         playSound: true,
         enableVibration: true,
-        timeoutAfter: 5000
+        // timeoutAfter: 6000,
+        // ongoing: true
     );
     //var iosDetails = IOSNotificationDetails();
     var platformDetails =
@@ -276,7 +294,9 @@ class _AlertsPageState extends State<AlertsPage> {
                           onDismissed: (DismissDirection direction) {
                             setState(() {
                               controllers.removeAt(index);
+                              listCards[index].deleteNotifications();
                               listCards.removeAt(index);
+
                             });
                           },
                           secondaryBackground: Container(
