@@ -7,63 +7,25 @@ import 'package:firebase_core/firebase_core.dart';
 
 class RecipePage extends StatefulWidget {
   RecipePage({Key? key}) : super(key: key);
+  static List<String> favourites = [];
+
+  static List<String> getFavourites() {
+    return favourites;
+  }
+
+  static void addFavourites(String newValue) {
+    favourites.add(newValue);
+  }
+
+  static void removeFavourites(String value) {
+    favourites.remove(value);
+  }
 
   @override
   State<RecipePage> createState() => _RecipePageState();
 }
 
-class DynamicWidget extends StatefulWidget {
-  String recipeName = '';
-  bool favourite = false;
-
-  DynamicWidget(String n, bool fav) {
-    recipeName = n;
-    favourite = fav;
-  }
-
-  @override
-  State<DynamicWidget> createState() => _DynamicWidgetState();
-}
-
-class _DynamicWidgetState extends State<DynamicWidget> {
-  // @override
-  // void initState() {
-  //   super.initState();
-  // }
-  List<String> favourites = [];
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-        elevation: 0,
-        color: Color.fromARGB(0, 255, 255, 255),
-        // shape: RoundedRectangleBorder(
-        //   borderRadius: BorderRadius.circular(25),
-        //   side: BorderSide(
-        //     color: Color.fromARGB(97, 0, 0, 0),
-        //   ),
-        // ),
-        child: Center(
-            child: SizedBox(
-                width: 350,
-                height: 60,
-                child: Column(children: <Widget>[
-                  Row(children: <Widget>[
-                    Text('${widget.recipeName}'),
-                    FavoriteButton(
-                      valueChanged: (_isFavorite) {
-                        widget.favourite = true;
-                        favourites.add(widget.recipeName);
-                      },
-                    )
-                  ])
-                ]))));
-  }
-}
-
 class _RecipePageState extends State<RecipePage> {
-  List<String> favourites = [];
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -105,19 +67,20 @@ class _RecipePageState extends State<RecipePage> {
                                 Row(children: <Widget>[
                                   TextButton(
                                     child: Text(document['Name']),
-                                    onPressed:(){
+                                    onPressed: () {
                                       // navigate to indiv recipe page
-                                    }, 
-                                    Widget: null,
+                                    },
                                   ),
                                   FavoriteButton(
                                     valueChanged: (_isFavorite) {
                                       if (_isFavorite) {
-                                        favourites.add(document['Name']);
-                                        print(favourites);
+                                        RecipePage.addFavourites(
+                                            document['Name']);
+                                        print(RecipePage.getFavourites());
                                       } else if (!_isFavorite) {
-                                        favourites.remove(document['Name']);
-                                        print(favourites);
+                                        RecipePage.removeFavourites(
+                                            document['Name']);
+                                        print(RecipePage.getFavourites());
                                       }
                                     },
                                   )
