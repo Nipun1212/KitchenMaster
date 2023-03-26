@@ -3,11 +3,11 @@
 import 'package:flutter/material.dart';
 import 'package:favorite_button/favorite_button.dart';
 
-class InventoryPage extends StatefulWidget {
-  InventoryPage({Key? key}) : super(key: key);
+class RecipePage extends StatefulWidget {
+  RecipePage({Key? key}) : super(key: key);
 
   @override
-  State<InventoryPage> createState() => _InventoryPageState();
+  State<RecipePage> createState() => _RecipePageState();
 }
 
 class DynamicWidget extends StatefulWidget {
@@ -59,7 +59,7 @@ class _DynamicWidgetState extends State<DynamicWidget> {
   }
 }
 
-class _InventoryPageState extends State<InventoryPage> {
+class _RecipePageState extends State<RecipePage> {
   List<DynamicWidget> recipes = [];
 
   void addRecipes(String n, bool fav) {
