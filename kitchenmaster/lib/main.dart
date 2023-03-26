@@ -1,33 +1,11 @@
 // ignore_for_file: prefer_const_constructors
-import 'dart:developer';
 
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/material.dart';
 import 'login.dart';
 import 'register.dart';
 
-// void main() {
-//
-//   runApp(const MyApp());
-// }
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  // // initialize the FlutterLocalNotificationsPlugin instance
-  // FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-  // FlutterLocalNotificationsPlugin();
-  //
-  // //delete specific instance of notification chanel
-  // await flutterLocalNotificationsPlugin
-  //     .resolvePlatformSpecificImplementation<
-  //     AndroidFlutterLocalNotificationsPlugin>()
-  // ?.cancelAll();
-  // await flutterLocalNotificationsPlugin
-  //     .resolvePlatformSpecificImplementation<
-  //     AndroidFlutterLocalNotificationsPlugin>()
-  //     ?.deleteNotificationChannel('apple3');
-
-  runApp(MyApp());
+void main() {
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
