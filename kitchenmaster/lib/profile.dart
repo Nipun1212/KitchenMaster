@@ -226,6 +226,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     height: 30,
                   ),
                   TextButton(
+                      child: Text('Save', style: TextStyle(fontSize: 22)),
                       style: ButtonStyle(
                         side: MaterialStateProperty.all<BorderSide>(
                             BorderSide(width: 1.5, color: Colors.black54)),
@@ -246,8 +247,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           },
                         ),
                       ),
-                      onPressed: () {},
-                      child: Text('Save', style: TextStyle(fontSize: 22))),
+                      onPressed: () {}),
                   SizedBox(
                     height: 50,
                   ),
