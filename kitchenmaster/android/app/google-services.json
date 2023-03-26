@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "418404573707",
+    "project_id": "kitchenmaster-ae07b",
+    "storage_bucket": "kitchenmaster-ae07b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:418404573707:android:5e68d8ddb4a07fe6691d0e",
+        "android_client_info": {
+          "package_name": "com.example.fridgemaster"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "418404573707-ejqeqe3eqps2ud6pm4s9jh016650oeaf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAhugXImRS6NybdDwqAjeWuIan8ZHYI54U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "418404573707-ejqeqe3eqps2ud6pm4s9jh016650oeaf.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "418404573707-5k03foiahskopcg8rvt51jp8jerfo7uk.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.fridgemaster"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

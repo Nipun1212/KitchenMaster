@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'login.dart';
@@ -153,6 +154,10 @@ class _RegisterPageState extends State<RegisterPage> {
             child: ElevatedButton(
               onPressed: () {
                 if ((regEmail.text.isNotEmpty) && (regName.text.isNotEmpty) && regPassword.text == regConfirm.text) {
+                  final name = regName.text;
+                  final email = regEmail.text;
+                  final password = regPassword.text;
+                  createUser(name: name, email: email, password: password);
                   Navigator.push(context,
                       MaterialPageRoute(builder: (context) => LoginPage()));
                   // make alert dialog to print 'successfully created account'
@@ -172,5 +177,39 @@ class _RegisterPageState extends State<RegisterPage> {
             ),
           ),
         ])));
+    }
+  Future createUser({required String name, required String email, required String password}) async {
+      final docUser = FirebaseFirestore.instance.collection('users').doc();
+
+      final user = UserInfo(
+        id: docUser.id,
+        name: name,
+        email: email,
+        password: password,
+      );
+      final json = user.toJson();
+
+      await docUser.set(json);
   }
+}
+
+class UserInfo {
+  String id;
+  final String name;
+  final String email;
+  final String password;
+  
+  UserInfo({
+    this.id = '',
+    required this.name,
+    required this.email,
+    required this.password,
+  });
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'name': name,
+    'email': email,
+    'password': password,
+  };
 }

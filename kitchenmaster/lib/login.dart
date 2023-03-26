@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors
-
+import 'package:flutter/foundation.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'register.dart';
@@ -9,7 +10,7 @@ import 'navBar.dart';
 
 
 class LoginPage extends StatefulWidget {
-  LoginPage({Key? key}) : super(key: key);
+  const LoginPage({Key? key}) : super(key: key);
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -123,10 +124,9 @@ class _LoginPageState extends State<LoginPage> {
             height: 51.5,
             child: ElevatedButton(
               onPressed: () {
-                Navigator.push(context,
-                    // MaterialPageRoute(builder: (context) => InventoryPage()));
-                    // MaterialPageRoute(builder: (context) => ProfilePage()));
-                    MaterialPageRoute(builder: (context) => NavBar()));
+                debugPrint("Email: "+enterEmail.text.trim());
+                debugPrint("Password: "+enterPassword.text.trim());
+                signIn();
               },
               child: Text(
                 'OK',
@@ -144,5 +144,28 @@ class _LoginPageState extends State<LoginPage> {
         ]),
       ),
     );
+  }
+  Future signIn() async {
+    try { 
+      final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: enterEmail.text.trim(), 
+        password: enterPassword.text.trim(),
+      );
+    } on FirebaseAuthException catch (e) {
+      debugPrint("Error Message: "+e.code);
+      if (e.code == 'user-not-found') {
+        debugPrint('No user found for that email.');
+      } else if (e.code == 'wrong-password') {
+        debugPrint('Wrong password provided for that user.');
+      }
+    }
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null)
+    { 
+      debugPrint(user.uid);
+      debugPrint("Success");
+      Navigator.push(context,
+        MaterialPageRoute(builder: (context) => NavBar()));
+    }
   }
 }
