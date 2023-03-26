@@ -3,6 +3,7 @@ import 'package:fridgemaster/alerts.dart';
 import 'package:fridgemaster/inventory.dart';
 import 'package:fridgemaster/inventorytryout.dart';
 import 'package:fridgemaster/profile.dart';
+import 'package:fridgemaster/recipes.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
 
@@ -18,7 +19,7 @@ class NavBar extends StatelessWidget {
       AlertsPage(),
       // Add the respective pages
       InventoryPage(),
-      ProfilePage(),
+      RecipesPage(),
       ProfilePage(),
     ];
   }
