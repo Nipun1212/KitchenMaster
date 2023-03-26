@@ -127,12 +127,8 @@ class _LoginPageState extends State<LoginPage> {
                 debugPrint("Email: "+enterEmail.text.trim());
                 debugPrint("Password: "+enterPassword.text.trim());
                 Navigator.push(context,
-<<<<<<< Updated upstream
                   MaterialPageRoute(builder: (context) => NavBar()));
-=======
-                      MaterialPageRoute(builder: (context) => ProfilePage()));
                 // signIn();
->>>>>>> Stashed changes
               },
               child: Text(
                 'OK',
