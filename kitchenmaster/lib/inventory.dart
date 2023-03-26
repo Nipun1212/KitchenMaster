@@ -2,6 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:tflite/tflite.dart';
+import 'dart:io';
 
 class InventoryPage extends StatefulWidget {
   InventoryPage({Key? key}) : super(key: key);
@@ -28,11 +30,6 @@ class DynamicWidget extends StatefulWidget {
 }
 
 class _DynamicWidgetState extends State<DynamicWidget> {
-  // @override
-  // void initState() {
-  //   super.initState();
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -89,15 +86,46 @@ class _InventoryPageState extends State<InventoryPage> {
   List<TextEditingController> controllers = [];
   //TextEditingController nameController = new TextEditingController();
 
-  XFile? _image;
-
-  Future getImage() async {
+  File? _image;
+  List _result = [];
+  String image_name = "";
+  getImage() async {
     var image = await ImagePicker().pickImage(source: ImageSource.gallery);
-
+    
+    debugPrint("Image.path: " + image!.path);
     setState(() {
-      _image = image;
-      // run image recognition
+      removeNoName();
+      _image = File(image.path);
+      image_name = File(image.path).toString().split('/').last.split('.').first;
+      TextEditingController nameController = new TextEditingController(text: image_name);
+      addDynamic(nameController, 0);
+      image_name = "";
+      //debugPrint("Apply on: " + _image!.path);
+      //applyModelOnImage(_image!);
     });
+  }
+
+  loadMyModel() async {
+    String? result = await Tflite.loadModel(
+      model: "assets/kitchen_master.tflite", 
+      labels: "assets/labels.txt");
+    debugPrint("Result: $result");
+  }
+
+  applyModelOnImage(File file) async {
+    var res = await Tflite.runModelOnImage(
+      path: file.path,
+      imageMean: 127.5,
+      imageStd: 127.5,
+      numResults: 2,
+      threshold: 0.1,
+      asynch: true);
+    
+    _result = res!;
+    String str = _result[0]["labels"];
+    debugPrint("Results Label:" + str);
+    debugPrint("Results Label Substring:" + str.substring(2));
+    debugPrint("Results Confidence:" + (_result[0]["confidence"]*100.0).toString().substring(0,2));
   }
 
   void addDynamic(TextEditingController n, int c) {
@@ -207,9 +235,7 @@ class _InventoryPageState extends State<InventoryPage> {
                     icon: const Icon(Icons.add_a_photo),
                     heroTag: "upload_photo",
                     onPressed: () {
-                      setState(() {
-                        getImage();
-                      });
+                      getImage();
                     },
                     backgroundColor: Colors.black,
                   ),
@@ -227,5 +253,11 @@ class _InventoryPageState extends State<InventoryPage> {
                     backgroundColor: Colors.black,
                   ),
                 ])));
+  }
+
+  @override
+  void initState() {
+    super.initState();
+     //loadMyModel();
   }
 }
