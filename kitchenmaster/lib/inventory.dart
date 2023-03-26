@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, unnecessary_new
 
 import 'package:flutter/material.dart';
+import 'package:fridgemaster/recipe.dart';
 import 'package:image_picker/image_picker.dart';
 
 class InventoryPage extends StatefulWidget {
@@ -107,6 +108,10 @@ class _InventoryPageState extends State<InventoryPage> {
     });
   }
 
+  //created object for recipe
+  // use reset button to test the fetching of recipe data
+  Recipe test = new Recipe();
+  ///////////////////////////////////////
   void resetDynamic() {
     setState(() {
       // if (listCards.isEmpty){
@@ -115,6 +120,9 @@ class _InventoryPageState extends State<InventoryPage> {
       controllers.removeRange(0, controllers.length);
       listCards.removeRange(0, listCards.length);
     });
+///// ADDED THIS FUNCTION TO TEST FETCHING OF RECIPE DATA/////
+    test.getRecipes();
+/////////////////////////////////////////////////////////////
   }
 
   void removeNoName() {

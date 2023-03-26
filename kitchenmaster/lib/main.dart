@@ -5,6 +5,8 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/material.dart';
 import 'login.dart';
 import 'register.dart';
+//import below line for firebase
+import 'package:firebase_core/firebase_core.dart';
 
 // void main() {
 //
@@ -27,6 +29,8 @@ Future<void> main() async {
   //     AndroidFlutterLocalNotificationsPlugin>()
   //     ?.deleteNotificationChannel('apple3');
 
+  //added the line below
+  await Firebase.initializeApp();
   runApp(MyApp());
 }
 
@@ -68,81 +72,72 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Container(
-              width: 303,
-              height: 200,
-              child: Image.asset('assets/logo.png'),
-            ),
-            Text(
-              'KitchenMaster',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  color: Color.fromRGBO(0, 0, 0, 1),
-                  fontFamily: 'Inria Serif',
-                  fontSize: 40,
-                  letterSpacing:
-                      0 /*percentages not used in flutter. defaulting to zero*/,
-                  fontWeight: FontWeight.normal,
-                  height: 1
-              ),
-            ),
-            const SizedBox(height: 30),
-            Container(
-              width: 300,
-              height: 51.5,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => LoginPage())
-                  );
-                },
-                child: Text(
-                  'Login',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
+        body: Center(
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+          Container(
+            width: 303,
+            height: 200,
+            child: Image.asset('assets/logo.png'),
+          ),
+          Text(
+            'KitchenMaster',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+                color: Color.fromRGBO(0, 0, 0, 1),
+                fontFamily: 'Inria Serif',
+                fontSize: 40,
+                letterSpacing:
+                    0 /*percentages not used in flutter. defaulting to zero*/,
+                fontWeight: FontWeight.normal,
+                height: 1),
+          ),
+          const SizedBox(height: 30),
+          Container(
+            width: 300,
+            height: 51.5,
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => LoginPage()));
+              },
+              child: Text(
+                'Login',
+                textAlign: TextAlign.center,
+                style: TextStyle(
                     color: Color.fromRGBO(255, 255, 255, 1),
                     fontFamily: 'IM FELL English SC',
                     fontSize: 30,
-                    letterSpacing: 0 /*percentages not used in flutter. defaulting to zero*/,
+                    letterSpacing:
+                        0 /*percentages not used in flutter. defaulting to zero*/,
                     fontWeight: FontWeight.normal,
-                    height: 1
-                  ),
-                ),
+                    height: 1),
               ),
             ),
-            const SizedBox(height: 30),
-            Container(
-              width: 300,
-              height: 51.5,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => RegisterPage())
-                  );
-                },
-                child: Text(
-                  'Create Account',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
+          ),
+          const SizedBox(height: 30),
+          Container(
+            width: 300,
+            height: 51.5,
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => RegisterPage()));
+              },
+              child: Text(
+                'Create Account',
+                textAlign: TextAlign.center,
+                style: TextStyle(
                     color: Color.fromRGBO(255, 255, 255, 1),
                     fontFamily: 'IM FELL English SC',
                     fontSize: 30,
                     letterSpacing: 0,
                     fontWeight: FontWeight.normal,
-                    height: 1
-                  ),
-                ),
+                    height: 1),
               ),
             ),
-          ]
-        )
-      )
-    );
+          ),
+        ])));
   }
 }
