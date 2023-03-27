@@ -39,7 +39,6 @@ class DynamicWidget extends StatefulWidget {
         .resolvePlatformSpecificImplementation<
         AndroidFlutterLocalNotificationsPlugin>()
         ?.deleteNotificationChannel(id);
-    // await flutterLocalNotificationsPlugin.cancelAll();
   }
 
   void deleteNotificationFirebase() async {
@@ -53,48 +52,9 @@ class DynamicWidget extends StatefulWidget {
     });
   }
 
-  @override
-  State<DynamicWidget> createState() => _DynamicWidgetState();
-}
-
-class _DynamicWidgetState extends State<DynamicWidget> {
-  // @override
-  // void initState() {
-  //   super.initState();
-  // }
-
-
-  Future<void> _initializeNotifications() async {
-    var initializationSettingsAndroid =
-    // AndroidInitializationSettings('@mipmap/ic_launcher');
-    AndroidInitializationSettings('@drawable/logo');
-    var initializationSettingsIOS = IOSInitializationSettings();
-    var initializationSettings = InitializationSettings(
-        android: initializationSettingsAndroid, iOS: initializationSettingsIOS
-    );
-
-    await widget.flutterLocalNotificationsPlugin.initialize(initializationSettings,
-        onSelectNotification: (String? payload) async {});
-  }
-
-  // Future<void> _sendFCMTokenToServer() async {
-  //   final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
-  //   String? fcmToken = await firebaseMessaging.getToken();
-  //   // TODO: Send the FCM token to your server
-  // }
-
-  @override
-  void initState() {
-    super.initState();
-    tz.initializeTimeZones();
-    _initializeNotifications();//local notifications
-    // _sendFCMTokenToServer(); //push notification
-
-  }
-
   void scheduleNotification(String id, String name, String frequency) async {
     // await widget.flutterLocalNotificationsPlugin.cancelAll();
-    widget.deleteNotifications();
+    deleteNotifications();
 
     //update firebase
     final uid = FirebaseAuth.instance.currentUser!.uid;
@@ -122,14 +82,14 @@ class _DynamicWidgetState extends State<DynamicWidget> {
     }
 
     var androidDetails = AndroidNotificationDetails(
-        id , name, frequency + ' reminder for ' + name,
-        importance: Importance.high,
-        priority: Priority.high,
-        styleInformation: BigTextStyleInformation(''),
-        playSound: true,
-        enableVibration: true,
-        // timeoutAfter: 6000,
-        // ongoing: true
+      id , name, frequency + ' reminder for ' + name,
+      importance: Importance.high,
+      priority: Priority.high,
+      styleInformation: BigTextStyleInformation(''),
+      playSound: true,
+      enableVibration: true,
+      // timeoutAfter: 6000,
+      // ongoing: true
     );
     var iosDetails = IOSNotificationDetails(
       presentAlert: true,
@@ -142,12 +102,8 @@ class _DynamicWidgetState extends State<DynamicWidget> {
       iOS: iosDetails,
     );
 
-    // var platformDetails =
-    // NotificationDetails(android: androidDetails, //iOS: iosDetails
-    // );
-
     // Schedule the notification
-    await widget.flutterLocalNotificationsPlugin.zonedSchedule(
+    await flutterLocalNotificationsPlugin.zonedSchedule(
       0, // notification id
       'Grocery List Reminder', // notification title
       'Restock ' + name + '!', // notification body
@@ -164,11 +120,11 @@ class _DynamicWidgetState extends State<DynamicWidget> {
   TZDateTime _nextInstanceOfTimeOfDay(int days) {
     final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
     tz.TZDateTime scheduledDate = tz.TZDateTime(
-      tz.local,
-      now.year,
-      now.month,
-      now.day,
-      now.hour, now.minute, now.second
+        tz.local,
+        now.year,
+        now.month,
+        now.day,
+        now.hour, now.minute, now.second
       // 16,
       // // hour of day
       // 15,
@@ -182,6 +138,123 @@ class _DynamicWidgetState extends State<DynamicWidget> {
 
     return scheduledDate;
   }
+
+  @override
+  State<DynamicWidget> createState() => _DynamicWidgetState();
+}
+
+class _DynamicWidgetState extends State<DynamicWidget> {
+
+  Future<void> _initializeNotifications() async {
+    var initializationSettingsAndroid =
+    // AndroidInitializationSettings('@mipmap/ic_launcher');
+    AndroidInitializationSettings('@drawable/logo');
+    var initializationSettingsIOS = IOSInitializationSettings();
+    var initializationSettings = InitializationSettings(
+        android: initializationSettingsAndroid, iOS: initializationSettingsIOS
+    );
+
+    await widget.flutterLocalNotificationsPlugin.initialize(initializationSettings,
+        onSelectNotification: (String? payload) async {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // tz.initializeTimeZones();
+    _initializeNotifications();
+  }
+
+  // void scheduleNotification(String id, String name, String frequency) async {
+  //   // await widget.flutterLocalNotificationsPlugin.cancelAll();
+  //   widget.deleteNotifications();
+  //
+  //   //update firebase
+  //   final uid = FirebaseAuth.instance.currentUser!.uid;
+  //   final alertRef = FirebaseFirestore.instance.collection('users').doc(uid).collection('alerts').doc(id);
+  //
+  //   // Update the data for this document
+  //   alertRef.update({
+  //     'name': name,
+  //     'frequency': frequency,
+  //   })
+  //       .then((value) => print('Alert updated successfully'))
+  //       .catchError((error) => print('Error updating alert: $error'));
+  //
+  //   if (name == '' || frequency == 'None') return;
+  //   int freqInDays = 0;
+  //   switch(frequency){
+  //     case "Daily": freqInDays = 1;
+  //     break;
+  //     case "Weekly": freqInDays = 7;
+  //     break;
+  //     case "Biweekly": freqInDays = 14;
+  //     break;
+  //     case "Monthly": freqInDays = 30;
+  //     break;
+  //   }
+  //
+  //   var androidDetails = AndroidNotificationDetails(
+  //       id , name, frequency + ' reminder for ' + name,
+  //       importance: Importance.high,
+  //       priority: Priority.high,
+  //       styleInformation: BigTextStyleInformation(''),
+  //       playSound: true,
+  //       enableVibration: true,
+  //       // timeoutAfter: 6000,
+  //       // ongoing: true
+  //   );
+  //   var iosDetails = IOSNotificationDetails(
+  //     presentAlert: true,
+  //     presentSound: true,
+  //     badgeNumber: 1,
+  //   );
+  //
+  //   var platformDetails = NotificationDetails(
+  //     android: androidDetails,
+  //     iOS: iosDetails,
+  //   );
+  //
+  //   // var platformDetails =
+  //   // NotificationDetails(android: androidDetails, //iOS: iosDetails
+  //   // );
+  //
+  //   // Schedule the notification
+  //   await widget.flutterLocalNotificationsPlugin.zonedSchedule(
+  //     0, // notification id
+  //     'Grocery List Reminder', // notification title
+  //     'Restock ' + name + '!', // notification body
+  //     _nextInstanceOfTimeOfDay(freqInDays), // scheduled date and time
+  //     platformDetails,
+  //     androidAllowWhileIdle: true,
+  //     uiLocalNotificationDateInterpretation:
+  //     UILocalNotificationDateInterpretation.absoluteTime,
+  //     matchDateTimeComponents: DateTimeComponents.time,
+  //   );
+  //   log("showSchedule " + id+ name + frequency);
+  // }
+  //
+  // TZDateTime _nextInstanceOfTimeOfDay(int days) {
+  //   final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
+  //   tz.TZDateTime scheduledDate = tz.TZDateTime(
+  //     tz.local,
+  //     now.year,
+  //     now.month,
+  //     now.day,
+  //     now.hour, now.minute, now.second
+  //     // 16,
+  //     // // hour of day
+  //     // 15,
+  //     // // minute
+  //     // 0, // second
+  //   );
+  //   scheduledDate = scheduledDate.add(Duration(seconds: 1));
+  //   while (scheduledDate.isBefore(now)) {
+  //     scheduledDate = scheduledDate.add(Duration(days: days));
+  //   }
+  //
+  //   return scheduledDate;
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -201,7 +274,7 @@ class _DynamicWidgetState extends State<DynamicWidget> {
                       onChanged: (String? newValue) {
                         setState(() {
                           widget.name = newValue!;
-                          scheduleNotification(
+                          widget.scheduleNotification(
                           widget.id,
                           widget.name,
                           widget.frequency,
@@ -232,7 +305,7 @@ class _DynamicWidgetState extends State<DynamicWidget> {
                     onChanged: (String? newValue) {
                       setState(() {
                         widget.frequency = newValue!;
-                        scheduleNotification(
+                        widget.scheduleNotification(
                           widget.id,
                           widget.name,
                           widget.frequency,
@@ -254,6 +327,7 @@ class _AlertsPageState extends State<AlertsPage> {
   @override
   void initState() {
     super.initState();
+    tz.initializeTimeZones();
     _loadAlerts(); // TODO
     setState(() {});
   }
@@ -300,14 +374,12 @@ class _AlertsPageState extends State<AlertsPage> {
         listCards.add(oldAlert);
 
         //if instance not found in device, add
-        // if (channels != null) {
-        //   bool channelExists = channels.any((channel) => channel.id == id);
-        //   if (channelExists) return;
-        // }
-        // oldAlert.
-
-
-
+        if (channels != null) {
+          bool channelExists = channels.any((channel) => channel.id == id);
+          debugPrint(id + " " + channelExists.toString());
+          if (channelExists) return;
+        }
+        oldAlert.scheduleNotification(id, name, frequency);
       });
     });
   }
