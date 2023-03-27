@@ -3,8 +3,9 @@
 import 'package:flutter/material.dart';
 import 'package:fridgemaster/recipe.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:tflite/tflite.dart';
 import 'dart:io';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class InventoryPage extends StatefulWidget {
   InventoryPage({Key? key}) : super(key: key);
@@ -86,48 +87,52 @@ class _InventoryPageState extends State<InventoryPage> {
   List<DynamicWidget> listCards = [];
   List<TextEditingController> controllers = [];
   //TextEditingController nameController = new TextEditingController();
+  
+  late List _results;
+  bool imageSelect = false;
+  bool isLoading = false;
 
-  File? _image;
-  List _result = [];
-  String image_name = "";
-  getImage() async {
-    var image = await ImagePicker().pickImage(source: ImageSource.gallery);
-    
-    debugPrint("Image.path: " + image!.path);
+  Future getImage() async {
+    final ImagePicker _picker = ImagePicker();
+    final XFile? pickedFile = await _picker.pickImage(
+      source: ImageSource.gallery,
+    );
+    print("=================IMAGE PATH HERE: ${pickedFile?.path}=================");
+    // Send the image to the Google Cloud Vision API for prediction
+    final String apiKey = "AIzaSyBXiiy7RW-SXoN02zmekWS-8W9mO8cn1Mk";
+    final String url = "https://vision.googleapis.com/v1/images:annotate?key=$apiKey";
+    final String base64Image = base64Encode(File(pickedFile!.path).readAsBytesSync());
+    final http.Response response = await http.post(
+      Uri.parse(url),
+      headers: <String, String>{"Content-Type": "application/json"},
+      body: jsonEncode({
+        "requests": [
+          {
+            "image": {"content": base64Image},
+            "features": [
+              {"type": "OBJECT_LOCALIZATION", "maxResults": 50},
+            ],
+          },
+        ],
+      }),
+    );
+    // Parse the response and extract the predictions
+    final Map<String, dynamic> data = jsonDecode(response.body);
+    final List<dynamic> labels = data["responses"][0]["localizedObjectAnnotations"];
+    final List<String> predictions =
+        labels.map((label) => label["name"].toString()).toList();
+    final List<String> confidence = labels.map((label) => label["score"].toString()).toList();
+    // Do something with the predictions
+    for (var i = 0; i < predictions.length; i++) {
+      print("Predictions: ${predictions[i]}, Score: ${confidence[i]}");
+      addDynamic(TextEditingController(text:predictions[i]), 0);
+    }
     setState(() {
-
-      removeNoName();
-      _image = File(image.path);
-      image_name = File(image.path).toString().split('/').last.split('.').first;
-      TextEditingController nameController = new TextEditingController(text: image_name);
-      addDynamic(nameController, 0);
-      image_name = "";
-      //debugPrint("Apply on: " + _image!.path);
-      //applyModelOnImage(_image!);
+      isLoading = true;
+      imageSelect = false;
+      _results = predictions;
     });
-  }
-
-  loadMyModel() async {
-    String? result = await Tflite.loadModel(
-      model: "assets/kitchen_master.tflite", 
-      labels: "assets/labels.txt");
-    debugPrint("Result: $result");
-  }
-
-  applyModelOnImage(File file) async {
-    var res = await Tflite.runModelOnImage(
-      path: file.path,
-      imageMean: 127.5,
-      imageStd: 127.5,
-      numResults: 2,
-      threshold: 0.1,
-      asynch: true);
-    
-    _result = res!;
-    String str = _result[0]["labels"];
-    debugPrint("Results Label:" + str);
-    debugPrint("Results Label Substring:" + str.substring(2));
-    debugPrint("Results Confidence:" + (_result[0]["confidence"]*100.0).toString().substring(0,2));
+    return predictions;
   }
 
   void addDynamic(TextEditingController n, int c) {
@@ -262,11 +267,5 @@ class _InventoryPageState extends State<InventoryPage> {
                     backgroundColor: Colors.black,
                   ),
                 ])));
-  }
-
-  @override
-  void initState() {
-    super.initState();
-     //loadMyModel();
   }
 }
