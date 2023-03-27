@@ -141,7 +141,9 @@ class _LoginPageState extends State<LoginPage> {
               onPressed: () {
                 debugPrint("Email: "+enterEmail.text.trim());
                 debugPrint("Password: "+enterPassword.text.trim());
-                signIn();
+                Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => NavBar()));
+                // signIn();
               },
               child: Text(
                 'OK',
@@ -160,6 +162,31 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
+<<<<<<< HEAD
+//   Future signIn() async {
+//     try { 
+//       final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+//         email: enterEmail.text.trim(), 
+//         password: enterPassword.text.trim(),
+//       );
+//     } on FirebaseAuthException catch (e) {
+//       debugPrint("Error Message: "+e.code);
+//       if (e.code == 'user-not-found') {
+//         debugPrint('No user found for that email.');
+//       } else if (e.code == 'wrong-password') {
+//         debugPrint('Wrong password provided for that user.');
+//       }
+//     }
+//     final user = FirebaseAuth.instance.currentUser;
+//     if (user != null)
+//     { 
+//       debugPrint(user.uid);
+//       debugPrint("Success");
+//       Navigator.push(context,
+//         MaterialPageRoute(builder: (context) => NavBar()));
+//     }
+//   }
+=======
   Future signIn() async {
     try { 
       final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
@@ -189,4 +216,5 @@ class _LoginPageState extends State<LoginPage> {
         MaterialPageRoute(builder: (context) => NavBar()));
     }
   }
+>>>>>>> Flutter_Firebase_Integration
 }
