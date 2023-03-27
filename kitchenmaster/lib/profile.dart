@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:fridgemaster/ResetPassword.dart';
 import 'package:fridgemaster/main.dart';
 import 'alerts.dart';
 
@@ -34,6 +35,12 @@ class _ProfilePageState extends State<ProfilePage> {
         MaterialPageRoute(builder: (context) => MyApp()));
   }
 
+  Future resetPassword() async {
+    var userUid = FirebaseAuth.instance.currentUser!.uid;
+    var document = await FirebaseFirestore.instance.collection('users').doc(userUid).get();
+    await FirebaseAuth.instance.sendPasswordResetEmail(email: document["email"]);
+  }
+
   void _onItemTapped(int index) {
     switch (index) {
       case 0:
@@ -59,12 +66,29 @@ class _ProfilePageState extends State<ProfilePage> {
   int _selectedIndex = 0;
   TextEditingController enterName = TextEditingController();
   TextEditingController enterEmail = TextEditingController();
-  TextEditingController enterPassword = TextEditingController();
-  TextEditingController enterConfirm = TextEditingController();
+  // TextEditingController enterPassword = TextEditingController();
+  // TextEditingController enterConfirm = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.red,
+          title: const Text(
+            "Profile",
+            style: TextStyle(color: Colors.white),
+          ),
+          leading: IconButton(
+            icon: const Icon(
+              Icons.arrow_back,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+        ),
         backgroundColor: Color(0xffe5e5e5),
         body: Center(
             child:
@@ -143,6 +167,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     )),
                   ]),
+
                   SizedBox(
                     height: 30,
                   ),
@@ -156,9 +181,6 @@ class _ProfilePageState extends State<ProfilePage> {
                               0 /*percentages not used in flutter. defaulting to zero*/,
                           fontWeight: FontWeight.normal,
                           height: 1)),
-                  SizedBox(
-                    height: 20,
-                  ),
                   TextFormField(
                     controller: enterEmail,
                     style: TextStyle(
@@ -185,73 +207,15 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ),
                   SizedBox(
-                    height: 20,
-                  ),
-                  TextFormField(
-                    obscureText: true,
-                    controller: enterPassword,
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 22,
-                      fontFamily: 'IBM Plex Serif',
-                    ),
-                    cursorColor: Colors.black,
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Colors.white,
-                      hintText: "Enter New Password",
-                      hintStyle: TextStyle(color: Colors.black, fontSize: 18),
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            width: 3, color: Colors.black54), //<-- SEE HERE
-                        borderRadius: BorderRadius.circular(50.0),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            width: 3, color: Color(0xffff6961)), //<-- SEE HERE
-                        borderRadius: BorderRadius.circular(50.0),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  TextFormField(
-                    obscureText: true,
-                    controller: enterConfirm,
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 22,
-                      fontFamily: 'IBM Plex Serif',
-                    ),
-                    cursorColor: Colors.black,
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Colors.white,
-                      hintText: "Confirm Password",
-                      hintStyle: TextStyle(color: Colors.black, fontSize: 18),
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            width: 3, color: Colors.black54), //<-- SEE HERE
-                        borderRadius: BorderRadius.circular(50.0),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            width: 3, color: Color(0xffff6961)), //<-- SEE HERE
-                        borderRadius: BorderRadius.circular(50.0),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
                     height: 30,
                   ),
                   TextButton(
-                      child: Text('Save', style: TextStyle(fontSize: 22)),
+                      child: Text('Reset Password', style: TextStyle(fontSize: 22)),
                       style: ButtonStyle(
                         side: MaterialStateProperty.all<BorderSide>(
                             BorderSide(width: 1.5, color: Colors.black54)),
                         fixedSize: MaterialStateProperty.all<Size>(
-                            Size.fromWidth(160.0)),
+                            Size.fromWidth(200.0)),
                         backgroundColor:
                             MaterialStateProperty.all<Color>(Color(0xffff6961)),
                         foregroundColor:
@@ -267,37 +231,44 @@ class _ProfilePageState extends State<ProfilePage> {
                           },
                         ),
                       ),
-                      onPressed: () {}),
-                       TextButton(
-                      child: Text('Sign Out', style: TextStyle(fontSize: 22)),
-                      style: ButtonStyle(
-                        side: MaterialStateProperty.all<BorderSide>(
-                            BorderSide(width: 1.5, color: Colors.black54)),
-                        fixedSize: MaterialStateProperty.all<Size>(
-                            Size.fromWidth(160.0)),
-                        backgroundColor:
-                            MaterialStateProperty.all<Color>(Color(0xffff6961)),
-                        foregroundColor:
-                            MaterialStateProperty.all<Color>(Colors.white),
-                        overlayColor: MaterialStateProperty.resolveWith<Color?>(
-                          (Set<MaterialState> states) {
-                            if (states.contains(MaterialState.hovered))
-                              return Colors.grey.withOpacity(0.04);
-                            if (states.contains(MaterialState.focused) ||
-                                states.contains(MaterialState.pressed))
-                              return Colors.black54.withOpacity(0.12);
-                            return null; // Defer to the widget's default.
-                          },
-                        ),
-                      ),
-                      onPressed: () {signOut();}),
+                      onPressed: () async {
+                        resetPassword();
+
+                        // Navigator.push(
+                        //     context,
+                        //      MaterialPageRoute(builder: (context) => ResetPasswordPage())
+                        // );
+                      }),
+                      //  TextButton(
+                      // child: Text('Sign Out', style: TextStyle(fontSize: 22)),
+                      // style: ButtonStyle(
+                      //   side: MaterialStateProperty.all<BorderSide>(
+                      //       BorderSide(width: 1.5, color: Colors.black54)),
+                      //   fixedSize: MaterialStateProperty.all<Size>(
+                      //       Size.fromWidth(160.0)),
+                      //   backgroundColor:
+                      //       MaterialStateProperty.all<Color>(Color(0xffff6961)),
+                      //   foregroundColor:
+                      //       MaterialStateProperty.all<Color>(Colors.white),
+                      //   overlayColor: MaterialStateProperty.resolveWith<Color?>(
+                      //     (Set<MaterialState> states) {
+                      //       if (states.contains(MaterialState.hovered))
+                      //         return Colors.grey.withOpacity(0.04);
+                      //       if (states.contains(MaterialState.focused) ||
+                      //           states.contains(MaterialState.pressed))
+                      //         return Colors.black54.withOpacity(0.12);
+                      //       return null; // Defer to the widget's default.
+                      //     },
+                      //   ),
+                      // ),
+                      // onPressed: () {signOut();}),
                   SizedBox(
                     height: 50,
                   ),
                   Row(children: [
                     Spacer(),
                     ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {signOut();},
                         style: ButtonStyle(
                           shape:
                               MaterialStateProperty.all<RoundedRectangleBorder>(
