@@ -70,6 +70,7 @@ flutter:
     - assets/rectangle.png
     - assets/labels.txt
     - assets/kitchen_master.tflite
+    - assets/images/anonymous.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:
