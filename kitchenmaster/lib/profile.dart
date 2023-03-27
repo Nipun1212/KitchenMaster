@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'alerts.dart';
 
@@ -9,9 +11,20 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  String userName = "";
   @override
   void initState() {
     super.initState();
+    getUsersName();
+  }
+
+  void getUsersName() async {
+    var userUid = FirebaseAuth.instance.currentUser!.uid;
+    var document = await FirebaseFirestore.instance.collection('users').doc(userUid).get();
+    setState(() {
+      userName = document["name"];
+    });
+    debugPrint(userName);
   }
 
   void _onItemTapped(int index) {
@@ -50,7 +63,7 @@ class _ProfilePageState extends State<ProfilePage> {
             child:
                 Column(mainAxisAlignment: MainAxisAlignment.center, children: <
                     Widget>[
-          Text('Hello, Grace!',
+          Text('Welcome Back, $userName!',
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: Color.fromRGBO(0, 0, 0, 1),
@@ -362,7 +375,6 @@ class _ProfilePageState extends State<ProfilePage> {
         //     onTap: _onItemTapped,
         //     elevation: 5
         // ),
-
-        );
+    );
   }
 }
