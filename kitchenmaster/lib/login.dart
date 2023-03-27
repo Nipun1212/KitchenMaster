@@ -142,9 +142,7 @@ class _LoginPageState extends State<LoginPage> {
               onPressed: () {
                 debugPrint("Email: "+enterEmail.text.trim());
                 debugPrint("Password: "+enterPassword.text.trim());
-                Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => NavBar()));
-                // signIn();
+                signIn();
               },
               child: Text(
                 'OK',
