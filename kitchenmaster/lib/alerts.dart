@@ -1,11 +1,14 @@
 import 'dart:developer';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/timezone.dart';
 import 'package:timezone/data/latest.dart' as tz;
-import 'profile.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
+// import 'profile.dart';
 // import 'package:firebase_messaging/firebase_messaging.dart';
 
 class AlertsPage extends StatefulWidget {
@@ -35,7 +38,19 @@ class DynamicWidget extends StatefulWidget {
     await flutterLocalNotificationsPlugin
         .resolvePlatformSpecificImplementation<
         AndroidFlutterLocalNotificationsPlugin>()
-        ?.deleteNotificationChannel(name);
+        ?.deleteNotificationChannel(id);
+    // await flutterLocalNotificationsPlugin.cancelAll();
+  }
+
+  void deleteNotificationFirebase() async {
+    //delete in firebase
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+    final alertRef = FirebaseFirestore.instance.collection('users').doc(uid).collection('alerts').doc(id);
+    alertRef.delete().then((value) {
+      debugPrint('Object deleted successfully');
+    }).catchError((error) {
+      debugPrint('Failed to delete object: $error');
+    });
   }
 
   @override
@@ -53,8 +68,9 @@ class _DynamicWidgetState extends State<DynamicWidget> {
     var initializationSettingsAndroid =
     // AndroidInitializationSettings('@mipmap/ic_launcher');
     AndroidInitializationSettings('@drawable/logo');
+    var initializationSettingsIOS = IOSInitializationSettings();
     var initializationSettings = InitializationSettings(
-        android: initializationSettingsAndroid //iOS: initializationSettingsIOS
+        android: initializationSettingsAndroid, iOS: initializationSettingsIOS
     );
 
     await widget.flutterLocalNotificationsPlugin.initialize(initializationSettings,
@@ -75,33 +91,38 @@ class _DynamicWidgetState extends State<DynamicWidget> {
     // _sendFCMTokenToServer(); //push notification
 
   }
-  //
-  // void deleteNotifications(String channelId) async {
-  //   await widget.flutterLocalNotificationsPlugin
-  //       .resolvePlatformSpecificImplementation<
-  //       AndroidFlutterLocalNotificationsPlugin>()
-  //       ?.deleteNotificationChannel(channelId);
-  // }
 
   void scheduleNotification(String id, String name, String frequency) async {
     // await widget.flutterLocalNotificationsPlugin.cancelAll();
     widget.deleteNotifications();
 
-    if (name == '' || frequency == 'none') return;
+    //update firebase
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+    final alertRef = FirebaseFirestore.instance.collection('users').doc(uid).collection('alerts').doc(id);
+
+    // Update the data for this document
+    alertRef.update({
+      'name': name,
+      'frequency': frequency,
+    })
+        .then((value) => print('Alert updated successfully'))
+        .catchError((error) => print('Error updating alert: $error'));
+
+    if (name == '' || frequency == 'None') return;
     int freqInDays = 0;
     switch(frequency){
-      case "daily": freqInDays = 1;
+      case "Daily": freqInDays = 1;
       break;
-      case "weekly": freqInDays = 7;
+      case "Weekly": freqInDays = 7;
       break;
-      case "biweekly": freqInDays = 14;
+      case "Biweekly": freqInDays = 14;
       break;
-      case "monthly": freqInDays = 30;
+      case "Monthly": freqInDays = 30;
       break;
     }
 
     var androidDetails = AndroidNotificationDetails(
-        name , name, frequency + ' reminder for ' + name,
+        id , name, frequency + ' reminder for ' + name,
         importance: Importance.high,
         priority: Priority.high,
         styleInformation: BigTextStyleInformation(''),
@@ -110,10 +131,20 @@ class _DynamicWidgetState extends State<DynamicWidget> {
         // timeoutAfter: 6000,
         // ongoing: true
     );
-    //var iosDetails = IOSNotificationDetails();
-    var platformDetails =
-    NotificationDetails(android: androidDetails, //iOS: iosDetails
+    var iosDetails = IOSNotificationDetails(
+      presentAlert: true,
+      presentSound: true,
+      badgeNumber: 1,
     );
+
+    var platformDetails = NotificationDetails(
+      android: androidDetails,
+      iOS: iosDetails,
+    );
+
+    // var platformDetails =
+    // NotificationDetails(android: androidDetails, //iOS: iosDetails
+    // );
 
     // Schedule the notification
     await widget.flutterLocalNotificationsPlugin.zonedSchedule(
@@ -173,7 +204,7 @@ class _DynamicWidgetState extends State<DynamicWidget> {
                           scheduleNotification(
                           widget.id,
                           widget.name,
-                          widget.frequency.toLowerCase(),
+                          widget.frequency,
                           );
                         });}
                     ),
@@ -204,7 +235,7 @@ class _DynamicWidgetState extends State<DynamicWidget> {
                         scheduleNotification(
                           widget.id,
                           widget.name,
-                          widget.frequency.toLowerCase(),
+                          widget.frequency,
                         );
                       });
 
@@ -215,34 +246,90 @@ class _DynamicWidgetState extends State<DynamicWidget> {
 }
 
 class _AlertsPageState extends State<AlertsPage> {
-
-
+  final FirebaseAuth auth = FirebaseAuth.instance;
 
   List<DynamicWidget> listCards = [];
   List<TextEditingController> controllers = [];
 
-  void addDynamic(TextEditingController n, String value) {
+  @override
+  void initState() {
+    super.initState();
+    _loadAlerts(); // TODO
+    setState(() {});
+  }
+
+  Future<void> _loadAlerts() async {
+    debugPrint("start loadAlerts");
+    // get all notifications in firebase
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+    final alertsRef = FirebaseFirestore.instance.collection('users').doc(uid).collection('alerts');
+    final snapshot = await alertsRef.get();
+
+    //get all notifications on device
+    FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
+    List<AndroidNotificationChannel>? channels =
+    await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin>()
+        ?.getNotificationChannels();
+    //
     setState(() {
-      controllers.add(n);
-      var dynamicWidget = DynamicWidget(n, value);
-      listCards.add(dynamicWidget);
-      log("added dynamic");
-      // scheduleNotification(dynamicWidget.id, dynamicWidget.name,
-      //     dynamicWidget.frequency.toLowerCase());
+      snapshot.docs.forEach((document) {
+        // Extract the data from the document
+        final data = document.data();
+        final id = document.id;
+        final name = data['name'];
+        final frequency = data['frequency'];
+
+        // delete those with empty name in database
+        if (name == "") {
+          alertsRef.doc(id).delete().then((value) {
+            debugPrint('Empty object deleted successfully');
+          }).catchError((error) {
+            debugPrint('Failed to delete empty object: $error');
+          });
+          return;
+        }
+        debugPrint((id ?? "") + " " + (name ?? "") + " " + (frequency ?? ""));
+        //add the widgets
+        TextEditingController n = new TextEditingController(text: name);
+        controllers.add(n);
+        DynamicWidget oldAlert = DynamicWidget(n, frequency);
+        oldAlert.id = id;
+        listCards.add(oldAlert);
+
+        //if instance not found in device, add
+        // if (channels != null) {
+        //   bool channelExists = channels.any((channel) => channel.id == id);
+        //   if (channelExists) return;
+        // }
+        // oldAlert.
+
+
+
+      });
     });
   }
 
-  // void editDynamic(int index, TextEditingController n, String value) {
-  //   setState(() {
-  //     var dynamicWidget = listCards[index];
-  //     controllers[index] = n;
-  //     dynamicWidget.nameController = n;
-  //     dynamicWidget.name = n.text;
-  //     dynamicWidget.frequency = value;
-  //     scheduleNotification(dynamicWidget.id, dynamicWidget.name,
-  //         dynamicWidget.frequency.toLowerCase());
-  //   });
-  // }
+  Future<void> addDynamic(TextEditingController n, String value) async {
+
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+    final alertsRef = FirebaseFirestore.instance.collection('users').doc(uid).collection('alerts');
+    DocumentReference newAlertRef = await alertsRef.add({
+      'name': '',
+      'frequency': 'None'
+    });
+    setState(() {
+      var dynamicWidget = DynamicWidget(n, value);
+      controllers.add(n);
+      dynamicWidget.id = newAlertRef.id;
+      listCards.add(dynamicWidget);
+      log("added dynamic");
+    });
+
+
+  }
 
   void resetDynamic() {
     setState(() {
@@ -295,6 +382,7 @@ class _AlertsPageState extends State<AlertsPage> {
                             setState(() {
                               controllers.removeAt(index);
                               listCards[index].deleteNotifications();
+                              listCards[index].deleteNotificationFirebase();
                               listCards.removeAt(index);
 
                             });
@@ -334,35 +422,5 @@ class _AlertsPageState extends State<AlertsPage> {
                   ),
                 ])));
   }
-  // bottomNavigationBar: BottomNavigationBar(
-  //     backgroundColor: Color(0xffff6961),
-  //     items: const <BottomNavigationBarItem>[
-  //       BottomNavigationBarItem(
-  //         icon: Icon(Icons.person),
-  //         label: 'Profile',
-  //       ),
-  //       BottomNavigationBarItem(
-  //         icon: Icon(Icons.add_alert_sharp),
-  //         label: 'Alerts',
-  //       ),
-  //       BottomNavigationBarItem(
-  //         icon: Icon(Icons.list),
-  //         label: 'Inventory',
-  //       ),
-  //       BottomNavigationBarItem(
-  //         icon: Icon(Icons.grid_view_rounded),
-  //         label: 'Recipes',
-  //       ),
-  //       BottomNavigationBarItem(
-  //         icon: Icon(Icons.favorite),
-  //         label: 'Favourites',
-  //       ),
-  //     ],
-  //     type: BottomNavigationBarType.fixed,
-  //     currentIndex: _selectedIndex,
-  //     selectedItemColor: Colors.white,
-  //     iconSize: 40,
-  //     onTap: _onItemTapped,
-  //     elevation: 5
-  // ),
+
 }
