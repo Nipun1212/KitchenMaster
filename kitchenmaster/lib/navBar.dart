@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:fridgemaster/alerts.dart';
 import 'package:fridgemaster/inventory.dart';
-import 'package:fridgemaster/inventorytryout.dart';
+import 'package:fridgemaster/recipes.dart';
 import 'package:fridgemaster/profile.dart';
+import 'package:fridgemaster/favourites.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
 
@@ -16,10 +17,10 @@ class NavBar extends StatelessWidget {
     return [
       ProfilePage(),
       AlertsPage(),
-      // Add the respective pages
       InventoryPage(),
-      ProfilePage(),
-      ProfilePage(),
+      RecipePage(),
+      FavouritesPage(),
+      //ProfilePage()
     ];
   }
 

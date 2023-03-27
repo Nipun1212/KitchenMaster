@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors
-
+import 'package:flutter/foundation.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'register.dart';
@@ -7,9 +8,8 @@ import 'inventory.dart';
 import 'profile.dart';
 import 'navBar.dart';
 
-
 class LoginPage extends StatefulWidget {
-  LoginPage({Key? key}) : super(key: key);
+  const LoginPage({Key? key}) : super(key: key);
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -19,10 +19,16 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
+    if (FirebaseAuth.instance.currentUser?.uid != ""){
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => NavBar()));
+    }
   }
 
   TextEditingController enterEmail = TextEditingController();
   TextEditingController enterPassword = TextEditingController();
+  String errorMessage = "";
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -100,6 +106,16 @@ class _LoginPageState extends State<LoginPage> {
           RichText(
               text: TextSpan(children: [
             TextSpan(
+              text: errorMessage,
+              style: TextStyle(
+                color: Colors.red,
+              ),
+            ),
+          ])),
+          const SizedBox(height: 30),
+          RichText(
+              text: TextSpan(children: [
+            TextSpan(
               text: 'New to KitchenMaster? ',
               style: TextStyle(
                 color: Colors.black,
@@ -123,10 +139,11 @@ class _LoginPageState extends State<LoginPage> {
             height: 51.5,
             child: ElevatedButton(
               onPressed: () {
+                debugPrint("Email: "+enterEmail.text.trim());
+                debugPrint("Password: "+enterPassword.text.trim());
                 Navigator.push(context,
-                    // MaterialPageRoute(builder: (context) => InventoryPage()));
-                    // MaterialPageRoute(builder: (context) => ProfilePage()));
-                    MaterialPageRoute(builder: (context) => NavBar()));
+                  MaterialPageRoute(builder: (context) => NavBar()));
+                // signIn();
               },
               child: Text(
                 'OK',
@@ -144,5 +161,35 @@ class _LoginPageState extends State<LoginPage> {
         ]),
       ),
     );
+  }
+
+  Future signIn() async {
+    try { 
+      final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: enterEmail.text.trim(), 
+        password: enterPassword.text.trim(),
+      );
+      setState(() {
+        errorMessage = "";
+      });
+    } on FirebaseAuthException catch (e) {
+      debugPrint("Error Message: "+e.code);
+      if (e.code == 'user-not-found') {
+        debugPrint('No user found for that email.');
+      } else if (e.code == 'wrong-password') {
+        debugPrint('Wrong password provided for that user.');
+      }
+      setState(() {
+        errorMessage = "Incorrect Email/Password";
+      });
+    }
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null && errorMessage == "")
+    { 
+      debugPrint(user.uid);
+      debugPrint("Success");
+      Navigator.push(context,
+        MaterialPageRoute(builder: (context) => NavBar()));
+    }
   }
 }

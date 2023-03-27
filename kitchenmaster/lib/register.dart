@@ -1,5 +1,7 @@
 // ignore_for_file: prefer_const_constructors
-
+import 'package:flutter/foundation.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'login.dart';
@@ -22,6 +24,7 @@ class _RegisterPageState extends State<RegisterPage> {
   TextEditingController regPassword = TextEditingController();
   TextEditingController regConfirm = TextEditingController();
   String errorTextvalue = '';
+  String errorMessage = '';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -147,14 +150,23 @@ class _RegisterPageState extends State<RegisterPage> {
             ),
           ),
           const SizedBox(height: 30),
+          RichText(
+              text: TextSpan(children: [
+            TextSpan(
+              text: errorMessage,
+              style: TextStyle(
+                color: Colors.red,
+              ),
+            ),
+          ])),
+          const SizedBox(height: 30),
           Container(
             width: 300,
             height: 51.5,
             child: ElevatedButton(
               onPressed: () {
-                if ((regEmail.text.isNotEmpty) && (regName.text.isNotEmpty) && regPassword.text == regConfirm.text) {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => LoginPage()));
+                if ((regEmail.text.isNotEmpty) && (regName.text.isNotEmpty) && (regPassword.text.isNotEmpty) && (regPassword.text == regConfirm.text)) {
+                  createUserAuth();
                   // make alert dialog to print 'successfully created account'
                 }
               },
@@ -172,5 +184,65 @@ class _RegisterPageState extends State<RegisterPage> {
             ),
           ),
         ])));
+    }
+  Future createUserDatabase({required String name, required String email, required String password}) async {
+      final docUser = FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid);
+
+      final user = UserInfo(
+        id: FirebaseAuth.instance.currentUser!.uid,
+        name: name,
+        email: email,
+        password: password,
+      );
+      final json = user.toJson();
+
+      await docUser.set(json);
   }
+
+  Future createUserAuth() async {
+    try { 
+      final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: regEmail.text.trim(), 
+        password: regPassword.text.trim(),
+      );
+      setState(() {
+        errorMessage = "";
+      });
+    } on FirebaseAuthException catch (e) {
+      debugPrint("Error Message: "+e.code);
+      if (e.code == 'email-already-in-use') {
+        debugPrint('The account already exists for that email.');
+      }
+      setState(() {
+        errorMessage = "An account already exists for that email";
+      });
+    }
+    if (errorMessage == "")
+    { 
+      createUserDatabase(name: regName.text.trim(), email: regEmail.text.trim(), password: regPassword.text.trim());
+      Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage()));
+      debugPrint("Register Success");
+    }
+  }
+}
+
+class UserInfo {
+  String id;
+  final String name;
+  final String email;
+  final String password;
+  
+  UserInfo({
+    this.id = '',
+    required this.name,
+    required this.email,
+    required this.password,
+  });
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'name': name,
+    'email': email,
+    'password': password,
+  };
 }

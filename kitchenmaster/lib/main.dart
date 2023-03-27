@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 import 'dart:developer';
-
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/material.dart';
 import 'login.dart';
@@ -8,12 +9,9 @@ import 'register.dart';
 //import below line for firebase
 import 'package:firebase_core/firebase_core.dart';
 
-// void main() {
-//
-//   runApp(const MyApp());
-// }
-Future<void> main() async {
+Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   // // initialize the FlutterLocalNotificationsPlugin instance
   // FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -29,8 +27,6 @@ Future<void> main() async {
   //     AndroidFlutterLocalNotificationsPlugin>()
   //     ?.deleteNotificationChannel('apple3');
 
-  //added the line below
-  await Firebase.initializeApp();
   runApp(MyApp());
 }
 
