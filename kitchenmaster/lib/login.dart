@@ -20,7 +20,8 @@ class _LoginPageState extends State<LoginPage> {
   void initState() {
     super.initState();
     if (FirebaseAuth.instance.currentUser?.uid != null){
-      debugPrint(FirebaseAuth.instance.currentUser?.uid);
+      var userUid = FirebaseAuth.instance.currentUser?.uid;
+      debugPrint("User UID: " + userUid!);
       //Navigator.push(context,
       //    MaterialPageRoute(builder: (context) => NavBar()));
     }

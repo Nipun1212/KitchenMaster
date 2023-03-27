@@ -36,6 +36,7 @@ dependencies:
   persistent_bottom_nav_bar: any
   firebase_auth: ^4.3.0
   tflite: ^1.1.2
+  cloud_firestore: ^4.4.5
   path_provider: ^2.0.14
   image_picker: ^0.8.7 
 
