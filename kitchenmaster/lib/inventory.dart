@@ -1,5 +1,7 @@
 // ignore_for_file: prefer_const_constructors, unnecessary_new
 
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
 import 'package:fridgemaster/recipe.dart';
 import 'package:image_picker/image_picker.dart';
@@ -88,7 +90,7 @@ class _InventoryPageState extends State<InventoryPage> {
   List<TextEditingController> controllers = [];
   //TextEditingController nameController = new TextEditingController();
   
-  late List _results;
+  late Map<String, int> _results;
   bool imageSelect = false;
   bool isLoading = false;
 
@@ -97,6 +99,8 @@ class _InventoryPageState extends State<InventoryPage> {
     final XFile? pickedFile = await _picker.pickImage(
       source: ImageSource.gallery,
     );
+    final List classList = ['egg', 'broccoli', 'banana', 'apple', 'chicken', 'pineapple', 'orange', 'pork'];
+
     print("=================IMAGE PATH HERE: ${pickedFile?.path}=================");
     // Send the image to the Google Cloud Vision API for prediction
     final String apiKey = "AIzaSyBXiiy7RW-SXoN02zmekWS-8W9mO8cn1Mk";
@@ -111,6 +115,7 @@ class _InventoryPageState extends State<InventoryPage> {
             "image": {"content": base64Image},
             "features": [
               {"type": "OBJECT_LOCALIZATION", "maxResults": 50},
+              {"type": "DOCUMENT_TEXT_DETECTION", "model": "builtin/latest", "maxResults": 100},
             ],
           },
         ],
@@ -118,27 +123,59 @@ class _InventoryPageState extends State<InventoryPage> {
     );
     // Parse the response and extract the predictions
     final Map<String, dynamic> data = jsonDecode(response.body);
-    final List<dynamic> labels = data["responses"][0]["localizedObjectAnnotations"];
-    final List<String> predictions =
-        labels.map((label) => label["name"].toString()).toList();
-    final List<String> confidence = labels.map((label) => label["score"].toString()).toList();
-    // Do something with the predictions
-    for (var i = 0; i < predictions.length; i++) {
-      print("Predictions: ${predictions[i]}, Score: ${confidence[i]}");
-      addDynamic(TextEditingController(text:predictions[i]), 0);
+    Map<String, int> _predictions = {};
+    String _textFound = "";
+
+    // print(response.body);
+    // Get all the predictions via object detection in the classList 
+    List<dynamic>? itemDetected = data["responses"][0]["localizedObjectAnnotations"];
+    if (itemDetected != null) {
+      itemDetected = itemDetected.map((label) => label["name"].toString().toLowerCase()).toList();
+      for (String item in itemDetected) {
+        print("$item : ${classList.contains(item)}");
+        if (classList.contains(item)){
+          print("item found via image: $item");
+          _predictions[item] ??=0;
+          _predictions[item] = _predictions[item]! + 1;
+        }
+      }
     }
+    // Get all the predictions via text detection in the classList 
+    List<dynamic>? textDetected = data["responses"][0]["textAnnotations"];
+    if (textDetected != null) {
+      _textFound = textDetected.map((label) => label["description"].toString().toLowerCase().replaceAll("\n", "")).toList().join(" ");
+      for (String item in classList) {
+        if (_textFound.contains(item)) {
+          print("item found via text: $item");
+          _predictions[item] ??=0;
+          _predictions[item] = _predictions[item]! + 1;
+        }
+      }
+    }
+    // Initialize inventory list for each predictions found 
+    print("predicted!! $_predictions");
+    _predictions.forEach((item, count){
+      addDynamic(TextEditingController(text:item), count);
+    });
+
     setState(() {
       isLoading = true;
       imageSelect = false;
-      _results = predictions;
+      _results = _predictions;
     });
-    return predictions;
+    return _results;
   }
 
   void addDynamic(TextEditingController n, int c) {
     setState(() {
-      controllers.add(n);
-      listCards.add(new DynamicWidget(n, c));
+      List existingControllers = controllers.map((label) => label.text).toList();
+      if (existingControllers.contains(n.text)){
+        listCards[existingControllers.indexOf(n.text)].count += c; 
+        print("Updated for ${n.text}, ${listCards[existingControllers.indexOf(n.text)].count}");
+      } else {
+        controllers.add(n);
+        listCards.add(new DynamicWidget(n, c));
+      }
     });
   }
 
