@@ -19,7 +19,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    if (FirebaseAuth.instance.currentUser?.uid != null){
+    if (FirebaseAuth.instance.currentUser?.uid != null) {
       var userUid = FirebaseAuth.instance.currentUser?.uid;
       debugPrint("User UID: " + userUid!);
       //Navigator.push(context,
@@ -107,42 +107,43 @@ class _LoginPageState extends State<LoginPage> {
           const SizedBox(height: 30),
           RichText(
               text: TextSpan(children: [
-            TextSpan(
-              text: errorMessage,
-              style: TextStyle(
-                color: Colors.red,
-              ),
-            ),
-          ])),
+                TextSpan(
+                  text: errorMessage,
+                  style: TextStyle(
+                    color: Colors.red,
+                  ),
+                ),
+              ])),
           const SizedBox(height: 30),
           RichText(
               text: TextSpan(children: [
-            TextSpan(
-              text: 'New to KitchenMaster? ',
-              style: TextStyle(
-                color: Colors.black,
-              ),
-            ),
-            TextSpan(
-              text: 'Sign Up Now!',
-              style: TextStyle(
-                color: Colors.blue,
-              ),
-              recognizer: TapGestureRecognizer()
-                ..onTap = () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => RegisterPage()));
-                },
-            ),
-          ])),
+                TextSpan(
+                  text: 'New to KitchenMaster? ',
+                  style: TextStyle(
+                    color: Colors.black,
+                  ),
+                ),
+                TextSpan(
+                  text: 'Sign Up Now!',
+                  style: TextStyle(
+                    color: Colors.blue,
+                  ),
+                  recognizer: TapGestureRecognizer()
+                    ..onTap = () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) =>
+                              RegisterPage()));
+                    },
+                ),
+              ])),
           const SizedBox(height: 30),
           Container(
             width: 300,
             height: 51.5,
             child: ElevatedButton(
               onPressed: () {
-                debugPrint("Email: "+enterEmail.text.trim());
-                debugPrint("Password: "+enterPassword.text.trim());
+                debugPrint("Email: " + enterEmail.text.trim());
+                debugPrint("Password: " + enterPassword.text.trim());
                 signIn();
               },
               child: Text(
@@ -152,7 +153,7 @@ class _LoginPageState extends State<LoginPage> {
                     color: Color.fromRGBO(255, 255, 255, 1),
                     fontFamily: 'IM FELL English SC',
                     fontSize: 30,
-                    letterSpacing:0,
+                    letterSpacing: 0,
                     fontWeight: FontWeight.normal,
                     height: 1),
               ),
@@ -162,17 +163,20 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
+
   Future signIn() async {
-    try { 
+    try {
       final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: enterEmail.text.trim(), 
+        email: enterEmail.text.trim(),
         password: enterPassword.text.trim(),
       );
+
+
       setState(() {
         errorMessage = "";
       });
     } on FirebaseAuthException catch (e) {
-      debugPrint("Error Message: "+e.code);
+      debugPrint("Error Message: " + e.code);
       if (e.code == 'user-not-found') {
         debugPrint('No user found for that email.');
       } else if (e.code == 'wrong-password') {
@@ -183,12 +187,20 @@ class _LoginPageState extends State<LoginPage> {
       });
     }
     final user = FirebaseAuth.instance.currentUser;
-    if (user != null && errorMessage == "")
-    { 
+    bool? verify = user?.emailVerified;
+    if (user != null && errorMessage == "" && verify != true) {
+      debugPrint("NOT VERIFIED");
+      setState(() {
+        errorMessage = "NOT VERIFIED";
+      });
+    }
+
+
+    if (user != null && errorMessage == "" && verify == true) {
       debugPrint(user.uid);
       debugPrint("Success");
       Navigator.push(context,
-        MaterialPageRoute(builder: (context) => NavBar()));
+          MaterialPageRoute(builder: (context) => NavBar()));
     }
   }
 }

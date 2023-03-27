@@ -205,6 +205,9 @@ class _RegisterPageState extends State<RegisterPage> {
         email: regEmail.text.trim(), 
         password: regPassword.text.trim(),
       );
+      if (credential.user != null){
+        credential.user?.sendEmailVerification();
+      }
       setState(() {
         errorMessage = "";
       });
