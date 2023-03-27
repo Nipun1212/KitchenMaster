@@ -19,9 +19,10 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    if (FirebaseAuth.instance.currentUser?.uid != ""){
-      Navigator.push(context,
-          MaterialPageRoute(builder: (context) => NavBar()));
+    if (FirebaseAuth.instance.currentUser?.uid != null){
+      debugPrint(FirebaseAuth.instance.currentUser?.uid);
+      //Navigator.push(context,
+      //    MaterialPageRoute(builder: (context) => NavBar()));
     }
   }
 

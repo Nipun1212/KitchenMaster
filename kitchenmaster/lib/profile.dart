@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:fridgemaster/main.dart';
 import 'alerts.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -25,6 +26,12 @@ class _ProfilePageState extends State<ProfilePage> {
       userName = document["name"];
     });
     debugPrint(userName);
+  }
+
+  void signOut() async {
+    await FirebaseAuth.instance.signOut();
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => MyApp()));
   }
 
   void _onItemTapped(int index) {
@@ -261,6 +268,29 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       ),
                       onPressed: () {}),
+                       TextButton(
+                      child: Text('Sign Out', style: TextStyle(fontSize: 22)),
+                      style: ButtonStyle(
+                        side: MaterialStateProperty.all<BorderSide>(
+                            BorderSide(width: 1.5, color: Colors.black54)),
+                        fixedSize: MaterialStateProperty.all<Size>(
+                            Size.fromWidth(160.0)),
+                        backgroundColor:
+                            MaterialStateProperty.all<Color>(Color(0xffff6961)),
+                        foregroundColor:
+                            MaterialStateProperty.all<Color>(Colors.white),
+                        overlayColor: MaterialStateProperty.resolveWith<Color?>(
+                          (Set<MaterialState> states) {
+                            if (states.contains(MaterialState.hovered))
+                              return Colors.grey.withOpacity(0.04);
+                            if (states.contains(MaterialState.focused) ||
+                                states.contains(MaterialState.pressed))
+                              return Colors.black54.withOpacity(0.12);
+                            return null; // Defer to the widget's default.
+                          },
+                        ),
+                      ),
+                      onPressed: () {signOut();}),
                   SizedBox(
                     height: 50,
                   ),
