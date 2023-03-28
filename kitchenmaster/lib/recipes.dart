@@ -30,6 +30,7 @@ class Recipe {
       FirebaseFirestore.instance.collection('Recipes');
 
   List<String> generated = [];
+  List<String> procedures = []; // for displaying the procedures
 
   void fetchRecipesName() async {
     QuerySnapshot querySnapshot = await recipes.get();
@@ -47,13 +48,21 @@ class Recipe {
       //gets array of String type from Ingredient column in database
       recipeDB = document.get("Ingredients");
       //checks if the food items in fridge is a subset of items in recipe
-      if (ingredients.toSet().length ==
+      if (recipeDB.toSet().length ==
           recipeDB.toSet().intersection(ingredients.toSet()).length) {
         //prints the name of recipes that matches the food items in fridge
         print(document.get("Name"));
         generated.add(document.get("Name"));
+        procedures.add(document.get("Procedures"));
       } else {}
     });
+  }
+
+  ////USE THIS FUNCTION TO SET SAVED RECIPE TO FIREBASE//////
+  void setSaved(String RecipeName, bool State) {
+    //RecipeName : name of food item eg Kiwi Fruit Smoothie
+    // State: set state to either True or False
+    recipes.doc(RecipeName).update({"Saved": State});
   }
 
   List<String> getRecipes() {
@@ -148,10 +157,18 @@ class _RecipePageState extends State<RecipePage> {
                                     RecipePage.addFavourites(
                                         generatedRecipes[index]);
                                     print(RecipePage.getFavourites());
+
+                                    ///UPDATES RECIPE AS SAVED TO FIREBASE
+                                    test.setSaved(
+                                        generatedRecipes[index], true);
                                   } else if (!_isFavorite) {
                                     RecipePage.removeFavourites(
                                         generatedRecipes[index]);
                                     print(RecipePage.getFavourites());
+
+                                    ///UPDATES RECIPE AS not SAVED TO FIREBASE
+                                    test.setSaved(
+                                        generatedRecipes[index], false);
                                   }
                                 },
                               )

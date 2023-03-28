@@ -25,7 +25,7 @@ class Recipe {
       //gets array of String type from Ingredient column in database
       recipeDB = document.get("Ingredients");
       //checks if the food items in fridge is a subset of items in recipe
-      if (ingredients.toSet().length ==
+      if (recipeDB.toSet().length ==
           recipeDB.toSet().intersection(ingredients.toSet()).length) {
         //prints the name of recipes that matches the food items in fridge
         print(document.get("Name"));
@@ -40,5 +40,11 @@ class Recipe {
     List<String> smoothie1 = ["banana", "strawberry", "apple juice"];
     List<String> smoothie2 = ["kiwi", "banana", "mango", "pineapple juice"];
     fetchMatchingRecipes(smoothie2);
+  }
+
+  void setSaved(String RecipeName, bool State) {
+    //RecipeName : name of food item eg Kiwi Fruit Smoothie
+    // State: set state to either True or False
+    recipes.doc(RecipeName).update({"Saved": State});
   }
 }

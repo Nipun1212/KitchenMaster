@@ -92,14 +92,14 @@ class _InventoryPageState extends State<InventoryPage> {
   String image_name = "";
   getImage() async {
     var image = await ImagePicker().pickImage(source: ImageSource.gallery);
-    
+
     debugPrint("Image.path: " + image!.path);
     setState(() {
-
       removeNoName();
       _image = File(image.path);
       image_name = File(image.path).toString().split('/').last.split('.').first;
-      TextEditingController nameController = new TextEditingController(text: image_name);
+      TextEditingController nameController =
+          new TextEditingController(text: image_name);
       addDynamic(nameController, 0);
       image_name = "";
       //debugPrint("Apply on: " + _image!.path);
@@ -109,25 +109,25 @@ class _InventoryPageState extends State<InventoryPage> {
 
   loadMyModel() async {
     String? result = await Tflite.loadModel(
-      model: "assets/kitchen_master.tflite", 
-      labels: "assets/labels.txt");
+        model: "assets/kitchen_master.tflite", labels: "assets/labels.txt");
     debugPrint("Result: $result");
   }
 
   applyModelOnImage(File file) async {
     var res = await Tflite.runModelOnImage(
-      path: file.path,
-      imageMean: 127.5,
-      imageStd: 127.5,
-      numResults: 2,
-      threshold: 0.1,
-      asynch: true);
-    
+        path: file.path,
+        imageMean: 127.5,
+        imageStd: 127.5,
+        numResults: 2,
+        threshold: 0.1,
+        asynch: true);
+
     _result = res!;
     String str = _result[0]["labels"];
     debugPrint("Results Label:" + str);
     debugPrint("Results Label Substring:" + str.substring(2));
-    debugPrint("Results Confidence:" + (_result[0]["confidence"]*100.0).toString().substring(0,2));
+    debugPrint("Results Confidence:" +
+        (_result[0]["confidence"] * 100.0).toString().substring(0, 2));
   }
 
   void addDynamic(TextEditingController n, int c) {
@@ -267,6 +267,6 @@ class _InventoryPageState extends State<InventoryPage> {
   @override
   void initState() {
     super.initState();
-     //loadMyModel();
+    //loadMyModel();
   }
 }
