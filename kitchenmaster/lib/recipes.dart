@@ -56,14 +56,14 @@ class Recipe {
     });
   }
 
-  List<String> getRecipes() {
+  Future<List<String>> getRecipes() async {
     debugPrint('getting recipes');
     //fetchRecipesName();
     //ingredients passed in are case and space sensitive
     List<String> smoothie1 = ["banana", "strawberry", "apple juice"];
     List<String> smoothie2 = ["kiwi", "banana", "mango", "pineapple juice"];
     fetchMatchingRecipes(smoothie2);
-    return generated;
+    return await generated;
   }
 }
 
@@ -72,9 +72,11 @@ class _RecipePageState extends State<RecipePage> {
   List<String> generatedRecipes = [];
 
   List<String> resetRecipes() {
+
+     //test.generated = [];
+     test.getRecipes();
     setState(() {});
-    // test.generated = [];
-    return test.getRecipes();
+    return [];
   }
 
   @override
@@ -122,43 +124,60 @@ class _RecipePageState extends State<RecipePage> {
         //         child: CircularProgressIndicator(),
         //       );
         //     }
-        child: new ListView.builder(
-            itemCount: generatedRecipes.length,
-            itemBuilder: (BuildContext context, int index) {
-              // return ListView(
-              //   children: snapshot.data!.docs.map((document) {
-              return Card(
-                  elevation: 0,
-                  color: Color.fromARGB(0, 255, 255, 255),
-                  child: Center(
-                      child: SizedBox(
-                          width: 350,
-                          height: 60,
-                          child: Column(children: <Widget>[
-                            Row(children: <Widget>[
-                              TextButton(
-                                child: Text(generatedRecipes[index]),
-                                onPressed: () {
-                                  // navigate to indiv recipe page
-                                },
-                              ),
-                              FavoriteButton(
-                                valueChanged: (_isFavorite) {
-                                  if (_isFavorite) {
-                                    RecipePage.addFavourites(
-                                        generatedRecipes[index]);
-                                    print(RecipePage.getFavourites());
-                                  } else if (!_isFavorite) {
-                                    RecipePage.removeFavourites(
-                                        generatedRecipes[index]);
-                                    print(RecipePage.getFavourites());
-                                  }
-                                },
-                              )
-                            ])
-                          ]))));
-            }),
+        child: FutureBuilder<List<String>>(
+          future: test.getRecipes(),
+          builder: (context, snapshot) {
+            return snapshot.connectionState == ConnectionState.waiting
+                ? const CircularProgressIndicator()
+                : Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: List.generate(snapshot.data!.length,
+                    (index) {
+                  return Text(snapshot.data?[index] ?? "null") ;
+                },
+              ),
+            );
+          },
+        ),
       )
     ]))));
   }
 }
+//
+// new ListView.builder(
+// itemCount: generatedRecipes.length,
+// itemBuilder: (BuildContext context, int index) {
+// // return ListView(
+// //   children: snapshot.data!.docs.map((document) {
+// return Card(
+// elevation: 0,
+// color: Color.fromARGB(0, 255, 255, 255),
+// child: Center(
+// child: SizedBox(
+// width: 350,
+// height: 60,
+// child: Column(children: <Widget>[
+// Row(children: <Widget>[
+// TextButton(
+// child: Text(generatedRecipes[index]),
+// onPressed: () {
+// // navigate to indiv recipe page
+// },
+// ),
+// FavoriteButton(
+// valueChanged: (_isFavorite) {
+// if (_isFavorite) {
+// RecipePage.addFavourites(
+// generatedRecipes[index]);
+// print(RecipePage.getFavourites());
+// } else if (!_isFavorite) {
+// RecipePage.removeFavourites(
+// generatedRecipes[index]);
+// print(RecipePage.getFavourites());
+// }
+// },
+// )
+// ])
+// ]))));
+// }),
