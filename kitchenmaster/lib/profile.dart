@@ -25,6 +25,7 @@ class _ProfilePageState extends State<ProfilePage> {
   void initState() {
     super.initState();
     getUsersName();
+    getCurrentUserProfile();
   }
 
   void getUsersName() async {
@@ -43,6 +44,18 @@ class _ProfilePageState extends State<ProfilePage> {
         MaterialPageRoute(builder: (context) => MyApp()));
   }
 
+  void getCurrentUserProfile() async {
+    var userUid = FirebaseAuth.instance.currentUser!.uid;
+    Reference ref = FirebaseStorage.instance.ref().child(userUid + ".jpg");
+
+    ref.getDownloadURL().then((value) {
+      debugPrint(value);
+      setState(() {
+        imageUrl = value;
+      });
+    });
+  }
+
   void pickUploadProfileImage() async {
     final image = await ImagePicker().pickImage(
       source: ImageSource.gallery, 
@@ -52,8 +65,6 @@ class _ProfilePageState extends State<ProfilePage> {
     );
 
     var userUid = FirebaseAuth.instance.currentUser!.uid;
-    String imageName = userUid + ".jpg";
-    debugPrint(imageName);
     Reference ref = FirebaseStorage.instance.ref().child(userUid + ".jpg");
 
     await ref.putFile(File(image!.path));
@@ -117,7 +128,6 @@ class _ProfilePageState extends State<ProfilePage> {
         padding: EdgeInsets.symmetric(horizontal: 24.0),
         child: Column(
           children: <Widget>[
-            Container(height: 20, width: 100),
             GestureDetector(
               onTap: () {
                 pickUploadProfileImage();

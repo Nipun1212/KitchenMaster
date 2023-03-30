@@ -36,131 +36,133 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Center(
-        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: <
-            Widget>[
-          Container(
-            width: 303,
-            height: 200,
-            child: Image.asset('assets/logo.png'),
-          ),
-          const Text('KitchenMaster',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  color: Color.fromRGBO(0, 0, 0, 1),
-                  fontFamily: 'Inria Serif',
-                  fontSize: 40,
-                  letterSpacing: 0,
-                  fontWeight: FontWeight.normal,
-                  height: 1)),
-          const SizedBox(height: 30),
-          Text('LOG IN',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  color: Color.fromRGBO(0, 0, 0, 1),
-                  fontFamily: 'Inria Serif',
-                  fontSize: 26,
-                  fontWeight: FontWeight.normal,
-                  height: 1)),
-          const SizedBox(height: 30),
-          Padding(
-            padding: EdgeInsets.only(left: 50, right: 50, top: 5),
-            child: TextFormField(
-              controller: enterEmail,
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 22,
-              ),
-              cursorColor: Colors.black,
-              decoration: InputDecoration(
-                hintText: "Enter Email",
-                hintStyle: TextStyle(color: Colors.black, fontSize: 18),
-                border: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black),
-                ),
-                focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.red),
-                ),
-              ),
+        child: SingleChildScrollView(
+          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: <
+              Widget>[
+            Container(
+              width: 303,
+              height: 200,
+              child: Image.asset('assets/logo.png'),
             ),
-          ),
-          Padding(
-            padding: EdgeInsets.only(left: 50, right: 50, top: 5),
-            child: TextFormField(
-              controller: enterPassword,
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 22,
-              ),
-              cursorColor: Colors.black,
-              obscureText: true,
-              decoration: InputDecoration(
-                hintText: "Enter Password",
-                hintStyle: TextStyle(color: Colors.black, fontSize: 18),
-                border: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black),
-                ),
-                focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.red),
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 30),
-          RichText(
-              text: TextSpan(children: [
-                TextSpan(
-                  text: errorMessage,
-                  style: TextStyle(
-                    color: Colors.red,
-                  ),
-                ),
-              ])),
-          const SizedBox(height: 30),
-          RichText(
-              text: TextSpan(children: [
-                TextSpan(
-                  text: 'New to KitchenMaster? ',
-                  style: TextStyle(
-                    color: Colors.black,
-                  ),
-                ),
-                TextSpan(
-                  text: 'Sign Up Now!',
-                  style: TextStyle(
-                    color: Colors.blue,
-                  ),
-                  recognizer: TapGestureRecognizer()
-                    ..onTap = () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) =>
-                              RegisterPage()));
-                    },
-                ),
-              ])),
-          const SizedBox(height: 30),
-          Container(
-            width: 300,
-            height: 51.5,
-            child: ElevatedButton(
-              onPressed: () {
-                debugPrint("Email: " + enterEmail.text.trim());
-                debugPrint("Password: " + enterPassword.text.trim());
-                signIn();
-              },
-              child: Text(
-                'OK',
+            const Text('KitchenMaster',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                    color: Color.fromRGBO(255, 255, 255, 1),
-                    fontFamily: 'IM FELL English SC',
-                    fontSize: 30,
+                    color: Color.fromRGBO(0, 0, 0, 1),
+                    fontFamily: 'Inria Serif',
+                    fontSize: 40,
                     letterSpacing: 0,
                     fontWeight: FontWeight.normal,
-                    height: 1),
+                    height: 1)),
+            const SizedBox(height: 30),
+            Text('LOG IN',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    color: Color.fromRGBO(0, 0, 0, 1),
+                    fontFamily: 'Inria Serif',
+                    fontSize: 26,
+                    fontWeight: FontWeight.normal,
+                    height: 1)),
+            const SizedBox(height: 30),
+            Padding(
+              padding: EdgeInsets.only(left: 50, right: 50, top: 5),
+              child: TextFormField(
+                controller: enterEmail,
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 22,
+                ),
+                cursorColor: Colors.black,
+                decoration: InputDecoration(
+                  hintText: "Enter Email",
+                  hintStyle: TextStyle(color: Colors.black, fontSize: 18),
+                  border: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black),
+                  ),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.red),
+                  ),
+                ),
               ),
             ),
-          ),
-        ]),
+            Padding(
+              padding: EdgeInsets.only(left: 50, right: 50, top: 5),
+              child: TextFormField(
+                controller: enterPassword,
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 22,
+                ),
+                cursorColor: Colors.black,
+                obscureText: true,
+                decoration: InputDecoration(
+                  hintText: "Enter Password",
+                  hintStyle: TextStyle(color: Colors.black, fontSize: 18),
+                  border: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black),
+                  ),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.red),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 30),
+            RichText(
+                text: TextSpan(children: [
+                  TextSpan(
+                    text: errorMessage,
+                    style: TextStyle(
+                      color: Colors.red,
+                    ),
+                  ),
+                ])),
+            const SizedBox(height: 30),
+            RichText(
+                text: TextSpan(children: [
+                  TextSpan(
+                    text: 'New to KitchenMaster? ',
+                    style: TextStyle(
+                      color: Colors.black,
+                    ),
+                  ),
+                  TextSpan(
+                    text: 'Sign Up Now!',
+                    style: TextStyle(
+                      color: Colors.blue,
+                    ),
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) =>
+                                RegisterPage()));
+                      },
+                  ),
+                ])),
+            const SizedBox(height: 30),
+            Container(
+              width: 300,
+              height: 51.5,
+              child: ElevatedButton(
+                onPressed: () {
+                  debugPrint("Email: " + enterEmail.text.trim());
+                  debugPrint("Password: " + enterPassword.text.trim());
+                  signIn();
+                },
+                child: Text(
+                  'OK',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: Color.fromRGBO(255, 255, 255, 1),
+                      fontFamily: 'IM FELL English SC',
+                      fontSize: 30,
+                      letterSpacing: 0,
+                      fontWeight: FontWeight.normal,
+                      height: 1),
+                ),
+              ),
+            ),
+          ]),
+        ),
       ),
     );
   }
