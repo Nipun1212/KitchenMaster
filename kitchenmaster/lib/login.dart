@@ -20,10 +20,10 @@ class _LoginPageState extends State<LoginPage> {
   void initState() {
     super.initState();
     if (FirebaseAuth.instance.currentUser?.uid != null) {
-      var userUid = FirebaseAuth.instance.currentUser?.uid;
-      debugPrint("User UID: " + userUid!);
-      //Navigator.push(context,
-      //    MaterialPageRoute(builder: (context) => NavBar()));
+      //var userUid = FirebaseAuth.instance.currentUser!.uid;
+      //debugPrint("User UID: " + userUid);
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => NavBar()));
     }
   }
 
@@ -34,6 +34,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Center(
         child: Column(mainAxisAlignment: MainAxisAlignment.center, children: <
             Widget>[

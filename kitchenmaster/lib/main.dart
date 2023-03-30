@@ -70,7 +70,9 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    FirebaseAuth.instance.signOut();
+    if (FirebaseAuth.instance.currentUser?.uid != null) {
+      FirebaseAuth.instance.signOut();
+    }
   }
 
   @override

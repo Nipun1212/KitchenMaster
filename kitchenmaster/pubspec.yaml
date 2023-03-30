@@ -37,6 +37,7 @@ dependencies:
   firebase_auth: ^4.3.0
   tflite: ^1.1.2
   cloud_firestore: ^4.4.5
+  firebase_storage: ^11.0.16
   path_provider: ^2.0.14
   image_picker: ^0.8.7 
 

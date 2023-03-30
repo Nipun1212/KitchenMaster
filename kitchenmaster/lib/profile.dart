@@ -1,6 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'dart:io';
 // import 'package:fridgemaster/ResetPassword.dart';
 import 'package:fridgemaster/main.dart';
 import 'alerts.dart';
@@ -14,8 +17,10 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   String userName = "";
-  late String name;
-  late String email;
+  String imageUrl = "";
+  String name = "";
+  String email = "";
+  
   @override
   void initState() {
     super.initState();
@@ -37,6 +42,29 @@ class _ProfilePageState extends State<ProfilePage> {
     Navigator.push(context,
         MaterialPageRoute(builder: (context) => MyApp()));
   }
+
+  void pickUploadProfileImage() async {
+    final image = await ImagePicker().pickImage(
+      source: ImageSource.gallery, 
+      maxWidth: 512,
+      maxHeight: 512,
+      imageQuality: 75,
+    );
+
+    var userUid = FirebaseAuth.instance.currentUser!.uid;
+    String imageName = userUid + ".jpg";
+    debugPrint(imageName);
+    Reference ref = FirebaseStorage.instance.ref().child(userUid + ".jpg");
+
+    await ref.putFile(File(image!.path));
+    ref.getDownloadURL().then((value) {
+      debugPrint(value);
+      setState(() {
+        imageUrl = value;
+      });
+    });
+  }
+
 
   Future resetPassword() async {
     var userUid = FirebaseAuth.instance.currentUser!.uid;
@@ -76,21 +104,38 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
 
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.red,
-          title: const Text(
-            "Profile",
-            style: TextStyle(color: Colors.white),
-          ),
+      resizeToAvoidBottomInset: false,
+      appBar: AppBar(
+        backgroundColor: Colors.red,
+        title: const Text(
+          "Profile",
+          style: TextStyle(color: Colors.white),
         ),
-        backgroundColor: Color(0xffe5e5e5),
+      ),
+      backgroundColor: Color(0xffe5e5e5),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 24.0),
         child: Column(
           children: <Widget>[
             Container(height: 20, width: 100),
-            Container(
-                child: CircleAvatar(child: Image.asset('assets/images/anonymous.png'),radius: 50)
+            GestureDetector(
+              onTap: () {
+                pickUploadProfileImage();
+              },
+              child: Container(
+                margin: EdgeInsets.only(top: 80),
+                width: 120,
+                height: 120,
+                alignment: Alignment.center,
+                decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(20))
+                ),
+                child: Center(
+                  child: imageUrl == "" ? const Icon(
+                    Icons.person, size: 80, color: Colors.white,
+                    ) : Image.network(imageUrl),
+                ),
+              ),
             ),
             SizedBox(height: 30.0,),
             Container(
