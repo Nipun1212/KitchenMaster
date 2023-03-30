@@ -133,17 +133,31 @@ class _ProfilePageState extends State<ProfilePage> {
                 pickUploadProfileImage();
               },
               child: Container(
-                margin: EdgeInsets.only(top: 80),
+                margin: EdgeInsets.only(top: 40),
                 width: 120,
                 height: 120,
                 alignment: Alignment.center,
                 decoration: const BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(20))
                 ),
-                child: Center(
-                  child: imageUrl == "" ? const Icon(
-                    Icons.person, size: 80, color: Colors.white,
-                    ) : Image.network(imageUrl),
+                child: CircleAvatar(
+                  radius:100,
+                  child:imageUrl == "" ? CircleAvatar
+                    (child: Image.asset('assets/images/anonymous.png'),
+                       radius: 100
+                     ) :
+                  ClipOval(
+                      child:Image.network(
+                        imageUrl ,
+                        width: 120,
+                        height: 120,
+                        fit: BoxFit.cover,
+                      )
+                  )
+
+                  //child: imageUrl == "" ? const CircleAvatar(
+                 //    radius: 1000,
+                  //  ) : Image.network(imageUrl),
                 ),
               ),
             ),
