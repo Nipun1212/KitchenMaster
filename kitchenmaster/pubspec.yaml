@@ -41,6 +41,7 @@ dependencies:
   path_provider: ^2.0.14
   image_picker: ^0.8.7 
   favorite_button: ^0.0.4
+  firebase_database:
 
 #  firebase_messaging: ^11.2.0
   flutter_local_notifications: ^8.1.0
