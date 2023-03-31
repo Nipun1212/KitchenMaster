@@ -1,7 +1,4 @@
 // ignore_for_file: prefer_const_constructors, unnecessary_new
-
-import 'dart:collection';
-
 import 'package:flutter/material.dart';
 import 'package:fridgemaster/recipe.dart';
 import 'package:image_picker/image_picker.dart';
@@ -39,12 +36,6 @@ class _DynamicWidgetState extends State<DynamicWidget> {
     return Card(
         elevation: 0,
         color: Color.fromARGB(0, 255, 255, 255),
-        // shape: RoundedRectangleBorder(
-        //   borderRadius: BorderRadius.circular(25),
-        //   side: BorderSide(
-        //     color: Color.fromARGB(97, 0, 0, 0),
-        //   ),
-        // ),
         child: Center(
             child: SizedBox(
                 width: 350,
@@ -74,11 +65,6 @@ class _DynamicWidgetState extends State<DynamicWidget> {
                           if (widget.count > 0) {
                             widget.count -= 1;
                           }
-                          // if(count<=0) {
-                          //   //remove dynamic
-                          // }
-                          // else if(count==0){
-                          // }
                         });
                       }),
                 ]))));
@@ -88,7 +74,6 @@ class _DynamicWidgetState extends State<DynamicWidget> {
 class _InventoryPageState extends State<InventoryPage> {
   List<DynamicWidget> listCards = [];
   List<TextEditingController> controllers = [];
-  //TextEditingController nameController = new TextEditingController();
   
   late Map<String, int> _results;
   bool imageSelect = false;
@@ -103,7 +88,7 @@ class _InventoryPageState extends State<InventoryPage> {
 
     print("=================IMAGE PATH HERE: ${pickedFile?.path}=================");
     // Send the image to the Google Cloud Vision API for prediction
-    final String apiKey = "AIzaSyBXiiy7RW-SXoN02zmekWS-8W9mO8cn1Mk";
+    final String apiKey = "AIzaSyAVz2DqoH6D7aQ355bMmdAHkMjbcHMi0yg";
     final String url = "https://vision.googleapis.com/v1/images:annotate?key=$apiKey";
     final String base64Image = base64Encode(File(pickedFile!.path).readAsBytesSync());
     final http.Response response = await http.post(
@@ -126,7 +111,7 @@ class _InventoryPageState extends State<InventoryPage> {
     Map<String, int> _predictions = {};
     String _textFound = "";
 
-    // print(response.body);
+    print(response.body);
     // Get all the predictions via object detection in the classList 
     List<dynamic>? itemDetected = data["responses"][0]["localizedObjectAnnotations"];
     if (itemDetected != null) {
@@ -152,15 +137,25 @@ class _InventoryPageState extends State<InventoryPage> {
         }
       }
     }
-    // Initialize inventory list for each predictions found 
+
     print("predicted!! $_predictions");
-    _predictions.forEach((item, count){
-      addDynamic(TextEditingController(text:item), count);
-    });
 
     setState(() {
       isLoading = true;
       imageSelect = false;
+      // Initialize inventory list for each predictions found 
+      _predictions.forEach((item, count){
+        List existingControllers = controllers.map((label) => label.text).toList();
+        if (existingControllers.contains(item)){
+          int index = existingControllers.indexOf(item);
+          listCards[index].count += count;
+          listCards[index] = DynamicWidget(listCards[index].nameController, listCards[index].count);
+        } else {
+          TextEditingController predItem = TextEditingController(text:item);
+          controllers.add(predItem);
+          listCards.add(new DynamicWidget(predItem, count));
+        }
+      });
       _results = _predictions;
     });
     return _results;
@@ -168,14 +163,8 @@ class _InventoryPageState extends State<InventoryPage> {
 
   void addDynamic(TextEditingController n, int c) {
     setState(() {
-      List existingControllers = controllers.map((label) => label.text).toList();
-      if (existingControllers.contains(n.text)){
-        listCards[existingControllers.indexOf(n.text)].count += c; 
-        print("Updated for ${n.text}, ${listCards[existingControllers.indexOf(n.text)].count}");
-      } else {
-        controllers.add(n);
-        listCards.add(new DynamicWidget(n, c));
-      }
+      controllers.add(n);
+      listCards.add(new DynamicWidget(n, c));
     });
   }
 
