@@ -73,6 +73,7 @@ class DynamicWidget extends StatefulWidget {
 
   void scheduleNotification(String id, String name, String frequency) async {
     // await widget.flutterLocalNotificationsPlugin.cancelAll();
+    log("Start schedule");
     deleteNotifications();
 
     //update firebase
@@ -99,7 +100,7 @@ class DynamicWidget extends StatefulWidget {
       case "Monthly": freqInDays = 30;
       break;
     }
-
+    log("Setting platform details");
     var androidDetails = AndroidNotificationDetails(
       id , name, frequency + ' reminder for ' + name,
       importance: Importance.high,
@@ -121,7 +122,7 @@ class DynamicWidget extends StatefulWidget {
       android: androidDetails,
       iOS: iosDetails,
     );
-
+    log("Scheduling the notification...");
     // Schedule the notification
     await flutterLocalNotificationsPlugin.zonedSchedule(
       intId, // notification id
@@ -134,7 +135,7 @@ class DynamicWidget extends StatefulWidget {
       UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: DateTimeComponents.time,
     );
-    log("showSchedule " + id+ name + frequency);
+    log("showSchedule " + id + " " + name + " " + frequency);
   }
 
   TZDateTime _nextInstanceOfTimeOfDay(int days) {
