@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_const_constructors, unnecessary_new
 
 import 'package:flutter/material.dart';
-import 'package:fridgemaster/recipe.dart';
+import 'package:fridgemaster/recipes.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tflite/tflite.dart';
 import 'dart:io';
