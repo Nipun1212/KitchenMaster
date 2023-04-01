@@ -5,6 +5,7 @@ import 'package:favorite_button/favorite_button.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'indivRecipes.dart';
 
 class RecipePage extends StatefulWidget {
@@ -69,6 +70,36 @@ class _RecipePageState extends State<RecipePage> {
     test.getRecipes();
     setState(() {});
     return [];
+  }
+
+  //update firebase
+  void addSaved(String recipeName, DocumentReference recipe) async {
+    print("Saving recipe...");
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+    final savedRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('savedRecipes');
+    DocumentReference newSavedRef =
+        await savedRef.add({'name': recipeName, 'recipe': recipe});
+
+    // final newAlertId = generateUniqueId(newAlertRef.id);
+    print("Recipe saved!");
+  }
+
+  void removeSaved(String id) async {
+    //delete in firebase
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+    final savedRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('savedRecipes')
+        .doc(id);
+    savedRef.delete().then((value) {
+      debugPrint('Recipe removed successfully');
+    }).catchError((error) {
+      debugPrint('Failed to remove recipe: $error');
+    });
   }
 
   @override
@@ -166,14 +197,11 @@ class _RecipePageState extends State<RecipePage> {
                                           FavoriteButton(
                                             isFavorite: false,
                                             valueChanged: (_isFavorite) {
-                                              DatabaseReference ref =
-                                                  FirebaseDatabase.instance.ref(
-                                                      "Recipes/${snapshot.data![index].get("Name")}");
                                               if (_isFavorite) {
-                                                ref.update({"Saved": true});
-                                                print(snapshot.data![index].get("Saved"));
+                                                var recipe = FirebaseFirestore.instance.collection("Recipes").doc(snapshot.data?[index].get("Name"));
+                                                addSaved(snapshot.data?[index].get("Name"), recipe);
                                               } else if (!_isFavorite) {
-                                                ref.update({"Saved": false});
+                                                removeSaved(snapshot.data?[index].reference.id);
                                               }
                                             },
                                           )
