@@ -19,7 +19,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    if (FirebaseAuth.instance.currentUser?.uid != null) {
+    if (FirebaseAuth.instance.currentUser?.uid != null && FirebaseAuth.instance.currentUser?.emailVerified == true) {
       //var userUid = FirebaseAuth.instance.currentUser!.uid;
       //debugPrint("User UID: " + userUid);
       Navigator.push(context,
