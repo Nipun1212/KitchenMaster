@@ -28,6 +28,7 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
         body: Center(
             child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -205,6 +206,9 @@ class _RegisterPageState extends State<RegisterPage> {
         email: regEmail.text.trim(), 
         password: regPassword.text.trim(),
       );
+      if (credential.user != null){
+        credential.user?.sendEmailVerification();
+      }
       setState(() {
         errorMessage = "";
       });
