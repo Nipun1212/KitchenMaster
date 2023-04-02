@@ -1,9 +1,17 @@
 // ignore_for_file: prefer_const_constructors, unnecessary_new
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tflite/tflite.dart';
 import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:flutter/material.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+
 
 class InventoryPage extends StatefulWidget {
   InventoryPage({Key? key}) : super(key: key);
@@ -49,6 +57,11 @@ class _DynamicWidgetState extends State<DynamicWidget> {
                   Expanded(
                     child: TextField(
                       controller: widget.nameController,
+                      onChanged: (value) {
+                        setState(() {
+                          widget.name = value;
+                        });
+                      },
                       decoration: InputDecoration(
                         hintText: "Enter Name",
                         hintStyle: TextStyle(color: Colors.black, fontSize: 18),
@@ -89,6 +102,7 @@ class _InventoryPageState extends State<InventoryPage> {
   File? _image;
   List _result = [];
   String image_name = "";
+
   getImage() async {
     var image = await ImagePicker().pickImage(source: ImageSource.gallery);
     
@@ -103,6 +117,73 @@ class _InventoryPageState extends State<InventoryPage> {
       //debugPrint("Apply on: " + _image!.path);
       //applyModelOnImage(_image!);
     });
+  }
+  Future<void> updateInventory(Map<String, int> inventory) async {
+    // var image = await ImagePicker().pickImage(source: ImageSource.gallery);
+    var userUid = FirebaseAuth.instance.currentUser!.uid;
+    // var docRef = await FirebaseFirestore.instance.collection('users').doc(userUid);
+    // await docRef.update({
+    //   'inventory': inventory,
+    // });
+    final docRef = FirebaseFirestore.instance.collection('users').doc(userUid);
+    final docSnapshot = await docRef.get();
+
+
+    Map<String, dynamic> data = docSnapshot.data()!;
+
+    if (data['inventory']!= null) {
+      // Map<String, int> intMap = data['inventory']?.map((key, value) => MapEntry(key as String, value as int)) ?? {};
+      // Map<String, int>? currentInventory = Map<String, int>.from(jsonEncode(data['inventory']) as Map<String,int> );
+
+
+      Map<String, int> currentInventory = Map<String, int>.from(data['inventory']!.map((key, value) => MapEntry(key as String, value as int?)));
+      currentInventory.addAll(inventory);
+      currentInventory.addAll(inventory);
+
+      await docRef.update({
+        'inventory': currentInventory,
+      });
+    }
+
+    else{
+      data['inventory']={};
+      await docRef.update({
+        'inventory': inventory,
+      });
+
+    }
+
+    // debugPrint(userName);
+
+
+  }
+
+  Future<Map<String, int>> getData() async {
+    var userUid = FirebaseAuth.instance.currentUser!.uid;
+    // var docRef = await FirebaseFirestore.instance.collection('users').doc(userUid);
+    // await docRef.update({
+    //   'inventory': inventory,
+
+    // });
+    Map<String, int> currentInventory = <String,int>{};
+    final docRef = FirebaseFirestore.instance.collection('users').doc(userUid);
+    final docSnapshot = await docRef.get();
+    Map<String, dynamic> data = docSnapshot.data()!;
+
+    if (data['inventory']!= null) {
+      // Map<String, int> intMap = data['inventory']?.map((key, value) => MapEntry(key as String, value as int)) ?? {};
+      // Map<String, int>? currentInventory = Map<String, int>.from(jsonEncode(data['inventory']) as Map<String,int> );
+
+
+      currentInventory = Map<String, int>.from(
+          data['inventory']!.map((key, value) =>
+              MapEntry(key as String, value as int?))) ?? {};
+    }
+    else{
+      Map<String, int> currentInventory={};
+    }
+
+    return currentInventory;
   }
 
   loadMyModel() async {
@@ -197,6 +278,33 @@ class _InventoryPageState extends State<InventoryPage> {
                         ),
                       ),
                     ),
+                    FutureBuilder(
+                      future: getData(),
+                      builder: (context, AsyncSnapshot<Map<String,int>> snapshot) {
+                        if (snapshot.connectionState == ConnectionState.done) {
+                          final currentInventory = snapshot.data;
+                          final inventoryItems = currentInventory?.entries.toList() ?? [];
+
+                          return ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: inventoryItems.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              final item = inventoryItems[index];
+                              final itemName = item.key;
+                              final itemQuantity = item.value;
+                              final controller = TextEditingController(text: '$itemName');
+
+                              return DynamicWidget(
+                                controller,itemQuantity
+                              );
+                            },
+                          );
+                        } else if (snapshot.connectionState == ConnectionState.none) {
+                          return Text("No data");
+                        }
+                        return CircularProgressIndicator();
+                      },
+                    ),
                     Flexible(
                       fit: FlexFit.tight,
                       child: new ListView.builder(
@@ -225,7 +333,9 @@ class _InventoryPageState extends State<InventoryPage> {
                           }),
                     ),
                   ])),
+
             ),
+
             floatingActionButton: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -235,7 +345,13 @@ class _InventoryPageState extends State<InventoryPage> {
                     icon: const Icon(Icons.add_a_photo),
                     heroTag: "upload_photo",
                     onPressed: () {
-                      getImage();
+                      // getImage();
+                      Map<String, int> inventory = {
+                        'banana': 10,
+                        'apple': 5,
+                        'kiwi': 2,
+                      };
+                      updateInventory(inventory);
                     },
                     backgroundColor: Colors.black,
                   ),
