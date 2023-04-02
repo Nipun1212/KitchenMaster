@@ -1,10 +1,14 @@
 // ignore_for_file: prefer_const_constructors, unnecessary_new
+
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:fridgemaster/recipe.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class InventoryPage extends StatefulWidget {
   InventoryPage({Key? key}) : super(key: key);
@@ -44,6 +48,11 @@ class _DynamicWidgetState extends State<DynamicWidget> {
                   Expanded(
                     child: TextField(
                       controller: widget.nameController,
+                      onChanged: (value) {
+                        setState(() {
+                          widget.name = value;
+                        });
+                      },
                       decoration: InputDecoration(
                         hintText: "Enter Name",
                         hintStyle: TextStyle(color: Colors.black, fontSize: 18),
@@ -169,6 +178,74 @@ class InventoryPageState extends State<InventoryPage> {
     return curInv;
   }
 
+  Future<void> updateInventory(Map<String, int> inventory) async {
+    // var image = await ImagePicker().pickImage(source: ImageSource.gallery);
+    var userUid = FirebaseAuth.instance.currentUser!.uid;
+    // var docRef = await FirebaseFirestore.instance.collection('users').doc(userUid);
+    // await docRef.update({
+    //   'inventory': inventory,
+    // });
+    final docRef = FirebaseFirestore.instance.collection('users').doc(userUid);
+    final docSnapshot = await docRef.get();
+
+
+    Map<String, dynamic> data = docSnapshot.data()!;
+
+    if (data['inventory']!= null) {
+      // Map<String, int> intMap = data['inventory']?.map((key, value) => MapEntry(key as String, value as int)) ?? {};
+      // Map<String, int>? currentInventory = Map<String, int>.from(jsonEncode(data['inventory']) as Map<String,int> );
+
+
+      Map<String, int> currentInventory = Map<String, int>.from(data['inventory']!.map((key, value) => MapEntry(key as String, value as int?)));
+      currentInventory.addAll(inventory);
+      currentInventory.addAll(inventory);
+
+      await docRef.update({
+        'inventory': currentInventory,
+      });
+    }
+
+    else{
+      data['inventory']={};
+      await docRef.update({
+        'inventory': inventory,
+      });
+
+    }
+
+    // debugPrint(userName);
+
+
+  }
+
+  Future<Map<String, int>> getData() async {
+    var userUid = FirebaseAuth.instance.currentUser!.uid;
+    // var docRef = await FirebaseFirestore.instance.collection('users').doc(userUid);
+    // await docRef.update({
+    //   'inventory': inventory,
+
+    // });
+    Map<String, int> currentInventory = <String,int>{};
+    final docRef = FirebaseFirestore.instance.collection('users').doc(userUid);
+    final docSnapshot = await docRef.get();
+    Map<String, dynamic> data = docSnapshot.data()!;
+
+    if (data['inventory']!= null) {
+      // Map<String, int> intMap = data['inventory']?.map((key, value) => MapEntry(key as String, value as int)) ?? {};
+      // Map<String, int>? currentInventory = Map<String, int>.from(jsonEncode(data['inventory']) as Map<String,int> );
+
+
+      currentInventory = Map<String, int>.from(
+          data['inventory']!.map((key, value) =>
+              MapEntry(key as String, value as int?))) ?? {};
+    }
+    else{
+      Map<String, int> currentInventory={};
+    }
+
+    return currentInventory;
+  }
+  
   void addDynamic(TextEditingController n, int c) {
     setState(() {
       controllers.add(n);
@@ -176,10 +253,6 @@ class InventoryPageState extends State<InventoryPage> {
     });
   }
 
-  //created object for recipe
-  // use reset button to test the fetching of recipe data
-  Recipe test = new Recipe();
-  ///////////////////////////////////////
   void resetDynamic() {
     setState(() {
       // if (listCards.isEmpty){
@@ -188,9 +261,6 @@ class InventoryPageState extends State<InventoryPage> {
       controllers.removeRange(0, controllers.length);
       listCards.removeRange(0, listCards.length);
     });
-///// ADDED THIS FUNCTION TO TEST FETCHING OF RECIPE DATA/////
-    test.getRecipes();
-/////////////////////////////////////////////////////////////
   }
 
   void removeNoName() {
@@ -245,6 +315,33 @@ class InventoryPageState extends State<InventoryPage> {
                         ),
                       ),
                     ),
+                    FutureBuilder(
+                      future: getData(),
+                      builder: (context, AsyncSnapshot<Map<String,int>> snapshot) {
+                        if (snapshot.connectionState == ConnectionState.done) {
+                          final currentInventory = snapshot.data;
+                          final inventoryItems = currentInventory?.entries.toList() ?? [];
+
+                          return ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: inventoryItems.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              final item = inventoryItems[index];
+                              final itemName = item.key;
+                              final itemQuantity = item.value;
+                              final controller = TextEditingController(text: '$itemName');
+
+                              return DynamicWidget(
+                                controller,itemQuantity
+                              );
+                            },
+                          );
+                        } else if (snapshot.connectionState == ConnectionState.none) {
+                          return Text("No data");
+                        }
+                        return CircularProgressIndicator();
+                      },
+                    ),
                     Flexible(
                       fit: FlexFit.tight,
                       child: new ListView.builder(
@@ -273,7 +370,9 @@ class InventoryPageState extends State<InventoryPage> {
                           }),
                     ),
                   ])),
+
             ),
+
             floatingActionButton: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.center,

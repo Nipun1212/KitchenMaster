@@ -28,6 +28,7 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
         body: Center(
             child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -192,7 +193,9 @@ class _RegisterPageState extends State<RegisterPage> {
         id: FirebaseAuth.instance.currentUser!.uid,
         name: name,
         email: email,
-        password: password,
+        password: password
+
+
       );
       final json = user.toJson();
 
@@ -205,6 +208,9 @@ class _RegisterPageState extends State<RegisterPage> {
         email: regEmail.text.trim(), 
         password: regPassword.text.trim(),
       );
+      if (credential.user != null){
+        credential.user?.sendEmailVerification();
+      }
       setState(() {
         errorMessage = "";
       });
@@ -231,12 +237,15 @@ class UserInfo {
   final String name;
   final String email;
   final String password;
+  Map<String, int>? inventory;
   
   UserInfo({
     this.id = '',
     required this.name,
     required this.email,
     required this.password,
+    this.inventory,
+
   });
 
   Map<String, dynamic> toJson() => {
@@ -244,5 +253,6 @@ class UserInfo {
     'name': name,
     'email': email,
     'password': password,
+    'inventory': inventory,
   };
 }
