@@ -43,17 +43,27 @@ class Recipe {
 
   void fetchMatchingRecipes(List<String> ingredients) async {
     QuerySnapshot querySnapshot = await recipes.get();
+
     List<dynamic> recipeDB;
+    int index = 1;
     querySnapshot.docs.forEach((document) {
       //gets array of String type from Ingredient column in database
+
       recipeDB = document.get("Ingredients");
+      print("this is the recipe");
+      print(recipeDB);
+      print(document.get("Name"));
+      print(index);
+      index++;
       //checks if the food items in fridge is a subset of items in recipe
-      if (recipeDB.toSet().length ==
-          recipeDB.toSet().intersection(ingredients.toSet()).length) {
+      if (recipeDB.toSet().intersection(ingredients.toSet()).length != 0) {
         //prints the name of recipes that matches the food items in fridge
         print(document.get("Name"));
         generated.add(document.get("Name"));
         procedures.add(document.get("Procedures"));
+        //print("list of recipes:");
+        //print(generated);
+        //print(procedures);
       } else {}
     });
   }
@@ -71,7 +81,8 @@ class Recipe {
     //ingredients passed in are case and space sensitive
     List<String> smoothie1 = ["banana", "strawberry", "apple juice"];
     List<String> smoothie2 = ["kiwi", "banana", "mango", "pineapple juice"];
-    fetchMatchingRecipes(smoothie2);
+    List<String> smoothie3 = ["banana"];
+    fetchMatchingRecipes(smoothie3);
     return generated;
   }
 }
