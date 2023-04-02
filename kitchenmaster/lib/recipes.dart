@@ -214,42 +214,44 @@ class _RecipePageState extends State<RecipePage> {
                                                                   procedure)));
                                             },
                                           ),
-                                          // FutureBuilder<bool>(
-                                          //     future: checkSaved(snapshot
-                                          //         .data?[index]
-                                          //         .get("Name")),
-                                          //     builder: (c, s) {
-                                          //       print("isFavorite: ${s.data}");
-                                          //       bool favourite = false;
-                                          //       if (s.data == true) {
-                                          //         favourite = true;
-                                          //       }
-                                          // return
-                                          FavoriteButton(
-                                            isFavorite: false,
-                                            valueChanged: (_isFavorite) {
-                                              if (_isFavorite) {
-                                                var recipe = FirebaseFirestore
-                                                    .instance
-                                                    .collection("Recipes")
-                                                    .doc(snapshot.data?[index]
-                                                        .get("Name"));
-                                                String id =
-                                                    UniqueKey().toString();
-                                                print(id);
-                                                addSaved(
-                                                    id,
-                                                    snapshot.data?[index]
-                                                        .get("Name"),
-                                                    recipe);
-                                              } else if (!_isFavorite) {
-                                                removeSaved(snapshot
-                                                    .data?[index]
-                                                    .get("Name"));
-                                              }
-                                            },
-                                          )
-                                          // })
+                                          FutureBuilder<bool>(
+                                              future: checkSaved(snapshot
+                                                  .data?[index]
+                                                  .get("Name")),
+                                              builder: (c, s) {
+                                                print("isFavorite: ${s.data}");
+                                                bool favourite = false;
+                                                if (s.data == true) {
+                                                  favourite = true;
+                                                }
+                                                return FavoriteButton(
+                                                  isFavorite: favourite,
+                                                  valueChanged: (_isFavorite) {
+                                                    if (_isFavorite) {
+                                                      var recipe =
+                                                          FirebaseFirestore
+                                                              .instance
+                                                              .collection(
+                                                                  "Recipes")
+                                                              .doc(snapshot
+                                                                  .data?[index]
+                                                                  .get("Name"));
+                                                      String id = UniqueKey()
+                                                          .toString();
+                                                      print(id);
+                                                      addSaved(
+                                                          id,
+                                                          snapshot.data?[index]
+                                                              .get("Name"),
+                                                          recipe);
+                                                    } else if (!_isFavorite) {
+                                                      removeSaved(snapshot
+                                                          .data?[index]
+                                                          .get("Name"));
+                                                    }
+                                                  },
+                                                );
+                                              })
                                         ]))));
                           },
                         ),
