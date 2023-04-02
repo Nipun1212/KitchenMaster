@@ -51,13 +51,24 @@ class Recipe {
 
   Future<List> getRecipes() async {
     debugPrint('getting recipes');
+    List<String> ingredientList = [];
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+    final savedRef = FirebaseFirestore.instance.collection('users');
+    var docSnapshot = await savedRef.doc(uid).get();
+    if (docSnapshot.exists) {
+      ingredientList = docSnapshot.data()!['inventory'].keys.toList();
+      // You can then retrieve the value from the Map like this:
+    }
     //fetchRecipesName();
     //ingredients passed in are case and space sensitive
-    List<String> smoothie1 = ["banana", "strawberry", "apple juice"];
-    List<String> smoothie2 = ["kiwi", "banana", "mango", "pineapple juice"];
-    List<String> smoothie3 = ["banana"];
-    fetchMatchingRecipes(smoothie3);
+    // List<String> smoothie1 = ["banana", "strawberry", "apple juice"];
+    // List<String> smoothie2 = ["kiwi", "banana", "mango", "pineapple juice"];
+    // List<String> smoothie3 = ["banana"];
+
+    // fetchMatchingRecipes(smoothie3);
     // fetchMatchingRecipes(smoothie2);
+    print(ingredientList);
+    fetchMatchingRecipes(ingredientList);
     return await recipeDetails;
   }
 }
