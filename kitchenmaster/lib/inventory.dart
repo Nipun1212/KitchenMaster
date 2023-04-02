@@ -4,12 +4,9 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:tflite/tflite.dart';
-import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 
@@ -99,20 +96,14 @@ class _InventoryPageState extends State<InventoryPage> {
   List<TextEditingController> controllers = [];
   //TextEditingController nameController = new TextEditingController();
 
-  File? _image;
   List _result = [];
   String image_name = "";
-
   getImage() async {
     var image = await ImagePicker().pickImage(source: ImageSource.gallery);
     
     debugPrint("Image.path: " + image!.path);
     setState(() {
       removeNoName();
-      _image = File(image.path);
-      image_name = File(image.path).toString().split('/').last.split('.').first;
-      TextEditingController nameController = new TextEditingController(text: image_name);
-      addDynamic(nameController, 0);
       image_name = "";
       //debugPrint("Apply on: " + _image!.path);
       //applyModelOnImage(_image!);
@@ -184,29 +175,6 @@ class _InventoryPageState extends State<InventoryPage> {
     }
 
     return currentInventory;
-  }
-
-  loadMyModel() async {
-    String? result = await Tflite.loadModel(
-      model: "assets/kitchen_master.tflite", 
-      labels: "assets/labels.txt");
-    debugPrint("Result: $result");
-  }
-
-  applyModelOnImage(File file) async {
-    var res = await Tflite.runModelOnImage(
-      path: file.path,
-      imageMean: 127.5,
-      imageStd: 127.5,
-      numResults: 2,
-      threshold: 0.1,
-      asynch: true);
-    
-    _result = res!;
-    String str = _result[0]["labels"];
-    debugPrint("Results Label:" + str);
-    debugPrint("Results Label Substring:" + str.substring(2));
-    debugPrint("Results Confidence:" + (_result[0]["confidence"]*100.0).toString().substring(0,2));
   }
 
   void addDynamic(TextEditingController n, int c) {
@@ -345,13 +313,7 @@ class _InventoryPageState extends State<InventoryPage> {
                     icon: const Icon(Icons.add_a_photo),
                     heroTag: "upload_photo",
                     onPressed: () {
-                      // getImage();
-                      Map<String, int> inventory = {
-                        'banana': 10,
-                        'apple': 5,
-                        'kiwi': 2,
-                      };
-                      updateInventory(inventory);
+                      getImage();
                     },
                     backgroundColor: Colors.black,
                   ),
