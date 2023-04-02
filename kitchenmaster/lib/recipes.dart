@@ -72,8 +72,23 @@ class _RecipePageState extends State<RecipePage> {
     return [];
   }
 
+  Future<bool> checkSaved(String name) async {
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+    final savedRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('savedRecipes');
+    var querySnapshots = await savedRef.get();
+    for (var snapshot in querySnapshots.docs) {
+      if (snapshot.get('name') == name) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   //update firebase
-  void addSaved(String recipeName, DocumentReference recipe) async {
+  void addSaved(String id, String recipeName, DocumentReference recipe) async {
     print("Saving recipe...");
     final uid = FirebaseAuth.instance.currentUser!.uid;
     final savedRef = FirebaseFirestore.instance
@@ -81,25 +96,29 @@ class _RecipePageState extends State<RecipePage> {
         .doc(uid)
         .collection('savedRecipes');
     DocumentReference newSavedRef =
-        await savedRef.add({'name': recipeName, 'recipe': recipe});
+        await savedRef.add({'id': id, 'name': recipeName, 'recipe': recipe});
 
     // final newAlertId = generateUniqueId(newAlertRef.id);
     print("Recipe saved!");
   }
 
-  void removeSaved(String id) async {
+  void removeSaved(String name) async {
     //delete in firebase
     final uid = FirebaseAuth.instance.currentUser!.uid;
     final savedRef = FirebaseFirestore.instance
         .collection('users')
         .doc(uid)
-        .collection('savedRecipes')
-        .doc(id);
-    savedRef.delete().then((value) {
-      debugPrint('Recipe removed successfully');
-    }).catchError((error) {
-      debugPrint('Failed to remove recipe: $error');
-    });
+        .collection('savedRecipes');
+    var querySnapshots = await savedRef.get();
+    for (var snapshot in querySnapshots.docs) {
+      if (snapshot.get('name') == name) {
+        savedRef.doc(snapshot.id).delete().then((value) {
+          debugPrint('Recipe removed successfully');
+        }).catchError((error) {
+          debugPrint('Failed to remove recipe: $error');
+        });
+      }
+    }
   }
 
   @override
@@ -194,17 +213,42 @@ class _RecipePageState extends State<RecipePage> {
                                                                   procedure)));
                                             },
                                           ),
+                                          // FutureBuilder<bool>(
+                                          //     future: checkSaved(snapshot
+                                          //         .data?[index]
+                                          //         .get("Name")),
+                                          //     builder: (c, s) {
+                                          //       print("isFavorite: ${s.data}");
+                                          //       bool favourite = false;
+                                          //       if (s.data == true) {
+                                          //         favourite = true;
+                                          //       }
+                                          // return
                                           FavoriteButton(
                                             isFavorite: false,
                                             valueChanged: (_isFavorite) {
                                               if (_isFavorite) {
-                                                var recipe = FirebaseFirestore.instance.collection("Recipes").doc(snapshot.data?[index].get("Name"));
-                                                addSaved(snapshot.data?[index].get("Name"), recipe);
+                                                var recipe = FirebaseFirestore
+                                                    .instance
+                                                    .collection("Recipes")
+                                                    .doc(snapshot.data?[index]
+                                                        .get("Name"));
+                                                String id =
+                                                    UniqueKey().toString();
+                                                print(id);
+                                                addSaved(
+                                                    id,
+                                                    snapshot.data?[index]
+                                                        .get("Name"),
+                                                    recipe);
                                               } else if (!_isFavorite) {
-                                                removeSaved(snapshot.data?[index].reference.id);
+                                                removeSaved(snapshot
+                                                    .data?[index]
+                                                    .get("Name"));
                                               }
                                             },
                                           )
+                                          // })
                                         ]))));
                           },
                         ),
