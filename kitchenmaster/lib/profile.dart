@@ -126,184 +126,173 @@ class _ProfilePageState extends State<ProfilePage> {
       backgroundColor: Color(0xffe5e5e5),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 24.0),
-        child: Column(
-          children: <Widget>[
-            GestureDetector(
-              onTap: () {
-                pickUploadProfileImage();
-              },
-              child: Container(
-                margin: EdgeInsets.only(top: 40),
-                width: 120,
-                height: 120,
-                alignment: Alignment.center,
-                decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(20))
-                ),
-                child: CircleAvatar(
-                  radius:100,
-                  child:imageUrl == "" ? CircleAvatar
-                    (child: Image.asset('assets/images/anonymous.png'),
-                       radius: 100
-                     ) :
-                  ClipOval(
-                      child:Image.network(
-                        imageUrl ,
-                        width: 120,
-                        height: 120,
-                        fit: BoxFit.cover,
-                      )
-                  )
-
-                  //child: imageUrl == "" ? const CircleAvatar(
-                 //    radius: 1000,
-                  //  ) : Image.network(imageUrl),
+        child: SingleChildScrollView(
+          child: Column(
+            children: <Widget>[
+              GestureDetector(
+                onTap: () {
+                  pickUploadProfileImage();
+                },
+                child: Container(
+                  margin: EdgeInsets.only(top: 80),
+                  width: 120,
+                  height: 120,
+                  alignment: Alignment.center,
+                  decoration: const BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(20))
+                  ),
+                  child: Center(
+                    child: imageUrl == "" ? const Icon(
+                      Icons.person, size: 80, color: Colors.white,
+                      ) : Image.network(imageUrl),
+                  ),
                 ),
               ),
-            ),
-            SizedBox(height: 30.0,),
-            Container(
-              alignment: Alignment.topLeft,
-              child: Text('Personal information', style: TextStyle(fontSize: 30.00, color: Colors.black), textAlign: TextAlign.center,),
-            ),
-            SizedBox(height: 10.0,),
-            Container(
-              alignment: Alignment.topLeft,
-              child: Text("Name : ", style: TextStyle(fontSize: 20.00, color: Colors.black), textAlign: TextAlign.left,),
-            ),
-            SizedBox(height: 10.0,),
-            Container(
-              padding: EdgeInsets.all(6.9),
-              alignment: Alignment.topLeft,
-              decoration: BoxDecoration(
-                  border: Border.all(color: Colors.redAccent, width: 2),
-                  borderRadius: BorderRadius.circular(10)
+              SizedBox(height: 30.0,),
+              Container(
+                alignment: Alignment.topLeft,
+                child: Text('Personal information', style: TextStyle(fontSize: 30.00, color: Colors.black), textAlign: TextAlign.center,),
               ),
-              child: Text("$userName", style: TextStyle(fontSize: 16.00, color: Colors.black)),
-            ),
-            SizedBox(height: 20.0,),
-            Container(
-              alignment: Alignment.topLeft,
-              child: Text("E-mail : ", style: TextStyle(fontSize: 20.00, color: Colors.black), textAlign: TextAlign.left,),
-            ),
-            SizedBox(height: 10.0,),
-            Container(
-              padding: EdgeInsets.all(6.9),
-              alignment: Alignment.topLeft,
-              decoration: BoxDecoration(
-                  border: Border.all(color: Colors.redAccent, width: 2),
-                  borderRadius: BorderRadius.circular(10)
+              SizedBox(height: 10.0,),
+              Container(
+                alignment: Alignment.topLeft,
+                child: Text("Name : ", style: TextStyle(fontSize: 20.00, color: Colors.black), textAlign: TextAlign.left,),
               ),
-              child: Text("$email", style: TextStyle(fontSize: 16.00, color: Colors.black),),
-            ),
-            Container(height: 20, width: 100),
-            TextButton(
-                          child: Text('Reset Password', style: TextStyle(fontSize: 22)),
-                          style: ButtonStyle(
-                            side: MaterialStateProperty.all<BorderSide>(
-                                BorderSide(width: 1.5, color: Colors.black54)),
-                            fixedSize: MaterialStateProperty.all<Size>(
-                                Size.fromWidth(200.0)),
-                            backgroundColor:
-                                MaterialStateProperty.all<Color>(Color(0xffff6961)),
-                            foregroundColor:
-                                MaterialStateProperty.all<Color>(Colors.white),
-                            overlayColor: MaterialStateProperty.resolveWith<Color?>(
-                              (Set<MaterialState> states) {
-                                if (states.contains(MaterialState.hovered))
-                                  return Colors.grey.withOpacity(0.04);
-                                if (states.contains(MaterialState.focused) ||
-                                    states.contains(MaterialState.pressed))
-                                  return Colors.black54.withOpacity(0.12);
-                                return null; // Defer to the widget's default.
-                              },
-                            ),
-                          ),
-                          onPressed: () async {
-                            resetPassword();
+              SizedBox(height: 10.0,),
+              Container(
+                padding: EdgeInsets.all(6.9),
+                alignment: Alignment.topLeft,
+                decoration: BoxDecoration(
+                    border: Border.all(color: Colors.redAccent, width: 2),
+                    borderRadius: BorderRadius.circular(10)
+                ),
+                child: Text("$userName", style: TextStyle(fontSize: 16.00, color: Colors.black)),
+              ),
+              SizedBox(height: 20.0,),
+              Container(
+                alignment: Alignment.topLeft,
+                child: Text("E-mail : ", style: TextStyle(fontSize: 20.00, color: Colors.black), textAlign: TextAlign.left,),
+              ),
+              SizedBox(height: 10.0,),
+              Container(
+                padding: EdgeInsets.all(6.9),
+                alignment: Alignment.topLeft,
+                decoration: BoxDecoration(
+                    border: Border.all(color: Colors.redAccent, width: 2),
+                    borderRadius: BorderRadius.circular(10)
+                ),
+                child: Text("$email", style: TextStyle(fontSize: 16.00, color: Colors.black),),
+              ),
+              Container(height: 20, width: 100),
+              TextButton(
+                child: Text('Reset Password', style: TextStyle(fontSize: 22)),
+                style: ButtonStyle(
+                  side: MaterialStateProperty.all<BorderSide>(
+                      BorderSide(width: 1.5, color: Colors.black54)),
+                  fixedSize: MaterialStateProperty.all<Size>(
+                      Size.fromWidth(200.0)),
+                  backgroundColor:
+                      MaterialStateProperty.all<Color>(Color(0xffff6961)),
+                  foregroundColor:
+                      MaterialStateProperty.all<Color>(Colors.white),
+                  overlayColor: MaterialStateProperty.resolveWith<Color?>(
+                    (Set<MaterialState> states) {
+                      if (states.contains(MaterialState.hovered))
+                        return Colors.grey.withOpacity(0.04);
+                      if (states.contains(MaterialState.focused) ||
+                          states.contains(MaterialState.pressed))
+                        return Colors.black54.withOpacity(0.12);
+                      return null; // Defer to the widget's default.
+                    },
+                  ),
+                ),
+                onPressed: () async {
+                  resetPassword();
 
-                            // Navigator.push(
-                            //     context,
-                            //      MaterialPageRoute(builder: (context) => ResetPasswordPage())
-                            // );
-                          }),
-            Container(height: 40, width: 100),
-            Row(children: [
-                        Spacer(),
-                        ElevatedButton(
-                            onPressed: () {signOut();},
-                            style: ButtonStyle(
-                              shape:
-                                  MaterialStateProperty.all<RoundedRectangleBorder>(
-                                      RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(18.0),
-                                          side: BorderSide(
-                                              width: 1.5,
-                                              color: Color(0xffff6961)))),
-                              backgroundColor:
-                                  MaterialStateProperty.all<Color>(Colors.white),
-                              foregroundColor: MaterialStateProperty.all<Color>(
-                                  Color(0xffff6961)),
-                            ),
-                            child: Row(
-                              children: <Widget>[
-                                Text(
-                                  "Log Out",
-                                  style: TextStyle(
-                                      color: Color(0xffff6961),
-                                      fontSize: 15,
-                                      fontFamily: 'IM FELL English SC'),
-                                ),
-                                SizedBox(
-                                  width: 5,
-                                ),
-                                Icon(
-                                  Icons.logout,
-                                  color: Color(0xffff6961),
-                                ),
-                              ],
-                            ))
-                      ]),
-            Container(height: 20, width: 100),
-            Container(
-                          alignment: Alignment.topLeft,
-                          width: 400,
-                          height: 65,
-                          padding: EdgeInsets.only(
-                              left: 10.0, right: 10.0, top: 10.0, bottom: 10.0),
-                          decoration: BoxDecoration(
-                            color: Color(0x33ff6961),
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(10),
-                              topRight: Radius.circular(10),
-                              bottomLeft: Radius.circular(10),
-                              bottomRight: Radius.circular(10),
-                            ),
+                  // Navigator.push(
+                  //     context,
+                  //      MaterialPageRoute(builder: (context) => ResetPasswordPage())
+                  // );
+                }),
+              Container(height: 40, width: 100),
+                Row(children: [
+                  Spacer(),
+                  ElevatedButton(
+                      onPressed: () {signOut();},
+                      style: ButtonStyle(
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(18.0),
+                                    side: BorderSide(
+                                        width: 1.5,
+                                        color: Color(0xffff6961)))),
+                        backgroundColor:
+                            MaterialStateProperty.all<Color>(Colors.white),
+                        foregroundColor: MaterialStateProperty.all<Color>(
+                            Color(0xffff6961)),
+                      ),
+                      child: Row(
+                        children: <Widget>[
+                          Text(
+                            "Log Out",
+                            style: TextStyle(
+                                color: Color(0xffff6961),
+                                fontSize: 15,
+                                fontFamily: 'IM FELL English SC'),
                           ),
-                          child: Column(children: <Widget>[
-                            Expanded(
-                                child: Text("Contact Us",
-                                    style: TextStyle(
-                                        fontSize: 15, fontFamily: 'Iceland'))),
-                            Divider(
-                              thickness: 2,
-                              color: Colors.black26,
-                            ),
-                            Expanded(
-                                child: Row(children: <Widget>[
-                              Icon(Icons.call, size: 20),
-                              SizedBox(width: 5),
-                              Text("+65 1234 5678"),
-                              Spacer(),
-                              Icon(Icons.email, size: 20),
-                              SizedBox(
-                                width: 5,
-                              ),
-                              Text("kitchenMaster@email.com"),
-                            ]))
-                          ]))
-                    ],
-                  )),
+                          SizedBox(
+                            width: 5,
+                          ),
+                          Icon(
+                            Icons.logout,
+                            color: Color(0xffff6961),
+                          ),
+                        ],
+                      ))
+                ]),
+              Container(height: 20, width: 100),
+              Container(
+                alignment: Alignment.topLeft,
+                width: 400,
+                height: 65,
+                padding: EdgeInsets.only(
+                    left: 10.0, right: 10.0, top: 10.0, bottom: 10.0),
+                decoration: BoxDecoration(
+                  color: Color(0x33ff6961),
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(10),
+                    topRight: Radius.circular(10),
+                    bottomLeft: Radius.circular(10),
+                    bottomRight: Radius.circular(10),
+                  ),
+                ),
+                child: Column(children: <Widget>[
+                  Expanded(
+                      child: Text("Contact Us",
+                          style: TextStyle(
+                              fontSize: 15, fontFamily: 'Iceland'))),
+                  Divider(
+                    thickness: 2,
+                    color: Colors.black26,
+                  ),
+                  Expanded(
+                      child: Row(children: <Widget>[
+                    Icon(Icons.call, size: 20),
+                    SizedBox(width: 5),
+                    Text("+65 1234 5678"),
+                    Spacer(),
+                    Icon(Icons.email, size: 20),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Text("kitchenMaster@email.com"),
+                  ]))
+                ])),
+              Container(height: 20, width: 100)
+              ],
+            ),
+        )),
            // ]
     //))
         //  ],
