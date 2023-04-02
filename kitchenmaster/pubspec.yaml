@@ -35,7 +35,6 @@ dependencies:
   gestures: ^1.0.0
   persistent_bottom_nav_bar: any
   firebase_auth: ^4.3.0
-  tflite: ^1.1.2
   cloud_firestore: ^4.4.5
   firebase_storage: ^11.0.16
   path_provider: ^2.0.14
@@ -44,8 +43,8 @@ dependencies:
   firebase_database: 
 
 #  firebase_messaging: ^11.2.0
-  flutter_local_notifications: ^8.1.0
-  timezone: ^0.7.0
+  flutter_local_notifications: ^12.0.0
+  timezone:
   
 dev_dependencies:
   flutter_test:
@@ -71,9 +70,6 @@ flutter:
   assets:
     - assets/logo.png
     - assets/rectangle.png
-    - assets/labels.txt
-    - assets/kitchen_master.tflite
-    - assets/images/anonymous.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:

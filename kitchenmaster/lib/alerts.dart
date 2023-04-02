@@ -106,7 +106,8 @@ class DynamicWidget extends StatefulWidget {
     }
     log("Setting channel");
     var channel = AndroidNotificationChannel(
-      id , name, frequency + ' reminder for ' + name,
+      id , name,
+      description: frequency + ' reminder for ' + name,
       importance: Importance.high,
 
     );
@@ -115,7 +116,8 @@ class DynamicWidget extends StatefulWidget {
         ?.createNotificationChannel(channel);
     log("Setting platform details");
     var androidDetails = AndroidNotificationDetails(
-      id , name, frequency + ' reminder for ' + name,
+      id , name,
+      channelDescription: frequency + ' reminder for ' + name,
       importance: Importance.high,
       priority: Priority.high,
       styleInformation: BigTextStyleInformation(''),
@@ -124,7 +126,7 @@ class DynamicWidget extends StatefulWidget {
       // timeoutAfter: 6000,
       // ongoing: true
     );
-    var iosDetails = IOSNotificationDetails(
+    var iosDetails = DarwinNotificationDetails(
       presentAlert: true,
       presentSound: true,
       badgeNumber: 1,
@@ -186,13 +188,14 @@ class _DynamicWidgetState extends State<DynamicWidget> {
     var initializationSettingsAndroid =
     // AndroidInitializationSettings('@mipmap/ic_launcher');
     AndroidInitializationSettings('@drawable/logo');
-    var initializationSettingsIOS = IOSInitializationSettings();
+    var initializationSettingsIOS = DarwinInitializationSettings();
     var initializationSettings = InitializationSettings(
         android: initializationSettingsAndroid, iOS: initializationSettingsIOS
     );
 
     await widget.flutterLocalNotificationsPlugin.initialize(initializationSettings,
-        onSelectNotification: (String? payload) async {});
+        // onSelectNotification: (String? payload) async {}
+        );
   }
   void setTime(BuildContext context) async {
     TimeOfDay? selectedTime = await showTimePicker(

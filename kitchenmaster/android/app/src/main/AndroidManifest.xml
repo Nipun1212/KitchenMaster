@@ -1,4 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.example.fridgemaster">
     <uses-sdk android:minSdkVersion="19"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
@@ -36,7 +37,8 @@
             android:name="flutterEmbedding"
             android:value="2" />
         <receiver android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver"
-              android:exported="true">   
+              android:exported="true"
+              tools:replace="android:exported">
         </receiver> 
     </application>
 </manifest>
