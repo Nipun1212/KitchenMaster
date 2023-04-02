@@ -61,14 +61,6 @@ class _DynamicWidgetState extends State<DynamicWidget> {
                     ),
                   ),
                   IconButton(
-                      icon: const Icon(Icons.add_circle_outline),
-                      onPressed: () {
-                        setState(() {
-                          widget.count += 1;
-                        });
-                      }),
-                  Text('${widget.count}'),
-                  IconButton(
                       icon: const Icon(Icons.remove_circle_outline),
                       onPressed: () {
                         setState(() {
@@ -77,6 +69,14 @@ class _DynamicWidgetState extends State<DynamicWidget> {
                           }
                         });
                       }),
+                  IconButton(
+                      icon: const Icon(Icons.add_circle_outline),
+                      onPressed: () {
+                        setState(() {
+                          widget.count += 1;
+                        });
+                      }),
+                  Text('${widget.count}'),
                 ]))));
   }
 }
