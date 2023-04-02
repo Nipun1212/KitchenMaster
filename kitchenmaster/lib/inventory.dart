@@ -4,17 +4,17 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import 'package:http/http.dart' as http;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-
 
 class InventoryPage extends StatefulWidget {
   InventoryPage({Key? key}) : super(key: key);
 
   @override
-  State<InventoryPage> createState() => _InventoryPageState();
+  State<InventoryPage> createState() => InventoryPageState();
 }
 
 class DynamicWidget extends StatefulWidget {
@@ -40,12 +40,6 @@ class _DynamicWidgetState extends State<DynamicWidget> {
     return Card(
         elevation: 0,
         color: Color.fromARGB(0, 255, 255, 255),
-        // shape: RoundedRectangleBorder(
-        //   borderRadius: BorderRadius.circular(25),
-        //   side: BorderSide(
-        //     color: Color.fromARGB(97, 0, 0, 0),
-        //   ),
-        // ),
         child: Center(
             child: SizedBox(
                 width: 350,
@@ -80,35 +74,110 @@ class _DynamicWidgetState extends State<DynamicWidget> {
                           if (widget.count > 0) {
                             widget.count -= 1;
                           }
-                          // if(count<=0) {
-                          //   //remove dynamic
-                          // }
-                          // else if(count==0){
-                          // }
                         });
                       }),
                 ]))));
   }
 }
 
-class _InventoryPageState extends State<InventoryPage> {
+class InventoryPageState extends State<InventoryPage> {
   List<DynamicWidget> listCards = [];
   List<TextEditingController> controllers = [];
-  //TextEditingController nameController = new TextEditingController();
+  
+  late Map<String, int> _results;
+  bool imageSelect = false;
+  bool isLoading = false;
 
-  List _result = [];
-  String image_name = "";
-  getImage() async {
-    var image = await ImagePicker().pickImage(source: ImageSource.gallery);
-    
-    debugPrint("Image.path: " + image!.path);
+  Future getImage() async {
+    final ImagePicker _picker = ImagePicker();
+    final XFile? pickedFile = await _picker.pickImage(
+      source: ImageSource.gallery,
+    );
+    final List classList = ['egg', 'broccoli', 'banana', 'apple', 'chicken', 'pineapple', 'orange', 'pork'];
+
+    print("=================IMAGE PATH HERE: ${pickedFile?.path}=================");
+    // Send the image to the Google Cloud Vision API for prediction
+    final String apiKey = "AIzaSyAVz2DqoH6D7aQ355bMmdAHkMjbcHMi0yg";
+    final String url = "https://vision.googleapis.com/v1/images:annotate?key=$apiKey";
+    final String base64Image = base64Encode(File(pickedFile!.path).readAsBytesSync());
+    final http.Response response = await http.post(
+      Uri.parse(url),
+      headers: <String, String>{"Content-Type": "application/json"},
+      body: jsonEncode({
+        "requests": [
+          {
+            "image": {"content": base64Image},
+            "features": [
+              {"type": "OBJECT_LOCALIZATION", "maxResults": 50},
+              {"type": "DOCUMENT_TEXT_DETECTION", "model": "builtin/latest", "maxResults": 100},
+            ],
+          },
+        ],
+      }),
+    );
+    // Parse the response and extract the predictions
+    final Map<String, dynamic> data = jsonDecode(response.body);
+    Map<String, int> _predictions = {};
+    String _textFound = "";
+
+    // Get all the predictions via object detection in the classList 
+    List<dynamic>? itemDetected = data["responses"][0]["localizedObjectAnnotations"];
+    if (itemDetected != null) {
+      itemDetected = itemDetected.map((label) => label["name"].toString().toLowerCase()).toList();
+      for (String item in itemDetected) {
+        if (classList.contains(item)){
+          print("item found via image: $item");
+          _predictions[item] ??=0;
+          _predictions[item] = _predictions[item]! + 1;
+        }
+      }
+    }
+    // Get all the predictions via text detection in the classList 
+    List<dynamic>? textDetected = data["responses"][0]["textAnnotations"];
+    if (textDetected != null) {
+      _textFound = textDetected.map((label) => label["description"].toString().toLowerCase().replaceAll("\n", "")).toList().join(" ");
+      for (String item in classList) {
+        if (_textFound.contains(item)) {
+          print("item found via text: $item");
+          _predictions[item] ??=0;
+          _predictions[item] = _predictions[item]! + 1;
+        }
+      }
+    }
+
+    print("predicted!! $_predictions");
+
     setState(() {
-      removeNoName();
-      image_name = "";
-      //debugPrint("Apply on: " + _image!.path);
-      //applyModelOnImage(_image!);
+      isLoading = true;
+      imageSelect = false;
+      // Initialize inventory list for each predictions found 
+      _predictions.forEach((item, count){
+        List existingControllers = controllers.map((label) => label.text).toList();
+        if (existingControllers.contains(item)){
+          int index = existingControllers.indexOf(item);
+          listCards[index].count += count;
+          listCards[index] = DynamicWidget(listCards[index].nameController, listCards[index].count);
+        } else {
+          TextEditingController predItem = TextEditingController(text:item);
+          controllers.add(predItem);
+          listCards.add(new DynamicWidget(predItem, count));
+        }
+      });
+      _results = _predictions;
     });
+    return _results;
   }
+
+  Map<String, int> getInventory() {
+    final Map<String, int> curInv = {};
+    List<String> _items = controllers.map((label) => label.text).toList();
+    for (String _item in _items) {
+      int index = _items.indexOf(_item);
+      curInv[_item] = listCards[index].count;
+    }
+    return curInv;
+  }
+
   Future<void> updateInventory(Map<String, int> inventory) async {
     // var image = await ImagePicker().pickImage(source: ImageSource.gallery);
     var userUid = FirebaseAuth.instance.currentUser!.uid;
@@ -176,7 +245,7 @@ class _InventoryPageState extends State<InventoryPage> {
 
     return currentInventory;
   }
-
+  
   void addDynamic(TextEditingController n, int c) {
     setState(() {
       controllers.add(n);
@@ -326,16 +395,11 @@ class _InventoryPageState extends State<InventoryPage> {
                       TextEditingController nameController =
                           new TextEditingController();
                       addDynamic(nameController, 0);
+                      print(getInventory());
                       setState(() {});
                     },
                     backgroundColor: Colors.black,
                   ),
                 ])));
-  }
-
-  @override
-  void initState() {
-    super.initState();
-     //loadMyModel();
   }
 }
