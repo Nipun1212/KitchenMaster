@@ -23,6 +23,7 @@ class AlertsPage extends StatefulWidget {
 class DynamicWidget extends StatefulWidget {
   String name = '';
   String frequency = '';
+  TimeOfDay time = TimeOfDay.now();
   TextEditingController nameController = TextEditingController();
   String id = '';
   int intId = 0;
@@ -32,6 +33,7 @@ class DynamicWidget extends StatefulWidget {
     nameController = n;
     name = n.text;
     frequency = value;
+    time = TimeOfDay.now();
     id = UniqueKey().toString();
     intId = 0;
     flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
@@ -71,6 +73,8 @@ class DynamicWidget extends StatefulWidget {
     });
   }
 
+
+
   void scheduleNotification(String id, String name, String frequency) async {
     // await widget.flutterLocalNotificationsPlugin.cancelAll();
     log("Start schedule");
@@ -100,6 +104,15 @@ class DynamicWidget extends StatefulWidget {
       case "Monthly": freqInDays = 30;
       break;
     }
+    log("Setting channel");
+    var channel = AndroidNotificationChannel(
+      id , name, frequency + ' reminder for ' + name,
+      importance: Importance.high,
+
+    );
+    await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(channel);
     log("Setting platform details");
     var androidDetails = AndroidNotificationDetails(
       id , name, frequency + ' reminder for ' + name,
@@ -128,35 +141,38 @@ class DynamicWidget extends StatefulWidget {
       intId, // notification id
       'Grocery List Reminder', // notification title
       'Restock ' + name + '!', // notification body
-      _nextInstanceOfTimeOfDay(freqInDays), // scheduled date and time
+      _nextInstanceOfTimeOfDay(freqInDays, time.hour, time.minute), // scheduled date and time
       platformDetails,
       androidAllowWhileIdle: true,
       uiLocalNotificationDateInterpretation:
       UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: DateTimeComponents.time,
     );
-    log("showSchedule " + id + " " + name + " " + frequency);
+    log("showSchedule " + id + " " + name + " " + frequency + " " + time.toString());
   }
 
-  TZDateTime _nextInstanceOfTimeOfDay(int days) {
+  tz.TZDateTime _nextInstanceOfTimeOfDay(int days, int hour, int minute) {
     final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
+
+    final timezone = tz.getLocation('Asia/Singapore');
     tz.TZDateTime scheduledDate = tz.TZDateTime(
-        tz.local,
+        timezone,
         now.year,
         now.month,
         now.day,
-        now.hour, now.minute, now.second
-      // 16,
-      // // hour of day
-      // 15,
-      // // minute
-      // 0, // second
+        // now.hour, now.minute, now.second
+        hour, minute
+      // 10,3
     );
     scheduledDate = scheduledDate.add(Duration(seconds: 1));
+    log("SingaporeTime: " + scheduledDate.toString());
+   // Convert the Singapore time to UTC
+    scheduledDate = scheduledDate.toUtc();
+
     while (scheduledDate.isBefore(now)) {
       scheduledDate = scheduledDate.add(Duration(days: days));
     }
-
+    log("scheduledDate: " + scheduledDate.toString());
     return scheduledDate;
   }
 
@@ -178,6 +194,28 @@ class _DynamicWidgetState extends State<DynamicWidget> {
     await widget.flutterLocalNotificationsPlugin.initialize(initializationSettings,
         onSelectNotification: (String? payload) async {});
   }
+  void setTime(BuildContext context) async {
+    TimeOfDay? selectedTime = await showTimePicker(
+      initialTime: widget.time,
+      context: context,
+    );
+    if (selectedTime != null) {
+      setState(() {
+        widget.time = selectedTime;
+        widget.scheduleNotification(widget.id, widget.name, widget.frequency);
+      });
+    }
+    //update firebase
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+    final alertRef = FirebaseFirestore.instance.collection('users').doc(uid).collection('alerts').doc(widget.id);
+
+    // Update the data for this document
+    alertRef.update({
+      'time': widget.time.format(context),
+    }).then((value) => print('Alert Time updated successfully'))
+        .catchError((error) => print('Error updating alert time: $error'));
+
+  }
 
   @override
   void initState() {
@@ -185,97 +223,6 @@ class _DynamicWidgetState extends State<DynamicWidget> {
     // tz.initializeTimeZones();
     _initializeNotifications();
   }
-
-  // void scheduleNotification(String id, String name, String frequency) async {
-  //   // await widget.flutterLocalNotificationsPlugin.cancelAll();
-  //   widget.deleteNotifications();
-  //
-  //   //update firebase
-  //   final uid = FirebaseAuth.instance.currentUser!.uid;
-  //   final alertRef = FirebaseFirestore.instance.collection('users').doc(uid).collection('alerts').doc(id);
-  //
-  //   // Update the data for this document
-  //   alertRef.update({
-  //     'name': name,
-  //     'frequency': frequency,
-  //   })
-  //       .then((value) => print('Alert updated successfully'))
-  //       .catchError((error) => print('Error updating alert: $error'));
-  //
-  //   if (name == '' || frequency == 'None') return;
-  //   int freqInDays = 0;
-  //   switch(frequency){
-  //     case "Daily": freqInDays = 1;
-  //     break;
-  //     case "Weekly": freqInDays = 7;
-  //     break;
-  //     case "Biweekly": freqInDays = 14;
-  //     break;
-  //     case "Monthly": freqInDays = 30;
-  //     break;
-  //   }
-  //
-  //   var androidDetails = AndroidNotificationDetails(
-  //       id , name, frequency + ' reminder for ' + name,
-  //       importance: Importance.high,
-  //       priority: Priority.high,
-  //       styleInformation: BigTextStyleInformation(''),
-  //       playSound: true,
-  //       enableVibration: true,
-  //       // timeoutAfter: 6000,
-  //       // ongoing: true
-  //   );
-  //   var iosDetails = IOSNotificationDetails(
-  //     presentAlert: true,
-  //     presentSound: true,
-  //     badgeNumber: 1,
-  //   );
-  //
-  //   var platformDetails = NotificationDetails(
-  //     android: androidDetails,
-  //     iOS: iosDetails,
-  //   );
-  //
-  //   // var platformDetails =
-  //   // NotificationDetails(android: androidDetails, //iOS: iosDetails
-  //   // );
-  //
-  //   // Schedule the notification
-  //   await widget.flutterLocalNotificationsPlugin.zonedSchedule(
-  //     0, // notification id
-  //     'Grocery List Reminder', // notification title
-  //     'Restock ' + name + '!', // notification body
-  //     _nextInstanceOfTimeOfDay(freqInDays), // scheduled date and time
-  //     platformDetails,
-  //     androidAllowWhileIdle: true,
-  //     uiLocalNotificationDateInterpretation:
-  //     UILocalNotificationDateInterpretation.absoluteTime,
-  //     matchDateTimeComponents: DateTimeComponents.time,
-  //   );
-  //   log("showSchedule " + id+ name + frequency);
-  // }
-  //
-  // TZDateTime _nextInstanceOfTimeOfDay(int days) {
-  //   final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
-  //   tz.TZDateTime scheduledDate = tz.TZDateTime(
-  //     tz.local,
-  //     now.year,
-  //     now.month,
-  //     now.day,
-  //     now.hour, now.minute, now.second
-  //     // 16,
-  //     // // hour of day
-  //     // 15,
-  //     // // minute
-  //     // 0, // second
-  //   );
-  //   scheduledDate = scheduledDate.add(Duration(seconds: 1));
-  //   while (scheduledDate.isBefore(now)) {
-  //     scheduledDate = scheduledDate.add(Duration(days: days));
-  //   }
-  //
-  //   return scheduledDate;
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -318,7 +265,7 @@ class _DynamicWidgetState extends State<DynamicWidget> {
                         value: value,
                         child: Text(
                           value,
-                          style: TextStyle(fontSize: 30),
+                          style: TextStyle(fontSize: 20),
                         ),
                       );
                     }).toList(),
@@ -335,6 +282,11 @@ class _DynamicWidgetState extends State<DynamicWidget> {
 
                     },
                   ),
+                  IconButton(
+                      icon: Icon(Icons.access_time_filled_sharp),
+                      onPressed:  () => setTime(context)
+                    ),
+
                 ]))));
   }
 }
@@ -377,6 +329,14 @@ class _AlertsPageState extends State<AlertsPage> {
         // Extract the data from the document
         final data = document.data();
         final id = document.id;
+        String? timeS = data['time'];
+        TimeOfDay time;
+        if (timeS == null) time = TimeOfDay.now();
+        else {
+          DateFormat formatter = DateFormat("h:mm a");
+          DateTime dateTime = formatter.parse(timeS);
+          time = TimeOfDay.fromDateTime(dateTime);
+        }
         int? intId = data['intID'];
         if (intId == null) intId = 0; // TODO check
         final name = data['name'];
@@ -398,6 +358,7 @@ class _AlertsPageState extends State<AlertsPage> {
         DynamicWidget oldAlert = DynamicWidget(n, frequency);
         oldAlert.id = id;
         oldAlert.intId = intId;
+        oldAlert.time = time;
         listCards.add(oldAlert);
 
         //if instance not found in device, add
@@ -440,6 +401,7 @@ class _AlertsPageState extends State<AlertsPage> {
     final alertsRef = FirebaseFirestore.instance.collection('users').doc(uid).collection('alerts');
     DocumentReference newAlertRef = await alertsRef.add({
       'name': '',
+      'time': TimeOfDay.now().format(context),
       'frequency': 'None'
     });
     // final newAlertId = generateUniqueId(newAlertRef.id);
