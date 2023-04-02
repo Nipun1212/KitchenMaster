@@ -40,8 +40,7 @@ class Recipe {
       //gets array of String type from Ingredient column in database
       recipeDB = document.get("Ingredients");
       //checks if the food items in fridge is a subset of items in recipe
-      if (ingredients.toSet().length ==
-          recipeDB.toSet().intersection(ingredients.toSet()).length) {
+      if (recipeDB.toSet().intersection(ingredients.toSet()).length != 0) {
         //prints the name of recipes that matches the food items in fridge
         print(document.get("Name"));
         generated.add(document.get("Name"));
@@ -56,7 +55,9 @@ class Recipe {
     //ingredients passed in are case and space sensitive
     List<String> smoothie1 = ["banana", "strawberry", "apple juice"];
     List<String> smoothie2 = ["kiwi", "banana", "mango", "pineapple juice"];
-    fetchMatchingRecipes(smoothie2);
+    List<String> smoothie3 = ["banana"];
+    fetchMatchingRecipes(smoothie3);
+    // fetchMatchingRecipes(smoothie2);
     return await recipeDetails;
   }
 }
