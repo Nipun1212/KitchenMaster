@@ -10,7 +10,7 @@ class InventoryPage extends StatefulWidget {
   InventoryPage({Key? key}) : super(key: key);
 
   @override
-  State<InventoryPage> createState() => _InventoryPageState();
+  State<InventoryPage> createState() => InventoryPageState();
 }
 
 class DynamicWidget extends StatefulWidget {
@@ -71,7 +71,7 @@ class _DynamicWidgetState extends State<DynamicWidget> {
   }
 }
 
-class _InventoryPageState extends State<InventoryPage> {
+class InventoryPageState extends State<InventoryPage> {
   List<DynamicWidget> listCards = [];
   List<TextEditingController> controllers = [];
   
@@ -111,13 +111,11 @@ class _InventoryPageState extends State<InventoryPage> {
     Map<String, int> _predictions = {};
     String _textFound = "";
 
-    print(response.body);
     // Get all the predictions via object detection in the classList 
     List<dynamic>? itemDetected = data["responses"][0]["localizedObjectAnnotations"];
     if (itemDetected != null) {
       itemDetected = itemDetected.map((label) => label["name"].toString().toLowerCase()).toList();
       for (String item in itemDetected) {
-        print("$item : ${classList.contains(item)}");
         if (classList.contains(item)){
           print("item found via image: $item");
           _predictions[item] ??=0;
@@ -159,6 +157,16 @@ class _InventoryPageState extends State<InventoryPage> {
       _results = _predictions;
     });
     return _results;
+  }
+
+  Map<String, int> getInventory() {
+    final Map<String, int> curInv = {};
+    List<String> _items = controllers.map((label) => label.text).toList();
+    for (String _item in _items) {
+      int index = _items.indexOf(_item);
+      curInv[_item] = listCards[index].count;
+    }
+    return curInv;
   }
 
   void addDynamic(TextEditingController n, int c) {
@@ -288,6 +296,7 @@ class _InventoryPageState extends State<InventoryPage> {
                       TextEditingController nameController =
                           new TextEditingController();
                       addDynamic(nameController, 0);
+                      print(getInventory());
                       setState(() {});
                     },
                     backgroundColor: Colors.black,
