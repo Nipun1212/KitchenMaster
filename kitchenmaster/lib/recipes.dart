@@ -5,6 +5,7 @@ import 'package:favorite_button/favorite_button.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'indivRecipes.dart';
 
 class RecipePage extends StatefulWidget {
@@ -39,8 +40,7 @@ class Recipe {
       //gets array of String type from Ingredient column in database
       recipeDB = document.get("Ingredients");
       //checks if the food items in fridge is a subset of items in recipe
-      if (ingredients.toSet().length ==
-          recipeDB.toSet().intersection(ingredients.toSet()).length) {
+      if (recipeDB.toSet().intersection(ingredients.toSet()).length != 0) {
         //prints the name of recipes that matches the food items in fridge
         print(document.get("Name"));
         generated.add(document.get("Name"));
@@ -51,11 +51,24 @@ class Recipe {
 
   Future<List> getRecipes() async {
     debugPrint('getting recipes');
+    List<String> ingredientList = [];
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+    final savedRef = FirebaseFirestore.instance.collection('users');
+    var docSnapshot = await savedRef.doc(uid).get();
+    if (docSnapshot.exists) {
+      ingredientList = docSnapshot.data()!['inventory'].keys.toList();
+      // You can then retrieve the value from the Map like this:
+    }
     //fetchRecipesName();
     //ingredients passed in are case and space sensitive
-    List<String> smoothie1 = ["banana", "strawberry", "apple juice"];
-    List<String> smoothie2 = ["kiwi", "banana", "mango", "pineapple juice"];
-    fetchMatchingRecipes(smoothie2);
+    // List<String> smoothie1 = ["banana", "strawberry", "apple juice"];
+    // List<String> smoothie2 = ["kiwi", "banana", "mango", "pineapple juice"];
+    // List<String> smoothie3 = ["banana"];
+
+    // fetchMatchingRecipes(smoothie3);
+    // fetchMatchingRecipes(smoothie2);
+    print(ingredientList);
+    fetchMatchingRecipes(ingredientList);
     return await recipeDetails;
   }
 }
@@ -69,6 +82,55 @@ class _RecipePageState extends State<RecipePage> {
     test.getRecipes();
     setState(() {});
     return [];
+  }
+
+  Future<bool> checkSaved(String name) async {
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+    final savedRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('savedRecipes');
+    var querySnapshots = await savedRef.get();
+    for (var snapshot in querySnapshots.docs) {
+      if (snapshot.get('name') == name) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  //update firebase
+  void addSaved(String id, String recipeName, DocumentReference recipe) async {
+    print("Saving recipe...");
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+    final savedRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('savedRecipes');
+    DocumentReference newSavedRef =
+        await savedRef.add({'id': id, 'name': recipeName, 'recipe': recipe});
+
+    // final newAlertId = generateUniqueId(newAlertRef.id);
+    print("Recipe saved!");
+  }
+
+  void removeSaved(String name) async {
+    //delete in firebase
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+    final savedRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('savedRecipes');
+    var querySnapshots = await savedRef.get();
+    for (var snapshot in querySnapshots.docs) {
+      if (snapshot.get('name') == name) {
+        savedRef.doc(snapshot.id).delete().then((value) {
+          debugPrint('Recipe removed successfully');
+        }).catchError((error) {
+          debugPrint('Failed to remove recipe: $error');
+        });
+      }
+    }
   }
 
   @override
@@ -163,20 +225,44 @@ class _RecipePageState extends State<RecipePage> {
                                                                   procedure)));
                                             },
                                           ),
-                                          FavoriteButton(
-                                            isFavorite: false,
-                                            valueChanged: (_isFavorite) {
-                                              DatabaseReference ref =
-                                                  FirebaseDatabase.instance.ref(
-                                                      "Recipes/${snapshot.data![index].get("Name")}");
-                                              if (_isFavorite) {
-                                                ref.update({"Saved": true});
-                                                print(snapshot.data![index].get("Saved"));
-                                              } else if (!_isFavorite) {
-                                                ref.update({"Saved": false});
-                                              }
-                                            },
-                                          )
+                                          FutureBuilder<bool>(
+                                              future: checkSaved(snapshot
+                                                  .data?[index]
+                                                  .get("Name")),
+                                              builder: (c, s) {
+                                                print("isFavorite: ${s.data}");
+                                                bool favourite = false;
+                                                if (s.data == true) {
+                                                  favourite = true;
+                                                }
+                                                return FavoriteButton(
+                                                  isFavorite: favourite,
+                                                  valueChanged: (_isFavorite) {
+                                                    if (_isFavorite) {
+                                                      var recipe =
+                                                          FirebaseFirestore
+                                                              .instance
+                                                              .collection(
+                                                                  "Recipes")
+                                                              .doc(snapshot
+                                                                  .data?[index]
+                                                                  .get("Name"));
+                                                      String id = UniqueKey()
+                                                          .toString();
+                                                      print(id);
+                                                      addSaved(
+                                                          id,
+                                                          snapshot.data?[index]
+                                                              .get("Name"),
+                                                          recipe);
+                                                    } else if (!_isFavorite) {
+                                                      removeSaved(snapshot
+                                                          .data?[index]
+                                                          .get("Name"));
+                                                    }
+                                                  },
+                                                );
+                                              })
                                         ]))));
                           },
                         ),

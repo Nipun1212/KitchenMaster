@@ -3,6 +3,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:fridgemaster/recipes.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:http/http.dart' as http;
@@ -187,14 +188,11 @@ class InventoryPageState extends State<InventoryPage> {
     // });
     final docRef = FirebaseFirestore.instance.collection('users').doc(userUid);
     final docSnapshot = await docRef.get();
-
-
     Map<String, dynamic> data = docSnapshot.data()!;
 
     if (data['inventory']!= null) {
       // Map<String, int> intMap = data['inventory']?.map((key, value) => MapEntry(key as String, value as int)) ?? {};
       // Map<String, int>? currentInventory = Map<String, int>.from(jsonEncode(data['inventory']) as Map<String,int> );
-
 
       Map<String, int> currentInventory = Map<String, int>.from(data['inventory']!.map((key, value) => MapEntry(key as String, value as int?)));
       currentInventory.addAll(inventory);
@@ -253,6 +251,10 @@ class InventoryPageState extends State<InventoryPage> {
     });
   }
 
+  //created object for recipe
+  // use reset button to test the fetching of recipe data
+  Recipe test = new Recipe();
+  ///////////////////////////////////////
   void resetDynamic() {
     setState(() {
       // if (listCards.isEmpty){
@@ -261,6 +263,8 @@ class InventoryPageState extends State<InventoryPage> {
       controllers.removeRange(0, controllers.length);
       listCards.removeRange(0, listCards.length);
     });
+///// ADDED THIS FUNCTION TO TEST FETCHING OF RECIPE DATA/////
+/////////////////////////////////////////////////////////////
   }
 
   void removeNoName() {
@@ -303,7 +307,8 @@ class InventoryPageState extends State<InventoryPage> {
                     ElevatedButton(
                       child: Text('Reset Inventory'),
                       onPressed: () {
-                        resetDynamic();
+                        // resetDynamic();
+                        updateInventory(getInventory());
                       },
                       style: ButtonStyle(
                         backgroundColor:
@@ -395,7 +400,6 @@ class InventoryPageState extends State<InventoryPage> {
                       TextEditingController nameController =
                           new TextEditingController();
                       addDynamic(nameController, 0);
-                      print(getInventory());
                       setState(() {});
                     },
                     backgroundColor: Colors.black,
