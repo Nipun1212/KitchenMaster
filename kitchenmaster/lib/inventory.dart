@@ -84,11 +84,27 @@ class _DynamicWidgetState extends State<DynamicWidget> {
 class InventoryPageState extends State<InventoryPage> {
   List<DynamicWidget> listCards = [];
   List<TextEditingController> controllers = [];
-  late Widget futureWidget;
-  
   late Map<String, int> _results;
   bool imageSelect = false;
   bool isLoading = false;
+  bool _initialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initialize();
+  }
+
+  Future<void> _initialize() async {
+    if (!_initialized) {
+      Map<String, int> data = await getData();
+      for (String i in data.keys){
+        TextEditingController nameController = new TextEditingController(text: i);
+        addDynamic(nameController, data[i]!);
+      }
+      _initialized = true;
+    }
+  }
 
   Future getImage() async {
     final ImagePicker _picker = ImagePicker();
@@ -181,63 +197,35 @@ class InventoryPageState extends State<InventoryPage> {
   }
 
   Future<void> updateInventory(Map<String, int> inventory) async {
-    // var image = await ImagePicker().pickImage(source: ImageSource.gallery);
     var userUid = FirebaseAuth.instance.currentUser!.uid;
-    // var docRef = await FirebaseFirestore.instance.collection('users').doc(userUid);
-    // await docRef.update({
-    //   'inventory': inventory,
-    // });
     final docRef = FirebaseFirestore.instance.collection('users').doc(userUid);
     final docSnapshot = await docRef.get();
     Map<String, dynamic> data = docSnapshot.data()!;
-
     if (data['inventory']!= null) {
-      // Map<String, int> intMap = data['inventory']?.map((key, value) => MapEntry(key as String, value as int)) ?? {};
-      // Map<String, int>? currentInventory = Map<String, int>.from(jsonEncode(data['inventory']) as Map<String,int> );
-
-      Map<String, int> currentInventory = Map<String, int>.from(data['inventory']!.map((key, value) => MapEntry(key as String, value as int?)));
-      currentInventory.addAll(inventory);
-      currentInventory.addAll(inventory);
-
+      Map<String, int> temp = Map<String, int>.from(data['inventory']!.map((key, value) => MapEntry(key as String, value as int?)));
+      temp.addAll(inventory);
+      Map<String, int> currentInventory = {};
+      for (String item in temp.keys){
+        if (temp[item]! > 0) {
+          currentInventory[item] = temp[item]!;
+        }
+      }
       await docRef.update({
         'inventory': currentInventory,
       });
     }
-
-    else{
-      data['inventory']={};
-      await docRef.update({
-        'inventory': inventory,
-      });
-
-    }
-
-    // debugPrint(userName);
-
-
+    _initialized = false; // to render page again
   }
 
   Future<Map<String, int>> getData() async {
-
     await Future.delayed(Duration(seconds: 1));
-
     debugPrint("FETCHING FROM FIREBASE");
     var userUid = FirebaseAuth.instance.currentUser!.uid;
-    // var docRef = await FirebaseFirestore.instance.collection('users').doc(userUid);
-    // await docRef.update({
-    //   'inventory': inventory,
-
-    // });
     Map<String, int> currentInventory = <String,int>{};
     final docRef = FirebaseFirestore.instance.collection('users').doc(userUid);
     final docSnapshot = await docRef.get();
     Map<String, dynamic> data = docSnapshot.data()!;
-
     if (data['inventory']!= null) {
-      // Map<String, int> intMap = data['inventory']?.map((key, value) => MapEntry(key as String, value as int)) ?? {};
-      // Map<String, int>? currentInventory = Map<String, int>.from(jsonEncode(data['inventory']) as Map<String,int> );
-
-
       currentInventory = Map<String, int>.from(
           data['inventory']!.map((key, value) =>
               MapEntry(key as String, value as int?))) ?? {};
@@ -245,7 +233,6 @@ class InventoryPageState extends State<InventoryPage> {
     else{
       Map<String, int> currentInventory={};
     }
-
     return currentInventory;
   }
   
@@ -259,17 +246,12 @@ class InventoryPageState extends State<InventoryPage> {
   //created object for recipe
   // use reset button to test the fetching of recipe data
   Recipe test = new Recipe();
-  ///////////////////////////////////////
   void resetDynamic() {
     setState(() {
-      // if (listCards.isEmpty){
-      //   //show error message
-      // }
       controllers.removeRange(0, controllers.length);
       listCards.removeRange(0, listCards.length);
     });
-///// ADDED THIS FUNCTION TO TEST FETCHING OF RECIPE DATA/////
-/////////////////////////////////////////////////////////////
+    _initialized = false;
   }
 
   void removeNoName() {
@@ -313,8 +295,9 @@ class InventoryPageState extends State<InventoryPage> {
                       SizedBox(width: 20),
                       ElevatedButton(
                         child: Text('Reset Inventory'),
-                        onPressed: () {
+                        onPressed: () async{
                           resetDynamic();
+                          await _initialize();
                         },
                         style: ButtonStyle(
                           backgroundColor:
@@ -330,12 +313,11 @@ class InventoryPageState extends State<InventoryPage> {
                       ElevatedButton(
                         child: Text('Update Inventory'),
                         onPressed: () {
-                          Map<String, int> inventory = {
-                            'banana': 10,
-                            'apple': 5,
-                            'kiwi': 2,
-                          };
-                          updateInventory(inventory);
+                          setState(() async {
+                            updateInventory(getInventory());
+                            resetDynamic();
+                            await _initialize();
+                          });
                         },
                         style: ButtonStyle(
                           backgroundColor:
@@ -349,7 +331,6 @@ class InventoryPageState extends State<InventoryPage> {
                       ),
                     ]
                     ),
-                    futureWidget,
                     Flexible(
                       fit: FlexFit.tight,
                       child: new ListView.builder(
@@ -378,9 +359,7 @@ class InventoryPageState extends State<InventoryPage> {
                           }),
                     ),
                   ])),
-
             ),
-
             floatingActionButton: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -409,42 +388,4 @@ class InventoryPageState extends State<InventoryPage> {
                   ),
                 ])));
   }
-
-
-  @override
-  void initState() {
-    super.initState();
-    futureWidget = FutureBuilder(
-      future:  getData(),
-      builder: (context, AsyncSnapshot<Map<String,int>> snapshot) {
-
-        if (snapshot.connectionState == ConnectionState.done) {
-
-          final currentInventory = snapshot.data;
-          final inventoryItems = currentInventory?.entries.toList() ?? [];
-
-          return ListView.builder(
-            shrinkWrap: true,
-            itemCount: inventoryItems.length,
-            itemBuilder: (BuildContext context, int index) {
-              final item = inventoryItems[index];
-              final itemName = item.key;
-              final itemQuantity = item.value;
-              final controller = TextEditingController(text: '$itemName');
-
-              return DynamicWidget(
-                  controller,itemQuantity
-              );
-            },
-          );
-        } else if (snapshot.connectionState == ConnectionState.none) {
-          return Text("No data");
-        }
-        return CircularProgressIndicator();
-      },
-    );
-    //loadMyModel();
-  }
-
-
 }
