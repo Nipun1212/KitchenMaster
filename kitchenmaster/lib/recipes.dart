@@ -184,89 +184,113 @@ class _RecipePageState extends State<RecipePage> {
               builder: (context, snapshot) {
                 return snapshot.connectionState == ConnectionState.waiting
                     ? const CircularProgressIndicator()
-                    : Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: List.generate(
-                          snapshot.data!.length,
-                          (index) {
-                            return Card(
-                                elevation: 0,
-                                color: Color.fromARGB(0, 255, 255, 255),
-                                child: Center(
-                                    child: SizedBox(
-                                        width: 350,
-                                        height: 60,
-                                        child: Row(children: <Widget>[
-                                          TextButton(
-                                            child: Text(snapshot.data?[index]
-                                                    .get("Name") ??
-                                                "null"),
-                                            onPressed: () {
-                                              String recipeName = snapshot
-                                                  .data![index]
-                                                  .get("Name");
-                                              List<dynamic> ingredients =
-                                                  snapshot.data![index]
-                                                      .get("Ingredients");
-                                              String procedure = snapshot
-                                                  .data![index]
-                                                  .get("Procedures");
-                                              Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          indivRecipePage(
-                                                              recipeName:
-                                                                  recipeName,
-                                                              ingredients:
-                                                                  ingredients,
-                                                              procedure:
-                                                                  procedure)));
-                                            },
-                                          ),
-                                          FutureBuilder<bool>(
-                                              future: checkSaved(snapshot
-                                                  .data?[index]
-                                                  .get("Name")),
-                                              builder: (c, s) {
-                                                print("isFavorite: ${s.data}");
-                                                bool favourite = false;
-                                                if (s.data == true) {
-                                                  favourite = true;
-                                                }
-                                                return FavoriteButton(
-                                                  isFavorite: favourite,
-                                                  valueChanged: (_isFavorite) {
-                                                    if (_isFavorite) {
-                                                      var recipe =
-                                                          FirebaseFirestore
-                                                              .instance
-                                                              .collection(
-                                                                  "Recipes")
-                                                              .doc(snapshot
-                                                                  .data?[index]
-                                                                  .get("Name"));
-                                                      String id = UniqueKey()
-                                                          .toString();
-                                                      print(id);
-                                                      addSaved(
-                                                          id,
-                                                          snapshot.data?[index]
-                                                              .get("Name"),
-                                                          recipe);
-                                                    } else if (!_isFavorite) {
-                                                      removeSaved(snapshot
-                                                          .data?[index]
-                                                          .get("Name"));
-                                                    }
+                    : SingleChildScrollView(
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: List.generate(
+                            snapshot.data!.length,
+                            (index) {
+                              return Card(
+                                  elevation: 0,
+                                  color: Color.fromARGB(0, 255, 255, 255),
+                                  child: Center(
+                                      child: SizedBox(
+                                          width: 350,
+                                          height: 60,
+                                          child: Container(
+                                            padding: EdgeInsets.only(right: 5.0),
+                                            child: Row(
+                                                // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                children: <Widget>[
+
+                                              Expanded(
+                                                child: TextButton(
+                                                  style: TextButton.styleFrom(
+                                                    alignment: Alignment.centerLeft, // align text to left
+                                                    primary: Colors.lightBlue,
+                                                    textStyle: const TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight: FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                  child: Text(snapshot.data?[index]
+                                                          .get("Name") ??
+                                                      "null",),
+
+                                                  onPressed: () {
+                                                    String recipeName = snapshot
+                                                        .data![index]
+                                                        .get("Name");
+                                                    List<dynamic> ingredients =
+                                                        snapshot.data![index]
+                                                            .get("Ingredients");
+                                                    String procedure = snapshot
+                                                        .data![index]
+                                                        .get("Procedures");
+                                                    Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                indivRecipePage(
+                                                                    recipeName:
+                                                                        recipeName,
+                                                                    ingredients:
+                                                                        ingredients,
+                                                                    procedure:
+                                                                        procedure)));
                                                   },
-                                                );
-                                              })
-                                        ]))));
-                          },
+                                                ),
+                                              ),
+
+
+
+
+
+                                              FutureBuilder<bool>(
+                                                  future: checkSaved(snapshot
+                                                      .data?[index]
+                                                      .get("Name")),
+                                                  builder: (c, s) {
+                                                    print("isFavorite: ${s.data}");
+                                                    bool favourite = false;
+                                                    if (s.data == true) {
+                                                      favourite = true;
+                                                    }
+                                                    return FavoriteButton(
+                                                      isFavorite: favourite,
+                                                      valueChanged: (_isFavorite) {
+                                                        if (_isFavorite) {
+                                                          var recipe =
+                                                              FirebaseFirestore
+                                                                  .instance
+                                                                  .collection(
+                                                                      "Recipes")
+                                                                  .doc(snapshot
+                                                                      .data?[index]
+                                                                      .get("Name"));
+                                                          String id = UniqueKey()
+                                                              .toString();
+                                                          print(id);
+                                                          addSaved(
+                                                              id,
+                                                              snapshot.data?[index]
+                                                                  .get("Name"),
+                                                              recipe);
+                                                        } else if (!_isFavorite) {
+                                                          removeSaved(snapshot
+                                                              .data?[index]
+                                                              .get("Name"));
+                                                        }
+                                                      },
+                                                    );
+                                                  })
+                                            ]),
+                                          ))));
+                            },
+                          ),
                         ),
-                      );
+                    );
               },
             ),
           )
