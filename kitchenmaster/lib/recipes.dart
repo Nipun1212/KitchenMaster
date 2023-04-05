@@ -137,6 +137,17 @@ class _RecipePageState extends State<RecipePage> {
   Widget build(BuildContext context) {
     return MaterialApp(
         home: Scaffold(
+            appBar: AppBar(
+              backgroundColor: Colors.red,
+              title: const Text(
+                "Recipes",
+                style: TextStyle(color: Colors.white),
+              ),
+              // leading: const BackButton(
+              //   color: Colors.white,
+              // ),
+              // centerTitle: true,
+            ),
             body: Container(
                 child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -188,7 +199,7 @@ class _RecipePageState extends State<RecipePage> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
                         children: List.generate(
-                          snapshot.data!.length,
+                          snapshot.data?.length ?? 0,
                           (index) {
                             return Card(
                                 elevation: 0,

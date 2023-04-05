@@ -65,33 +65,44 @@ class _FavouritesPageState extends State<FavouritesPage> {
   Widget build(BuildContext context) {
     return MaterialApp(
         home: Scaffold(
+            appBar: AppBar(
+              backgroundColor: Colors.red,
+              title: const Text(
+                "Favourites",
+                style: TextStyle(color: Colors.white),
+              ),
+              // leading: const BackButton(
+              //   color: Colors.white,
+              // ),
+              // centerTitle: true,
+            ),
             body: Container(
                 child: Column(children: <Widget>[
-      SizedBox(height: 50),
-      const Text('Saved Recipes',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-              color: Color.fromRGBO(0, 0, 0, 1),
-              fontFamily: 'Inria Serif',
-              fontSize: 35,
-              fontWeight: FontWeight.normal,
-              height: 1)),
-      SizedBox(height: 30),
-      Flexible(
-          fit: FlexFit.tight,
-          child: StreamBuilder<QuerySnapshot>(
-            stream: FirebaseFirestore.instance
-                .collection('users')
-                .doc(FirebaseAuth.instance.currentUser!.uid)
-                .collection('savedRecipes')
-                .snapshots(),
-            builder: (context, snapshot) {
-              // if (snapshot.hasError) {
-              //   return const Text('Something went wrong');
-              // }
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const CircularProgressIndicator();
-              }
+                SizedBox(height: 50),
+                const Text('Saved Recipes',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: Color.fromRGBO(0, 0, 0, 1),
+                        fontFamily: 'Inria Serif',
+                        fontSize: 35,
+                        fontWeight: FontWeight.normal,
+                        height: 1)),
+                SizedBox(height: 30),
+                Flexible(
+                    fit: FlexFit.tight,
+                    child: StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance
+                          .collection('users')
+                          .doc(FirebaseAuth.instance.currentUser!.uid)
+                          .collection('savedRecipes')
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        // if (snapshot.hasError) {
+                        //   return const Text('Something went wrong');
+                        // }
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const CircularProgressIndicator();
+                        }
               return ListView(
                   children:
                       snapshot.data!.docs.map((DocumentSnapshot document) {
