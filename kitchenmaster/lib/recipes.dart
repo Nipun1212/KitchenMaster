@@ -36,7 +36,6 @@ class Recipe {
     List<dynamic> recipeDB;
     generated = [];
     recipeDetails = [];
-    print("comparing recipes");
     querySnapshot.docs.forEach((document) {
       //gets array of String type from Ingredient column in database
       recipeDB = document.get("Ingredients");
@@ -62,7 +61,6 @@ class Recipe {
     }
     //fetchRecipesName();
     //ingredients passed in are case and space sensitive
-<<<<<<< Updated upstream
     // List<String> smoothie1 = ["banana", "strawberry", "apple juice"];
     // List<String> smoothie2 = ["kiwi", "banana", "mango", "pineapple juice"];
     // List<String> smoothie3 = ["banana"];
@@ -71,12 +69,6 @@ class Recipe {
     // fetchMatchingRecipes(smoothie2);
     print(ingredientList);
     fetchMatchingRecipes(ingredientList);
-=======
-    List<String> smoothie1 = ["banana", "strawberry", "apple juice"];
-    List<String> smoothie2 = ["kiwi", "banana", "mango", "pineapple juice"];
-    List<String> smoothie3 = ["banana", "strawberry"];
-    fetchMatchingRecipes(smoothie3);
->>>>>>> Stashed changes
     return await recipeDetails;
   }
 }
@@ -244,7 +236,6 @@ class _RecipePageState extends State<RecipePage> {
                                                                   procedure)));
                                             },
                                           ),
-<<<<<<< Updated upstream
                                           FutureBuilder<bool>(
                                               future: checkSaved(snapshot
                                                   .data?[index]
@@ -283,23 +274,6 @@ class _RecipePageState extends State<RecipePage> {
                                                   },
                                                 );
                                               })
-=======
-                                          FavoriteButton(
-                                            isFavorite: false,
-                                            valueChanged: (_isFavorite) {
-                                              DatabaseReference ref =
-                                                  FirebaseDatabase.instance.ref(
-                                                      "Recipes/${snapshot.data![index].get("Name")}");
-                                              if (_isFavorite) {
-                                                ref.update({"Saved": true});
-                                                print(snapshot.data![index]
-                                                    .get("Saved"));
-                                              } else if (!_isFavorite) {
-                                                ref.update({"Saved": false});
-                                              }
-                                            },
-                                          )
->>>>>>> Stashed changes
                                         ]))));
                           },
                         ),
