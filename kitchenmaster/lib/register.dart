@@ -28,200 +28,234 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        resizeToAvoidBottomInset: false,
         body: Center(
             child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-          const Text('Welcome!',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  color: Color.fromRGBO(0, 0, 0, 1),
-                  fontFamily: 'Inria Serif',
-                  fontSize: 40,
-                  letterSpacing: 0,
-                  fontWeight: FontWeight.normal,
-                  height: 1)),
-          const SizedBox(height: 30),
-          Text('User Registration',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  color: Color.fromRGBO(0, 0, 0, 1),
-                  fontFamily: 'Inria Serif',
-                  fontSize: 40,
-                  letterSpacing: 0,
-                  fontWeight: FontWeight.normal,
-                  height: 1)),
-          const SizedBox(height: 30),
-          Padding(
-            padding: EdgeInsets.only(left: 50, right: 50, top: 5),
-            child: TextFormField(
-              controller: regName,
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 22,
-              ),
-              cursorColor: Colors.black,
-              decoration: InputDecoration(
-                hintText: "Enter Name",
-                hintStyle: TextStyle(color: Colors.black, fontSize: 18),
-                border: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black),
-                ),
-                focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.red),
-                ),
-              ),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.only(left: 50, right: 50, top: 5),
-            child: TextFormField(
-              controller: regEmail,
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 22,
-              ),
-              cursorColor: Colors.black,
-              decoration: InputDecoration(
-                hintText: "Enter Email",
-                hintStyle: TextStyle(color: Colors.black, fontSize: 18),
-                border: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black),
-                ),
-                focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.red),
+              const Text('Welcome!',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: Color.fromRGBO(0, 0, 0, 1),
+                      fontFamily: 'Inria Serif',
+                      fontSize: 40,
+                      letterSpacing: 0,
+                      fontWeight: FontWeight.normal,
+                      height: 1)),
+              const SizedBox(height: 30),
+              Text('User Registration',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: Color.fromRGBO(0, 0, 0, 1),
+                      fontFamily: 'Inria Serif',
+                      fontSize: 40,
+                      letterSpacing: 0,
+                      fontWeight: FontWeight.normal,
+                      height: 1)),
+              const SizedBox(height: 30),
+              Padding(
+                padding: EdgeInsets.only(left: 50, right: 50, top: 5),
+                child: TextFormField(
+                  controller: regName,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 22,
+                  ),
+                  cursorColor: Colors.black,
+                  decoration: InputDecoration(
+                    hintText: "Enter Name",
+                    hintStyle: TextStyle(color: Colors.black, fontSize: 18),
+                    border: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.red),
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.only(left: 50, right: 50, top: 5),
-            child: TextFormField(
-              controller: regPassword,
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 22,
-              ),
-              cursorColor: Colors.black,
-              obscureText: true,
-              decoration: InputDecoration(
-                hintText: "Enter Password",
-                hintStyle: TextStyle(color: Colors.black, fontSize: 18),
-                border: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black),
+              Padding(
+                padding: EdgeInsets.only(left: 50, right: 50, top: 5),
+                child: TextFormField(
+                  controller: regEmail,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 22,
+                  ),
+                  cursorColor: Colors.black,
+                  decoration: InputDecoration(
+                    hintText: "Enter Email",
+                    hintStyle: TextStyle(color: Colors.black, fontSize: 18),
+                    border: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.red),
+                    ),
+                  ),
                 ),
-                focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.red),
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 50, right: 50, top: 5),
+                child: TextFormField(
+                  controller: regPassword,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 22,
+                  ),
+                  cursorColor: Colors.black,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    hintText: "Enter Password",
+                    hintStyle: TextStyle(color: Colors.black, fontSize: 18),
+                    border: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.red),
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.only(left: 50, right: 50, top: 5),
-            child: TextFormField(
-              onChanged: (value) {
-                setState(() {
-                  if (value != regPassword.text) {
-                    errorTextvalue = value;
-                  } else {
-                    errorTextvalue = '';
-                  }
-                });
-              },
-              controller: regConfirm,
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 22,
-              ),
-              cursorColor: Colors.black,
-              obscureText: true,
-              decoration: InputDecoration(
-                hintText: "Confirm Password",
-                hintStyle: TextStyle(color: Colors.black, fontSize: 18),
-                border: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black),
+              Padding(
+                padding: EdgeInsets.only(left: 50, right: 50, top: 5),
+                child: TextFormField(
+                  onChanged: (value) {
+                    setState(() {
+                      if (value != regPassword.text) {
+                        errorTextvalue = value;
+                      } else {
+                        errorTextvalue = '';
+                      }
+                    });
+                  },
+                  controller: regConfirm,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 22,
+                  ),
+                  cursorColor: Colors.black,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    hintText: "Confirm Password",
+                    hintStyle: TextStyle(color: Colors.black, fontSize: 18),
+                    border: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.red),
+                    ),
+                    errorText: errorTextvalue.isEmpty
+                        ? null
+                        : 'Passwords do not match!',
+                  ),
                 ),
-                focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.red),
+              ),
+              const SizedBox(height: 30),
+              RichText(
+                  text: TextSpan(children: [
+                TextSpan(
+                  text: errorMessage,
+                  style: TextStyle(
+                    color: Colors.red,
+                  ),
                 ),
-                errorText:
-                    errorTextvalue.isEmpty ? null : 'Passwords do not match!',
+              ])),
+              const SizedBox(height: 30),
+              Container(
+                width: 300,
+                height: 51.5,
+                child: ElevatedButton(
+                  onPressed: () {
+                    if ((regEmail.text.isNotEmpty) &&
+                        (regName.text.isNotEmpty) &&
+                        (regPassword.text.isNotEmpty) &&
+                        (regPassword.text == regConfirm.text)) {
+                      createUserAuth();
+                    }
+                  },
+                  child: Text(
+                    'DONE',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: Color.fromRGBO(255, 255, 255, 1),
+                        fontFamily: 'IM FELL English SC',
+                        fontSize: 30,
+                        letterSpacing: 0,
+                        fontWeight: FontWeight.normal,
+                        height: 1),
+                  ),
+                ),
               ),
-            ),
-          ),
-          const SizedBox(height: 30),
-          RichText(
-              text: TextSpan(children: [
-            TextSpan(
-              text: errorMessage,
-              style: TextStyle(
-                color: Colors.red,
-              ),
-            ),
-          ])),
-          const SizedBox(height: 30),
-          Container(
-            width: 300,
-            height: 51.5,
-            child: ElevatedButton(
-              onPressed: () {
-                if ((regEmail.text.isNotEmpty) && (regName.text.isNotEmpty) && (regPassword.text.isNotEmpty) && (regPassword.text == regConfirm.text)) {
-                  createUserAuth();
-                  // make alert dialog to print 'successfully created account'
-                }
-              },
-              child: Text(
-                'DONE',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    color: Color.fromRGBO(255, 255, 255, 1),
-                    fontFamily: 'IM FELL English SC',
-                    fontSize: 30,
-                    letterSpacing: 0,
-                    fontWeight: FontWeight.normal,
-                    height: 1),
-              ),
-            ),
-          ),
-        ])));
-    }
-  Future createUserDatabase({required String name, required String email, required String password}) async {
-      final docUser = FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid);
+            ])));
+  }
 
-      final user = UserInfo(
-        id: FirebaseAuth.instance.currentUser!.uid,
-        name: name,
-        email: email,
-        password: password,
-      );
-      final json = user.toJson();
+  Future createUserDatabase(
+      {required String name,
+      required String email,
+      required String password}) async {
+    final docUser = FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser!.uid);
 
-      await docUser.set(json);
+    final user = UserInfo(
+      id: FirebaseAuth.instance.currentUser!.uid,
+      name: name,
+      email: email,
+      password: password,
+    );
+    final json = user.toJson();
+
+    await docUser.set(json);
   }
 
   Future createUserAuth() async {
-    try { 
-      final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: regEmail.text.trim(), 
+    try {
+      final credential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: regEmail.text.trim(),
         password: regPassword.text.trim(),
       );
+      if (credential.user != null) {
+        credential.user?.sendEmailVerification();
+      }
       setState(() {
         errorMessage = "";
       });
     } on FirebaseAuthException catch (e) {
-      debugPrint("Error Message: "+e.code);
+      debugPrint("Error Message: " + e.code);
       if (e.code == 'email-already-in-use') {
         debugPrint('The account already exists for that email.');
+        setState(() {
+          errorMessage = "An account already exists for that email";
+        });
+      } else if (e.code == 'weak-password') {
+        debugPrint('Password not strong enough');
+        setState(() {
+          errorMessage = "Password not strong enough";
+        });
       }
-      setState(() {
-        errorMessage = "An account already exists for that email";
-      });
     }
-    if (errorMessage == "")
-    { 
-      createUserDatabase(name: regName.text.trim(), email: regEmail.text.trim(), password: regPassword.text.trim());
-      Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage()));
+    if (errorMessage == "") {
+      createUserDatabase(
+          name: regName.text.trim(),
+          email: regEmail.text.trim(),
+          password: regPassword.text.trim());
       debugPrint("Register Success");
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text(
+                "Account successfully created. An email has been sent for verification."),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage())),
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        });
     }
   }
 }
@@ -231,7 +265,7 @@ class UserInfo {
   final String name;
   final String email;
   final String password;
-  
+
   UserInfo({
     this.id = '',
     required this.name,
@@ -240,9 +274,9 @@ class UserInfo {
   });
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'name': name,
-    'email': email,
-    'password': password,
-  };
+        'id': id,
+        'name': name,
+        'email': email,
+        'password': password,
+      };
 }

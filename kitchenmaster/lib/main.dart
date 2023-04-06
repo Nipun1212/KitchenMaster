@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'firebase_options.dart';
 import 'dart:developer';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -65,6 +66,14 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  @override
+  void initState() {
+    super.initState();
+    if (FirebaseAuth.instance.currentUser?.uid != null) {
+      FirebaseAuth.instance.signOut();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

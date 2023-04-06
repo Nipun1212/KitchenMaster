@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:fridgemaster/alerts.dart';
+import 'package:fridgemaster/favourites.dart';
 import 'package:fridgemaster/inventory.dart';
 import 'package:fridgemaster/recipes.dart';
 import 'package:fridgemaster/profile.dart';
-import 'package:fridgemaster/favourites.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
 
@@ -17,10 +17,10 @@ class NavBar extends StatelessWidget {
     return [
       ProfilePage(),
       AlertsPage(),
+      // Add the respective pages
       InventoryPage(),
       RecipePage(),
-      FavouritesPage(),
-      //ProfilePage()
+      FavouritesPage()
     ];
   }
 
@@ -84,7 +84,7 @@ class NavBar extends StatelessWidget {
       stateManagement: true, // Default is true.
       hideNavigationBarWhenKeyboardShows: true, // Recommended to set 'resizeToAvoidBottomInset' as true while using this argument. Default is true.
       decoration: NavBarDecoration(
-        borderRadius: BorderRadius.circular(10.0),
+        // borderRadius: BorderRadius.circular(10.0),
         colorBehindNavBar: Colors.white,
       ),
       popAllScreensOnTapOfSelectedTab: true,
