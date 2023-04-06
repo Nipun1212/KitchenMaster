@@ -139,7 +139,6 @@ class _RecipePageState extends State<RecipePage> {
         home: Scaffold(
 
             body: Container(
-
                 child: Column(mainAxisAlignment: MainAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: <Widget>[
       SizedBox(height: 50),
       const Text('Recipes',

@@ -47,8 +47,8 @@ class _indivRecipePageState extends State<indivRecipePage> {
               ),
               // centerTitle: true,
             ),
-
-            body: Container(
+              body: SingleChildScrollView(
+            child: Container(
                 child:Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
@@ -199,6 +199,6 @@ class _indivRecipePageState extends State<indivRecipePage> {
                               child: Image.network("${widget.image}",
                               ))),
                       SizedBox(height: 30),
-                ]))));
+                ])))));
   }
 }
