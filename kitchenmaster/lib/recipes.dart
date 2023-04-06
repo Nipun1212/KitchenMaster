@@ -137,7 +137,9 @@ class _RecipePageState extends State<RecipePage> {
   Widget build(BuildContext context) {
     return MaterialApp(
         home: Scaffold(
+
             body: Container(
+
                 child: Column(mainAxisAlignment: MainAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: <Widget>[
       SizedBox(height: 50),
       const Text('Recipes',
@@ -198,11 +200,12 @@ class _RecipePageState extends State<RecipePage> {
                                           String recipeName = snapshot.data![index][0].get("Name");
                                           List<dynamic> ingredients = snapshot.data![index][0].get("Ingredients");
                                           String procedure = snapshot.data![index][0].get("Procedures");
+                                          String image = snapshot.data![index][0].get("Image");
                                           Navigator.push(
                                               context,
                                               MaterialPageRoute(
                                                   builder: (context) =>
-                                                      indivRecipePage(recipeName: recipeName, ingredients: ingredients, procedure: procedure)));
+                                                      indivRecipePage(recipeName: recipeName, ingredients: ingredients, procedure: procedure, image: image)));
                                         },
                                       ),
                                       // FutureBuilder<bool>(

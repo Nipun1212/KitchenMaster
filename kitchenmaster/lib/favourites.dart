@@ -117,12 +117,13 @@ class _FavouritesPageState extends State<FavouritesPage> {
                                             recipe.get().then((value) {
                                               String recipeName = value.get("Name");
                                               List<dynamic> ingredients = value.get("Ingredients");
-                                              String procedure = value.get("Name");
+                                              String procedure = value.get("Procedures");
+                                              String image=value.get("Image");
                                               Navigator.push(
                                                   context,
                                                   MaterialPageRoute(
                                                       builder: (context) =>
-                                                          indivRecipePage(recipeName: recipeName, ingredients: ingredients, procedure: procedure)));
+                                                          indivRecipePage(recipeName: recipeName, ingredients: ingredients, procedure: procedure, image:image)));
                                             });
                                           },
                                         ),
