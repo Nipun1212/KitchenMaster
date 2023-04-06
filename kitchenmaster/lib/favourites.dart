@@ -23,36 +23,30 @@ class _FavouritesPageState extends State<FavouritesPage> {
     super.initState();
   }
 
-  final CollectionReference recipes =
-      FirebaseFirestore.instance.collection('Recipes');
+  final CollectionReference recipes = FirebaseFirestore.instance.collection('Recipes');
 
   List savedRecipes = [];
 
   void addSaved(String id, String recipeName, DocumentReference recipe) async {
     print("Saving recipe...");
     final uid = FirebaseAuth.instance.currentUser!.uid;
-    final savedRef = FirebaseFirestore.instance
-        .collection('users')
-        .doc(uid)
-        .collection('savedRecipes');
-    DocumentReference newSavedRef =
-        await savedRef.add({'id': id, 'name': recipeName, 'recipe': recipe});
+    final savedRef = FirebaseFirestore.instance.collection('users').doc(uid).collection('savedRecipes');
+    DocumentReference newSavedRef = await savedRef.add({'id': id, 'name': recipeName, 'recipe': recipe});
 
     // final newAlertId = generateUniqueId(newAlertRef.id);
     print("Recipe saved!");
   }
 
-  void removeSaved(String name) async {
+  Future<void> removeSaved(String name) async {
     //delete in firebase
     final uid = FirebaseAuth.instance.currentUser!.uid;
-    final savedRef = FirebaseFirestore.instance
-        .collection('users')
-        .doc(uid)
-        .collection('savedRecipes');
+    final savedRef = FirebaseFirestore.instance.collection('users').doc(uid).collection('savedRecipes');
     var querySnapshots = await savedRef.get();
     for (var snapshot in querySnapshots.docs) {
       if (snapshot.get('name') == name) {
         savedRef.doc(snapshot.id).delete().then((value) {
+          // print(snapshot.get('name'));
+          print("recipe removed!");
           debugPrint('Recipe removed successfully');
         }).catchError((error) {
           debugPrint('Failed to remove recipe: $error');
@@ -78,91 +72,83 @@ class _FavouritesPageState extends State<FavouritesPage> {
             ),
             body: Container(
                 child: Column(children: <Widget>[
-                SizedBox(height: 50),
-                const Text('Saved Recipes',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        color: Color.fromRGBO(0, 0, 0, 1),
-                        fontFamily: 'Inria Serif',
-                        fontSize: 35,
-                        fontWeight: FontWeight.normal,
-                        height: 1)),
-                SizedBox(height: 30),
-                Flexible(
-                    fit: FlexFit.tight,
-                    child: StreamBuilder<QuerySnapshot>(
-                      stream: FirebaseFirestore.instance
-                          .collection('users')
-                          .doc(FirebaseAuth.instance.currentUser!.uid)
-                          .collection('savedRecipes')
-                          .snapshots(),
-                      builder: (context, snapshot) {
-                        // if (snapshot.hasError) {
-                        //   return const Text('Something went wrong');
-                        // }
-                        if (snapshot.connectionState == ConnectionState.waiting) {
-                          return const CircularProgressIndicator();
+              SizedBox(height: 50),
+              const Text('Saved Recipes',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: Color.fromRGBO(0, 0, 0, 1), fontFamily: 'Inria Serif', fontSize: 35, fontWeight: FontWeight.normal, height: 1)),
+              SizedBox(height: 30),
+              Flexible(
+                  fit: FlexFit.tight,
+                  child: StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection('users')
+                        .doc(FirebaseAuth.instance.currentUser!.uid)
+                        .collection('savedRecipes')
+                        .snapshots(),
+                    builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const CircularProgressIndicator();
+                      } else {
+                        savedRecipes = [];
+                        for (var i in snapshot.data!.docs) {
+                          savedRecipes.add((i.data() as Map)['name']);
                         }
-              return ListView(
-                  children:
-                      snapshot.data!.docs.map((DocumentSnapshot document) {
-                Map<String, dynamic> data =
-                    document.data()! as Map<String, dynamic>;
-                return Card(
-                    elevation: 0,
-                    color: Color.fromARGB(0, 255, 255, 255),
-                    child: Center(
-                        child: SizedBox(
-                            width: 350,
-                            height: 60,
-                            child: Row(children: <Widget>[
-                              TextButton(
-                                child: Text(data["name"] ?? "null"),
-                                onPressed: () async {
-                                  print(data['recipe'].path);
-                                  var recipe = FirebaseFirestore.instance
-                                      .doc(data['recipe'].path);
-                                  print("Recipe::: $recipe");
-                                  recipe.get().then((value) {
-                                    String recipeName = value.get("Name");
-                                    List<dynamic> ingredients =
-                                        value.get("Ingredients");
-                                    String procedure = value.get("Name");
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                indivRecipePage(
-                                                    recipeName: recipeName,
-                                                    ingredients: ingredients,
-                                                    procedure: procedure)));
-                                  });
-                                },
-                              ),
-                              FavoriteButton(
-                                isFavorite: true,
-                                valueChanged: (_isFavorite) {
-                                  if (_isFavorite) {
-                                    var recipe = FirebaseFirestore
-                                        .instance
-                                        .collection("Recipes")
-                                        .doc(data["name"]);
-                                    String id =
-                                        UniqueKey().toString();
-                                    print(id);
-                                    addSaved(
-                                        id,
-                                        data["name"],
-                                        recipe);
-                                  } else if (!_isFavorite) {
-                                    removeSaved(data["name"]);
-                                  }
-                                },
-                              )
-                            ]))));
-              }).toList());
-            },
-          ))
-    ]))));
+                        print(savedRecipes);
+                        return ListView(
+                            children: snapshot.data!.docs.map((DocumentSnapshot document) {
+                          Map<String, dynamic> data = document.data()! as Map<String, dynamic>;
+                          print("name: ${data['name']}");
+                          print(savedRecipes.contains(data['name']));
+                          return Card(
+                              elevation: 0,
+                              color: Color.fromARGB(0, 255, 255, 255),
+                              child: Center(
+                                  child: SizedBox(
+                                      width: 350,
+                                      height: 60,
+                                      child: Row(children: <Widget>[
+                                        TextButton(
+                                          child: Text(data["name"] ?? "null"),
+                                          onPressed: () async {
+                                            print(data['recipe'].path);
+                                            var recipe = FirebaseFirestore.instance.doc(data['recipe'].path);
+                                            print("Recipe::: $recipe");
+                                            recipe.get().then((value) {
+                                              String recipeName = value.get("Name");
+                                              List<dynamic> ingredients = value.get("Ingredients");
+                                              String procedure = value.get("Name");
+                                              Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          indivRecipePage(recipeName: recipeName, ingredients: ingredients, procedure: procedure)));
+                                            });
+                                          },
+                                        ),
+                                        FavoriteButton(
+                                          isFavorite: savedRecipes.contains(data["name"]),
+                                          valueChanged: (_isFavorite) async {
+                                            setState(() {});
+                                              print("_isFav: $_isFavorite");
+                                              if (_isFavorite & !savedRecipes.contains(data["name"])) {
+                                                var recipe = FirebaseFirestore.instance.collection("Recipes").doc(data["name"]);
+                                                String id = UniqueKey().toString();
+                                                print(id);
+                                                addSaved(id, data["name"], recipe);
+                                              } else if (!_isFavorite) {
+                                                _isFavorite = true;
+                                                savedRecipes.remove(data['name']);
+                                                removeSaved(data["name"]);
+                                              }
+                                              print("do this?");
+                                          },
+                                        )
+                                      ]))));
+                        }).toList());
+                      }
+                    },
+                  ))
+            ]))));
   }
 }
