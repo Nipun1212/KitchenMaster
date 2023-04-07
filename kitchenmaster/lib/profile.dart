@@ -40,8 +40,12 @@ class _ProfilePageState extends State<ProfilePage> {
 
   void signOut() async {
     await FirebaseAuth.instance.signOut();
-    Navigator.push(context,
-        MaterialPageRoute(builder: (context) => MyApp()));
+    Navigator.of(context, rootNavigator: true)
+                              .pushAndRemoveUntil(
+                            MaterialPageRoute(
+                              builder: (BuildContext context) {
+                                return const MyApp();
+                              }), (Route<dynamic> route) => false);
   }
 
   void getCurrentUserProfile() async {
