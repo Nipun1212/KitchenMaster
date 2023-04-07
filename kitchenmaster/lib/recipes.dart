@@ -104,7 +104,7 @@ class Recipe {
 class _RecipePageState extends State<RecipePage> {
   Recipe test = new Recipe();
   List<String> generatedRecipes = [];
-  List<String> filterList = ["vegetarian", "vegan", "Halal", "No Beef", "No Dairy"];
+  List<String> filterList = ["vegetarian", "vegan", "halal", "no beef", "no dairy"];
   List<String> selectedFilterList = [];
 
   List<String> resetRecipes() {
@@ -184,7 +184,8 @@ class _RecipePageState extends State<RecipePage> {
         home: Scaffold(
             floatingActionButton: FloatingActionButton(
               onPressed: openFilterDialog,
-              child: Icon(Icons.add),
+              backgroundColor: Colors.black,
+              child: Icon(Icons.filter_alt),
             ),
             body: Container(
                 child: Column(mainAxisAlignment: MainAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: <Widget>[
