@@ -13,7 +13,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 
 class InventoryPage extends StatefulWidget {
   InventoryPage({Key? key}) : super(key: key);
-
   @override
   State<InventoryPage> createState() => InventoryPageState();
 }
@@ -77,7 +76,6 @@ class _DynamicWidgetState extends State<DynamicWidget> {
                           widget.count += 1;
                         });
                       }),
-
                 ]))));
   }
 }
@@ -113,7 +111,6 @@ class InventoryPageState extends State<InventoryPage> {
       source: ImageSource.gallery,
     );
     final List classList = ['egg', 'broccoli', 'banana', 'apple', 'chicken', 'pineapple', 'orange', 'pork'];
-
     print("=================IMAGE PATH HERE: ${pickedFile?.path}=================");
     // Send the image to the Google Cloud Vision API for prediction
     final String apiKey = "AIzaSyAVz2DqoH6D7aQ355bMmdAHkMjbcHMi0yg";
@@ -138,7 +135,6 @@ class InventoryPageState extends State<InventoryPage> {
     final Map<String, dynamic> data = jsonDecode(response.body);
     Map<String, int> _predictions = {};
     String _textFound = "";
-
     // Get all the predictions via object detection in the classList 
     List<dynamic>? itemDetected = data["responses"][0]["localizedObjectAnnotations"];
     if (itemDetected != null) {
@@ -163,9 +159,7 @@ class InventoryPageState extends State<InventoryPage> {
         }
       }
     }
-
     print("predicted!! $_predictions");
-
     setState(() {
       isLoading = true;
       imageSelect = false;
@@ -202,21 +196,23 @@ class InventoryPageState extends State<InventoryPage> {
     final docRef = FirebaseFirestore.instance.collection('users').doc(userUid);
     final docSnapshot = await docRef.get();
     Map<String, dynamic> data = docSnapshot.data()!;
-    if (data['inventory']!= null) {
-      Map<String, int> temp = Map<String, int>.from(data['inventory']!.map((key, value) => MapEntry(key as String, value as int?)));
-      temp.addAll(inventory);
-      Map<String, int> currentInventory = {};
-      for (String item in temp.keys){
-        if (temp[item]! > 0) {
-          currentInventory[item] = temp[item]!;
-        }
-      }
-      await docRef.update({
-        'inventory': currentInventory,
-      });
+    Map<String, int> currentInventory = {};
+    Map<String, int> newInventory = {};
+    if (data['inventory'] != null) {
+      Map<String, int> currentInventory = Map<String, int>.from(data['inventory'].map((key, value) => MapEntry(key as String, value as int)));
     }
+    newInventory.addAll(inventory);
+    for (String item in newInventory.keys){
+      if (newInventory[item]! > 0) {
+        currentInventory[item] = newInventory[item]!;
+      }
+    }
+    await docRef.update({
+      'inventory': currentInventory,
+    });
     _initialized = false; // to render page again
   }
+
   Future<void> resetInventory() async {
     var userUid = FirebaseAuth.instance.currentUser!.uid;
     final docRef = FirebaseFirestore.instance.collection('users').doc(userUid);
@@ -290,10 +286,6 @@ class InventoryPageState extends State<InventoryPage> {
                 "Inventory",
                 style: TextStyle(color: Colors.white),
               ),
-              // leading: const BackButton(
-              //   color: Colors.white,
-              // ),
-              // centerTitle: true,
             ),
             body: GestureDetector(
               onTap: () {
@@ -339,12 +331,11 @@ class InventoryPageState extends State<InventoryPage> {
                       Spacer(),
                       ElevatedButton(
                         child: Text('Update Inventory'),
-                        onPressed: () {
-                          setState(() async {
-                            updateInventory(getInventory());
+                        onPressed: () async{
+                            await updateInventory(getInventory());
                             resetDynamic();
                             await _initialize();
-                          });
+                          setState(() { });
                         },
                         style: ButtonStyle(
                           backgroundColor:
