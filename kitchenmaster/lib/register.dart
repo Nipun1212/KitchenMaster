@@ -265,18 +265,21 @@ class UserInfo {
   final String name;
   final String email;
   final String password;
-
+  Map<String, int>? inventory;
+  
   UserInfo({
     this.id = '',
     required this.name,
     required this.email,
     required this.password,
+    this.inventory,
   });
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'name': name,
-        'email': email,
-        'password': password,
-      };
+    'id': id,
+    'name': name,
+    'email': email,
+    'password': password,
+    'inventory': inventory,
+  };
 }

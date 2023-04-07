@@ -370,7 +370,6 @@ class InventoryPageState extends State<InventoryPage> {
                                   controllers.removeAt(index);
                                   listCards.removeAt(index);
                                 });
-                                print("HEREEEEE ${controllers.map((label) => label.text).toList()}");
                               },
                               secondaryBackground: Container(
                                 child: Center(
