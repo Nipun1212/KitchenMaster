@@ -230,6 +230,7 @@ class _DynamicWidgetState extends State<DynamicWidget> {
   @override
   Widget build(BuildContext context) {
     return Card(
+
         child: Center(
             child: SizedBox(
                 width: 350,
@@ -470,15 +471,16 @@ class _AlertsPageState extends State<AlertsPage> {
                 removeNoName();
               },
               child: Column(children: <Widget>[
-                const SizedBox(height: 50),
-                const Text('Grocery List',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        color: Color.fromRGBO(0, 0, 0, 1),
-                        fontFamily: 'Inria Serif',
-                        fontSize: 35,
-                        fontWeight: FontWeight.normal,
-                        height: 1)),
+                // const SizedBox(height: 50),
+                // const Text('Grocery List',
+                //     textAlign: TextAlign.center,
+                //     style: TextStyle(
+                //         color: Color.fromRGBO(0, 0, 0, 1),
+                //         fontFamily: 'Inria Serif',
+                //         fontSize: 35,
+                //         fontWeight: FontWeight.normal,
+                //         height: 1)),
+                SizedBox(height: 20,),
                 Flexible(
                   fit: FlexFit.tight,
                   child: ListView.builder(

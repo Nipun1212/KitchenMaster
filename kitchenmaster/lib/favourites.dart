@@ -72,11 +72,11 @@ class _FavouritesPageState extends State<FavouritesPage> {
             ),
             body: Container(
                 child: Column(children: <Widget>[
-              SizedBox(height: 50),
-              const Text('Saved Recipes',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      color: Color.fromRGBO(0, 0, 0, 1), fontFamily: 'Inria Serif', fontSize: 35, fontWeight: FontWeight.normal, height: 1)),
+              // SizedBox(height: 50),
+              // const Text('Saved Recipes',
+              //     textAlign: TextAlign.center,
+              //     style: TextStyle(
+              //         color: Color.fromRGBO(0, 0, 0, 1), fontFamily: 'Inria Serif', fontSize: 35, fontWeight: FontWeight.normal, height: 1)),
               SizedBox(height: 30),
               Flexible(
                   fit: FlexFit.tight,

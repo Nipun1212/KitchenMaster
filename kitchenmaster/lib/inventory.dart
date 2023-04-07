@@ -359,7 +359,7 @@ class InventoryPageState extends State<InventoryPage> {
                           ),
                         ),
                       ),
-                      SizedBox(width: 30),
+                      SizedBox(width: 20),
                       // Spacer(),
                       //FloatingActionButton.extended(
                         //label: const Text('Add entries'),
@@ -414,11 +414,13 @@ class InventoryPageState extends State<InventoryPage> {
                     ),
                   ])),
             ),
+            floatingActionButtonLocation:
+            FloatingActionButtonLocation.centerFloat,
             floatingActionButton: Row(
                 // mainAxisAlignment: MainAxisAlignment.end,
               mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
-                children: [SizedBox(width: 20,),
+                children: [
                   FloatingActionButton.extended(
                     label: const Text('Upload New Photo'),
                     icon: const Icon(Icons.add_a_photo),
