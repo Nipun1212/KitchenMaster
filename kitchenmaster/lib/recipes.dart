@@ -105,21 +105,6 @@ class _RecipePageState extends State<RecipePage> {
     return [];
   }
 
-  Future<bool> checkSaved(String name) async {
-    final uid = FirebaseAuth.instance.currentUser!.uid;
-    final savedRef = FirebaseFirestore.instance
-        .collection('users')
-        .doc(uid)
-        .collection('savedRecipes');
-    var querySnapshots = await savedRef.get();
-    for (var snapshot in querySnapshots.docs) {
-      if (snapshot.get('name') == name) {
-        return true;
-      }
-    }
-    return false;
-  }
-
   //update firebase
   void addSaved(String id, String recipeName, DocumentReference recipe) async {
     print("Saving recipe...");
@@ -153,72 +138,63 @@ class _RecipePageState extends State<RecipePage> {
     return MaterialApp(
         home: Scaffold(
             body: Container(
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-          SizedBox(height: 50),
-          const Text('Recipes',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  color: Color.fromRGBO(0, 0, 0, 1),
-                  fontFamily: 'Inria Serif',
-                  fontSize: 35,
-                  fontWeight: FontWeight.normal,
-                  height: 1)),
-          SizedBox(height: 30),
-          ElevatedButton(
-            child: Text('Generate Recipes'),
-            onPressed: () async {
-              generatedRecipes = resetRecipes();
-              setState(() {});
-            },
-            style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all<Color>(Colors.black),
-              shape: MaterialStateProperty.all(
-                RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(25),
-                ),
-              ),
+                child: Column(mainAxisAlignment: MainAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: <Widget>[
+      SizedBox(height: 50),
+      const Text('Recipes',
+          textAlign: TextAlign.center,
+          style: TextStyle(color: Color.fromRGBO(0, 0, 0, 1), fontFamily: 'Inria Serif', fontSize: 35, fontWeight: FontWeight.normal, height: 1)),
+      SizedBox(height: 30),
+      ElevatedButton(
+        child: Text('Generate Recipes'),
+        onPressed: () async {
+          //generatedRecipes = resetRecipes();
+          setState(() {});
+        },
+        style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.all<Color>(Colors.black),
+          shape: MaterialStateProperty.all(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(25),
             ),
           ),
-          Flexible(
-            fit: FlexFit.tight,
-            // child: StreamBuilder(
-            //   stream:
-            //       FirebaseFirestore.instance.collection('Recipes').snapshots(),
-            //   builder:
-            //       (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-            //     if (!snapshot.hasData) {
-            //       return Center(
-            //         child: CircularProgressIndicator(),
-            //       );
-            //     }
-            child: FutureBuilder<List>(
-              future: test.getRecipes(),
-              builder: (context, snapshot) {
-                return snapshot.connectionState == ConnectionState.waiting
-                    ? const CircularProgressIndicator()
-                    : SingleChildScrollView(
-                      child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: List.generate(
-                            snapshot.data!.length,
-                            (index) {
-                              return Card(
-                                  elevation: 0,
-                                  color: Color.fromARGB(0, 255, 255, 255),
-                                  child: Center(
-                                      child: SizedBox(
-                                          width: 350,
-                                          height: 60,
-                                          child: Container(
-                                            padding: EdgeInsets.only(right: 5.0),
-                                            child: Row(
-                                                // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                children: <Widget>[
-
+        ),
+      ),
+      Flexible(
+        fit: FlexFit.tight,
+        // child: StreamBuilder(
+        //   stream:
+        //       FirebaseFirestore.instance.collection('Recipes').snapshots(),
+        //   builder:
+        //       (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        //     if (!snapshot.hasData) {
+        //       return Center(
+        //         child: CircularProgressIndicator(),
+        //       );
+        //     }
+        child: FutureBuilder<List>(
+          future: test.getRecipes(),
+          builder: (context, snapshot) {
+            return snapshot.connectionState == ConnectionState.waiting
+                ? const CircularProgressIndicator()
+                : SingleChildScrollView(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: List.generate(
+                        snapshot.data!.length,
+                        (index) {
+                          return Card(
+                              elevation: 0,
+                              color: Color.fromARGB(0, 255, 255, 255),
+                              child: Center(
+                                  child: SizedBox(
+                                      width: 350,
+                                      height: 60,
+                                      child: Container(
+                                        padding: EdgeInsets.only(right: 5.0),
+                                        child: Row(
+                                            // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: <Widget>[
                                               Expanded(
                                                 child: TextButton(
                                                   style: TextButton.styleFrom(
@@ -229,87 +205,45 @@ class _RecipePageState extends State<RecipePage> {
                                                       fontWeight: FontWeight.bold,
                                                     ),
                                                   ),
-                                                  child: Text(snapshot.data?[index]
-                                                          .get("Name") ??
-                                                      "null",),
-
+                                                  child: Text(snapshot.data?[index][0].get("Name") ?? "null"),
                                                   onPressed: () {
-                                                    String recipeName = snapshot
-                                                        .data![index]
-                                                        .get("Name");
-                                                    List<dynamic> ingredients =
-                                                        snapshot.data![index]
-                                                            .get("Ingredients");
-                                                    String procedure = snapshot
-                                                        .data![index]
-                                                        .get("Procedures");
+                                                    String recipeName = snapshot.data![index][0].get("Name");
+                                                    List<dynamic> ingredients = snapshot.data![index][0].get("Ingredients");
+                                                    String procedure = snapshot.data![index][0].get("Procedures");
+                                                    String image = snapshot.data![index][0].get("Image");
                                                     Navigator.push(
                                                         context,
                                                         MaterialPageRoute(
-                                                            builder: (context) =>
-                                                                indivRecipePage(
-                                                                    recipeName:
-                                                                        recipeName,
-                                                                    ingredients:
-                                                                        ingredients,
-                                                                    procedure:
-                                                                        procedure)));
+                                                            builder: (context) => indivRecipePage(
+                                                                recipeName: recipeName,
+                                                                ingredients: ingredients,
+                                                                procedure: procedure,
+                                                                image: image)));
                                                   },
                                                 ),
                                               ),
-
-
-
-
-
-                                              FutureBuilder<bool>(
-                                                  future: checkSaved(snapshot
-                                                      .data?[index]
-                                                      .get("Name")),
-                                                  builder: (c, s) {
-                                                    print("isFavorite: ${s.data}");
-                                                    bool favourite = false;
-                                                    if (s.data == true) {
-                                                      favourite = true;
-                                                    }
-                                                    return FavoriteButton(
-                                                      isFavorite: favourite,
-                                                      valueChanged: (_isFavorite) {
-                                                        if (_isFavorite) {
-                                                          var recipe =
-                                                              FirebaseFirestore
-                                                                  .instance
-                                                                  .collection(
-                                                                      "Recipes")
-                                                                  .doc(snapshot
-                                                                      .data?[index]
-                                                                      .get("Name"));
-                                                          String id = UniqueKey()
-                                                              .toString();
-                                                          print(id);
-                                                          addSaved(
-                                                              id,
-                                                              snapshot.data?[index]
-                                                                  .get("Name"),
-                                                              recipe);
-                                                        } else if (!_isFavorite) {
-                                                          removeSaved(snapshot
-                                                              .data?[index]
-                                                              .get("Name"));
-                                                        }
-                                                      },
-                                                    );
-                                                  })
+                                              FavoriteButton(
+                                                isFavorite: snapshot.data![index][1],
+                                                valueChanged: (_isFavorite) {
+                                                  if (_isFavorite & !snapshot.data![index][1]) {
+                                                    var recipe = FirebaseFirestore.instance.collection("Recipes").doc(snapshot.data?[index][0].get("Name"));
+                                                    String id = UniqueKey().toString();
+                                                    addSaved(id, snapshot.data?[index][0].get("Name"), recipe);
+                                                  } else if (!_isFavorite) {
+                                                    removeSaved(snapshot.data?[index][0].get("Name"));
+                                                  }
+                                                },
+                                              )
                                             ]),
-                                          ))));
-                            },
-                          ),
-                        ),
-                    );
-              },
-            ),
-          )
-        ]))));
+                                      ))));
+                        },
+                      ),
+                    ),
+                  );
+          },
+        ),
+      )
+    ]))));
   }
 }
 //
