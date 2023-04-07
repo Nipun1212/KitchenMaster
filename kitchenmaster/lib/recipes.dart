@@ -16,11 +16,12 @@ class RecipePage extends StatefulWidget {
 }
 
 class Recipe {
-  final CollectionReference recipes =
-      FirebaseFirestore.instance.collection('Recipes');
+  final CollectionReference recipes = FirebaseFirestore.instance.collection('Recipes');
 
   List<String> generated = [];
-  List recipeDetails = [];
+  List<List> recipeDetails = [];
+  List<String> savedRecipes = [];
+  // List<bool> saved = [];
 
   void fetchRecipesName() async {
     QuerySnapshot querySnapshot = await recipes.get();
@@ -31,7 +32,17 @@ class Recipe {
     });
   }
 
-  void fetchMatchingRecipes(List<String> ingredients) async {
+  fetchSavedRecipes() async {
+    savedRecipes = [];
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+    final savedRef = FirebaseFirestore.instance.collection('users').doc(uid).collection('savedRecipes');
+    var querySnapshots = await savedRef.get();
+    for (var snapshot in querySnapshots.docs) {
+      savedRecipes.add(snapshot.get("name"));
+    }
+  }
+
+  fetchMatchingRecipes(List<String> ingredients) async {
     QuerySnapshot querySnapshot = await recipes.get();
     List<dynamic> recipeDB;
     generated = [];
@@ -42,14 +53,23 @@ class Recipe {
       //checks if the food items in fridge is a subset of items in recipe
       if (recipeDB.toSet().intersection(ingredients.toSet()).length != 0) {
         //prints the name of recipes that matches the food items in fridge
-        print(document.get("Name"));
         generated.add(document.get("Name"));
-        recipeDetails.add(document);
+        bool saved = savedRecipes.contains(document.get("Name"));
+        recipeDetails.add([document, saved]);
+        // saved.add(checkSaved(document.get("Name")));
       } else {}
     });
   }
 
-  Future<List> getRecipes() async {
+  // Future<bool> checkSaved(String name) async {
+  //   if (savedRecipes.contains(name)) {
+  //     return true;
+  //   } else {
+  //     return false;
+  //   }
+  // }
+
+  Future<List<List>> getRecipes() async {
     debugPrint('getting recipes');
     List<String> ingredientList = [];
     final uid = FirebaseAuth.instance.currentUser!.uid;
@@ -67,8 +87,9 @@ class Recipe {
 
     // fetchMatchingRecipes(smoothie3);
     // fetchMatchingRecipes(smoothie2);
-    print(ingredientList);
-    fetchMatchingRecipes(ingredientList);
+    // print(ingredientList);
+    await fetchSavedRecipes();
+    await fetchMatchingRecipes(ingredientList);
     return await recipeDetails;
   }
 }
@@ -103,12 +124,8 @@ class _RecipePageState extends State<RecipePage> {
   void addSaved(String id, String recipeName, DocumentReference recipe) async {
     print("Saving recipe...");
     final uid = FirebaseAuth.instance.currentUser!.uid;
-    final savedRef = FirebaseFirestore.instance
-        .collection('users')
-        .doc(uid)
-        .collection('savedRecipes');
-    DocumentReference newSavedRef =
-        await savedRef.add({'id': id, 'name': recipeName, 'recipe': recipe});
+    final savedRef = FirebaseFirestore.instance.collection('users').doc(uid).collection('savedRecipes');
+    DocumentReference newSavedRef = await savedRef.add({'id': id, 'name': recipeName, 'recipe': recipe});
 
     // final newAlertId = generateUniqueId(newAlertRef.id);
     print("Recipe saved!");
@@ -117,14 +134,12 @@ class _RecipePageState extends State<RecipePage> {
   void removeSaved(String name) async {
     //delete in firebase
     final uid = FirebaseAuth.instance.currentUser!.uid;
-    final savedRef = FirebaseFirestore.instance
-        .collection('users')
-        .doc(uid)
-        .collection('savedRecipes');
+    final savedRef = FirebaseFirestore.instance.collection('users').doc(uid).collection('savedRecipes');
     var querySnapshots = await savedRef.get();
     for (var snapshot in querySnapshots.docs) {
       if (snapshot.get('name') == name) {
         savedRef.doc(snapshot.id).delete().then((value) {
+          print(snapshot.get('name'));
           debugPrint('Recipe removed successfully');
         }).catchError((error) {
           debugPrint('Failed to remove recipe: $error');

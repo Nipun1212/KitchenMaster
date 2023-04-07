@@ -69,6 +69,7 @@ class _DynamicWidgetState extends State<DynamicWidget> {
                           }
                         });
                       }),
+                  Text('${widget.count}'),
                   IconButton(
                       icon: const Icon(Icons.add_circle_outline),
                       onPressed: () {
@@ -76,7 +77,7 @@ class _DynamicWidgetState extends State<DynamicWidget> {
                           widget.count += 1;
                         });
                       }),
-                  Text('${widget.count}'),
+
                 ]))));
   }
 }
@@ -270,6 +271,17 @@ class InventoryPageState extends State<InventoryPage> {
   Widget build(BuildContext context) {
     return MaterialApp(
         home: Scaffold(
+            appBar: AppBar(
+              backgroundColor: Colors.red,
+              title: const Text(
+                "Inventory",
+                style: TextStyle(color: Colors.white),
+              ),
+              // leading: const BackButton(
+              //   color: Colors.white,
+              // ),
+              // centerTitle: true,
+            ),
             body: GestureDetector(
               onTap: () {
                 FocusScope.of(context).requestFocus(FocusNode());

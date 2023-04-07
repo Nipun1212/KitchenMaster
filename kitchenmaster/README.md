@@ -1,4 +1,4 @@
-# fridgemaster
+# KitchenMaster
 
 A new Flutter project.
 

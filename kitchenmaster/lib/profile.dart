@@ -123,7 +123,7 @@ class _ProfilePageState extends State<ProfilePage> {
           style: TextStyle(color: Colors.white),
         ),
       ),
-      backgroundColor: Color(0xffe5e5e5),
+      // backgroundColor: Color(0xffe5e5e5),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 24.0),
         child: SingleChildScrollView(
@@ -191,8 +191,10 @@ class _ProfilePageState extends State<ProfilePage> {
                       BorderSide(width: 1.5, color: Colors.black54)),
                   fixedSize: MaterialStateProperty.all<Size>(
                       Size.fromWidth(200.0)),
+                  // backgroundColor:
+                  //     MaterialStateProperty.all<Color>(Color(0xffff6961)),
                   backgroundColor:
-                      MaterialStateProperty.all<Color>(Color(0xffff6961)),
+                  MaterialStateProperty.all<Color>(Colors.black),
                   foregroundColor:
                       MaterialStateProperty.all<Color>(Colors.white),
                   overlayColor: MaterialStateProperty.resolveWith<Color?>(
@@ -226,18 +228,20 @@ class _ProfilePageState extends State<ProfilePage> {
                                     borderRadius: BorderRadius.circular(18.0),
                                     side: BorderSide(
                                         width: 1.5,
-                                        color: Color(0xffff6961)))),
+                                        // color: Color(0xffff6961)
+                                    ))),
                         backgroundColor:
-                            MaterialStateProperty.all<Color>(Colors.white),
-                        foregroundColor: MaterialStateProperty.all<Color>(
-                            Color(0xffff6961)),
+                            MaterialStateProperty.all<Color>(Colors.black),
+                        // foregroundColor: MaterialStateProperty.all<Color>(
+                        //     Color(0xffff6961)),
                       ),
                       child: Row(
                         children: <Widget>[
                           Text(
                             "Log Out",
                             style: TextStyle(
-                                color: Color(0xffff6961),
+                                // color: Color(0xffff6961),
+                              color: Colors.white,
                                 fontSize: 15,
                                 fontFamily: 'IM FELL English SC'),
                           ),
@@ -246,7 +250,8 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                           Icon(
                             Icons.logout,
-                            color: Color(0xffff6961),
+                            // color: Color(0xffff6961),
+                            color: Colors.white,
                           ),
                         ],
                       ))

@@ -253,7 +253,11 @@ class _DynamicWidgetState extends State<DynamicWidget> {
                         });}
                     ),
                   ),
-                  DropdownButton<String>(
+                SizedBox(width: 5),
+
+                DropdownButtonHideUnderline(
+                child:DropdownButton<String>(
+                    underline: null,
                     // Step 3.
                     value: widget.frequency,
                     // Step 4.
@@ -284,7 +288,7 @@ class _DynamicWidgetState extends State<DynamicWidget> {
                       });
 
                     },
-                  ),
+                  ),),
                   IconButton(
                       icon: Icon(Icons.access_time_filled_sharp),
                       onPressed:  () => setTime(context)
@@ -449,6 +453,17 @@ class _AlertsPageState extends State<AlertsPage> {
   Widget build(BuildContext context) {
     return MaterialApp(
         home: Scaffold(
+            appBar: AppBar(
+              backgroundColor: Colors.red,
+              title: const Text(
+                "Alerts",
+                style: TextStyle(color: Colors.white),
+              ),
+              // leading: const BackButton(
+              //   color: Colors.white,
+              // ),
+              // centerTitle: true,
+            ),
             body: GestureDetector(
               onTap: () {
                 FocusScope.of(context).requestFocus(FocusNode());
