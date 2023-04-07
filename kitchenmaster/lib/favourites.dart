@@ -60,7 +60,7 @@ class _FavouritesPageState extends State<FavouritesPage> {
     return MaterialApp(
         home: Scaffold(
             appBar: AppBar(
-              backgroundColor: Colors.red,
+              backgroundColor: Color(0xffff6961), //Colors.red,
               title: const Text(
                 "Favourites",
                 style: TextStyle(color: Colors.white),
@@ -113,7 +113,7 @@ class _FavouritesPageState extends State<FavouritesPage> {
                                       height: 60,
                                       child: Row(children: <Widget>[
                                         TextButton(
-                                          child: Text(data["name"] ?? "null"),
+                                          child: Text(data["name"] ?? "null", style: TextStyle(fontSize: 20 , fontWeight: FontWeight.bold,)),
                                           onPressed: () async {
                                             print(data['recipe'].path);
                                             var recipe = FirebaseFirestore.instance.doc(data['recipe'].path);
@@ -131,6 +131,7 @@ class _FavouritesPageState extends State<FavouritesPage> {
                                             });
                                           },
                                         ),
+                                        Spacer(),
                                         FavoriteButton(
                                           isFavorite: savedRecipes.contains(data["name"]),
                                           valueChanged: (_isFavorite) async {

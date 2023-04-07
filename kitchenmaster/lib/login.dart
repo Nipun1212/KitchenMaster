@@ -159,6 +159,15 @@ class _LoginPageState extends State<LoginPage> {
                       fontWeight: FontWeight.normal,
                       height: 1),
                 ),
+                style: ButtonStyle(
+                  backgroundColor:
+                  MaterialStateProperty.all<Color>(Colors.black),
+                  shape: MaterialStateProperty.all(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                  ),
+                ),
               ),
             ),
           ]),

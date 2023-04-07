@@ -454,7 +454,7 @@ class _AlertsPageState extends State<AlertsPage> {
     return MaterialApp(
         home: Scaffold(
             appBar: AppBar(
-              backgroundColor: Colors.red,
+              backgroundColor: Color(0xffff6961), //Colors.red,
               title: const Text(
                 "Alerts",
                 style: TextStyle(color: Colors.white),

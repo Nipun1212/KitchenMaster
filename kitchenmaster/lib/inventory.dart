@@ -285,7 +285,7 @@ class InventoryPageState extends State<InventoryPage> {
     return MaterialApp(
         home: Scaffold(
             appBar: AppBar(
-              backgroundColor: Colors.red,
+              backgroundColor: Color(0xffff6961), //Colors.red,
               title: const Text(
                 "Inventory",
                 style: TextStyle(color: Colors.white),
@@ -307,19 +307,22 @@ class InventoryPageState extends State<InventoryPage> {
                       color: Colors.white),
                   child: Column(children: <Widget>[
                     SizedBox(height: 20),
-                    const Text('Inventory List',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: Color.fromRGBO(0, 0, 0, 1),
-                            fontFamily: 'Inria Serif',
-                            fontSize: 35,
-                            fontWeight: FontWeight.normal,
-                            height: 1)),
-                    SizedBox(height: 30),
-                    Row(children:<Widget>[
+                    // const Text('Inventory List',
+                    //     textAlign: TextAlign.center,
+                    //     style: TextStyle(
+                    //         color: Color.fromRGBO(0, 0, 0, 1),
+                    //         fontFamily: 'Inria Serif',
+                    //         fontSize: 35,
+                    //         fontWeight: FontWeight.normal,
+                    //         height: 1)),
+                    SizedBox(height: 20),
+                    Row(
+                        // mainAxisAlignment: MainAxisAlignment.end,
+                        children:<Widget>[
+                          Spacer(),
                       SizedBox(width: 20),
                       ElevatedButton(
-                        child: Text('Reset Inventory'),
+                        child: Icon(Icons.delete_forever_outlined), //Text('Reset Inventory'),
                         onPressed: () async{
                           resetInventory();
                           resetDynamic();
@@ -335,10 +338,10 @@ class InventoryPageState extends State<InventoryPage> {
                           ),
                         ),
                       ),
-                      // SizedBox(width: 80),
-                      Spacer(),
+                      SizedBox(width: 20),
+                      // Spacer(),
                       ElevatedButton(
-                        child: Text('Update Inventory'),
+                        child: Icon(Icons.save),//Text('Update Inventory'),
                         onPressed: () {
                           setState(() async {
                             updateInventory(getInventory());
@@ -356,7 +359,30 @@ class InventoryPageState extends State<InventoryPage> {
                           ),
                         ),
                       ),
+                      SizedBox(width: 30),
+                      // Spacer(),
+                      //FloatingActionButton.extended(
+                        //label: const Text('Add entries'),
+                      // icon: const Icon(Icons.add),
+                      // heroTag: "add_entries",backgroundColor: Colors.black,
+                      ElevatedButton(
+                        child: const Icon(Icons.add),
+                        onPressed: () {
+                          TextEditingController nameController =
+                          new TextEditingController();
+                          addDynamic(nameController, 0);
+                          setState(() {});
+                        },
+                          style: ButtonStyle(
+                              backgroundColor:
+                              MaterialStateProperty.all<Color>(Colors.black),
+                              shape: MaterialStateProperty.all(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(25),
+                                ),))
+                      ),
                       SizedBox(width: 20),
+                          Spacer()
                     ]
                     ),
                     Flexible(
@@ -389,9 +415,10 @@ class InventoryPageState extends State<InventoryPage> {
                   ])),
             ),
             floatingActionButton: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
+                // mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
+                children: [SizedBox(width: 20,),
                   FloatingActionButton.extended(
                     label: const Text('Upload New Photo'),
                     icon: const Icon(Icons.add_a_photo),
@@ -401,19 +428,19 @@ class InventoryPageState extends State<InventoryPage> {
                     },
                     backgroundColor: Colors.black,
                   ),
-                  SizedBox(width: 10),
-                  FloatingActionButton.extended(
-                    label: const Text('Add entries'),
-                    icon: const Icon(Icons.add),
-                    heroTag: "add_entries",
-                    onPressed: () {
-                      TextEditingController nameController =
-                          new TextEditingController();
-                      addDynamic(nameController, 0);
-                      setState(() {});
-                    },
-                    backgroundColor: Colors.black,
-                  ),
+                  // SizedBox(width: 10),
+                  // FloatingActionButton.extended(
+                  //   label: const Text('Add entries'),
+                  //   icon: const Icon(Icons.add),
+                  //   heroTag: "add_entries",
+                  //   onPressed: () {
+                  //     TextEditingController nameController =
+                  //         new TextEditingController();
+                  //     addDynamic(nameController, 0);
+                  //     setState(() {});
+                  //   },
+                  //   backgroundColor: Colors.black,
+                  // ),
                 ])));
   }
 }

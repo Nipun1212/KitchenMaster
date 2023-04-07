@@ -185,6 +185,15 @@ class _RegisterPageState extends State<RegisterPage> {
                         fontWeight: FontWeight.normal,
                         height: 1),
                   ),
+                  style: ButtonStyle(
+                    backgroundColor:
+                    MaterialStateProperty.all<Color>(Colors.black),
+                    shape: MaterialStateProperty.all(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(25),
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ])));

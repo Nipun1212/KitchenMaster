@@ -151,16 +151,31 @@ class _RecipePageState extends State<RecipePage> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+
         home: Scaffold(
+            appBar: AppBar(
+              backgroundColor: Color(0xffff6961), //Colors.red,
+              title: const Text(
+                "Recipes",
+                style: TextStyle(color: Colors.white),
+              ),
+              // leading: const BackButton(
+              //   color: Colors.white,
+              // ),
+              // centerTitle: true,
+            ),
             body: Container(
                 child: Column(mainAxisAlignment: MainAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: <Widget>[
-      SizedBox(height: 50),
-      const Text('Recipes',
-          textAlign: TextAlign.center,
-          style: TextStyle(color: Color.fromRGBO(0, 0, 0, 1), fontFamily: 'Inria Serif', fontSize: 35, fontWeight: FontWeight.normal, height: 1)),
+      // SizedBox(height: 50),
+      // const Text('Recipes',
+      //     textAlign: TextAlign.center,
+      //     style: TextStyle(color: Color.fromRGBO(0, 0, 0, 1), fontFamily: 'Inria Serif', fontSize: 35, fontWeight: FontWeight.normal, height: 1)),
       SizedBox(height: 30),
-      ElevatedButton(
-        child: Text('Generate Recipes'),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+          children: [ElevatedButton(
+        child: Text('Generate Recipes', style: TextStyle(fontSize: 20),),
+
         onPressed: () async {
           //generatedRecipes = resetRecipes();
           setState(() {});
@@ -173,7 +188,7 @@ class _RecipePageState extends State<RecipePage> {
             ),
           ),
         ),
-      ),
+      )]),
       Flexible(
         fit: FlexFit.tight,
         // child: StreamBuilder(
@@ -220,7 +235,7 @@ class _RecipePageState extends State<RecipePage> {
                                                     alignment: Alignment.centerLeft, // align text to left
                                                     primary: Colors.lightBlue,
                                                     textStyle: const TextStyle(
-                                                      fontSize: 16,
+                                                      fontSize: 20,
                                                       fontWeight: FontWeight.bold,
                                                     ),
                                                   ),
