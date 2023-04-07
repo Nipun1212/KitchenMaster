@@ -46,6 +46,7 @@ class Recipe {
   fetchMatchingRecipes(List<String> ingredients, List<String> filterList) async {
     QuerySnapshot querySnapshot = await recipes.get();
     List<dynamic> recipeDB;
+    List<dynamic> type;
     generated = [];
     recipeDetails = [];
     querySnapshot.docs.forEach((document) {
@@ -58,9 +59,10 @@ class Recipe {
         bool saved = savedRecipes.contains(document.get("Name"));
         print(document.get("Name"));
         print(filterList.isEmpty);
-        print(filterList.contains(document.get('Type')));
-        // | document.get("Type").toSet().intersection(filterList.toSet()).length != 0
-        if (filterList.isEmpty | filterList.contains(document.get('Type'))) {
+        type = document.get("Type");
+        print(type.toSet().intersection(filterList.toSet()).length);
+        if (filterList.isEmpty | (type.toSet().intersection(filterList.toSet()).length == filterList.length)) {
+          // if (filterList.isEmpty | filterList.contains(document.get('Type'))) {
           recipeDetails.add([document, saved]);
         }
         // saved.add(checkSaved(document.get("Name")));
