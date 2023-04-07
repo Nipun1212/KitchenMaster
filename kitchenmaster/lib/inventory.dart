@@ -217,6 +217,19 @@ class InventoryPageState extends State<InventoryPage> {
     }
     _initialized = false; // to render page again
   }
+  Future<void> resetInventory() async {
+    var userUid = FirebaseAuth.instance.currentUser!.uid;
+    final docRef = FirebaseFirestore.instance.collection('users').doc(userUid);
+    final docSnapshot = await docRef.get();
+    Map<String, dynamic> data = docSnapshot.data()!;
+    Map<String, dynamic> inventoryData = data['inventory'];
+    if (inventoryData != null) {
+      await docRef.update({
+        'inventory': {}, // reset to empty map
+      });
+    }
+    _initialized = false; // to render page again
+  }
 
   Future<Map<String, int>> getData() async {
     await Future.delayed(Duration(seconds: 1));
@@ -293,7 +306,7 @@ class InventoryPageState extends State<InventoryPage> {
                       // color: Color.fromARGB(100, 255, 105, 97),
                       color: Colors.white),
                   child: Column(children: <Widget>[
-                    SizedBox(height: 50),
+                    SizedBox(height: 20),
                     const Text('Inventory List',
                         textAlign: TextAlign.center,
                         style: TextStyle(
@@ -308,6 +321,7 @@ class InventoryPageState extends State<InventoryPage> {
                       ElevatedButton(
                         child: Text('Reset Inventory'),
                         onPressed: () async{
+                          resetInventory();
                           resetDynamic();
                           await _initialize();
                         },
@@ -321,7 +335,8 @@ class InventoryPageState extends State<InventoryPage> {
                           ),
                         ),
                       ),
-                      SizedBox(width: 40),
+                      // SizedBox(width: 80),
+                      Spacer(),
                       ElevatedButton(
                         child: Text('Update Inventory'),
                         onPressed: () {
@@ -341,6 +356,7 @@ class InventoryPageState extends State<InventoryPage> {
                           ),
                         ),
                       ),
+                      SizedBox(width: 20),
                     ]
                     ),
                     Flexible(
