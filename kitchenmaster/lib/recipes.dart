@@ -133,6 +133,21 @@ class _RecipePageState extends State<RecipePage> {
     }
   }
 
+  ///// makes the procedures in order
+  String addNewlineAfterStar(String inputString) {
+    String outputString = '';
+    for (int i = 0; i < inputString.length; i++) {
+      if (inputString[i] == '*') {
+        continue;
+      }
+      outputString += inputString[i];
+      if (i < inputString.length - 1 && inputString[i + 1] == '*') {
+        outputString += '\n';
+      }
+    }
+    return outputString;
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -214,6 +229,7 @@ class _RecipePageState extends State<RecipePage> {
                                                     String recipeName = snapshot.data![index][0].get("Name");
                                                     List<dynamic> ingredients = snapshot.data![index][0].get("Ingredients");
                                                     String procedure = snapshot.data![index][0].get("Procedures");
+                                                    procedure = addNewlineAfterStar(procedure);
                                                     String image = snapshot.data![index][0].get("Image");
                                                     Navigator.push(
                                                         context,
@@ -230,7 +246,8 @@ class _RecipePageState extends State<RecipePage> {
                                                 isFavorite: snapshot.data![index][1],
                                                 valueChanged: (_isFavorite) {
                                                   if (_isFavorite & !snapshot.data![index][1]) {
-                                                    var recipe = FirebaseFirestore.instance.collection("Recipes").doc(snapshot.data?[index][0].get("Name"));
+                                                    var recipe =
+                                                        FirebaseFirestore.instance.collection("Recipes").doc(snapshot.data?[index][0].get("Name"));
                                                     String id = UniqueKey().toString();
                                                     addSaved(id, snapshot.data?[index][0].get("Name"), recipe);
                                                   } else if (!_isFavorite) {
