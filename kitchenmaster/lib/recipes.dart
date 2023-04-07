@@ -175,7 +175,11 @@ class _RecipePageState extends State<RecipePage> {
           future: test.getRecipes(),
           builder: (context, snapshot) {
             return snapshot.connectionState == ConnectionState.waiting
-                ? const CircularProgressIndicator()
+                ? const SizedBox(
+                    child: Align(alignment: Alignment.topCenter, child: CircularProgressIndicator()),
+                    height: 50.0,
+                    width: 50.0,
+                  )
                 : SingleChildScrollView(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,

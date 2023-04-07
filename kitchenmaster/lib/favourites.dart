@@ -88,7 +88,11 @@ class _FavouritesPageState extends State<FavouritesPage> {
                         .snapshots(),
                     builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const CircularProgressIndicator();
+                        return const SizedBox(
+                          child: Align(alignment: Alignment.topCenter, child: CircularProgressIndicator()),
+                          height: 50.0,
+                          width: 50.0,
+                        );
                       } else {
                         savedRecipes = [];
                         for (var i in snapshot.data!.docs) {
