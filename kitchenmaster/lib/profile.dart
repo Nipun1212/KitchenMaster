@@ -215,11 +215,31 @@ class _ProfilePageState extends State<ProfilePage> {
                 onPressed: () async {
                   resetPassword();
 
-                  // Navigator.push(
-                  //     context,
-                  //      MaterialPageRoute(builder: (context) => ResetPasswordPage())
-                  // );
-                }),
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text("Password reset email has been sent"),
+                        actions: [
+                          TextButton(
+                            style: TextButton.styleFrom(
+                             // align text to left
+                              primary: Colors.redAccent,
+                              textStyle: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            child: Text("OK"),
+                            onPressed: (){
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },),
               Container(height: 40, width: 100),
                 Row(children: [
                   Spacer(),
