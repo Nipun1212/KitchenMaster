@@ -145,10 +145,11 @@ class _ProfilePageState extends State<ProfilePage> {
                   decoration: const BoxDecoration(
                     borderRadius: BorderRadius.all(Radius.circular(20))
                   ),
-                    child: ClipOval(
-                    child: imageUrl == "" ? const Icon(
-                      Icons.person, size: 80, color: Colors.white,
-                      ) : Image.network(imageUrl,  width: 120,
+                  child: ClipOval(
+                    child: imageUrl == "" ?  CircleAvatar
+                      (child: Image.asset('assets/images/anonymous.png'),
+                        radius: 100
+                    ) : Image.network(imageUrl,  width: 120,
                       height: 120,
                       fit: BoxFit.cover,),
 

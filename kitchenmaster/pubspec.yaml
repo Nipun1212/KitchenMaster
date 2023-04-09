@@ -71,6 +71,7 @@ flutter:
   assets:
     - assets/logo.png
     - assets/rectangle.png
+    - assets/images/anonymous.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:
