@@ -121,7 +121,7 @@ class _ProfilePageState extends State<ProfilePage> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        backgroundColor: Colors.red,
+        backgroundColor: Color(0xffff6961), //Colors.red,
         title: const Text(
           "Profile",
           style: TextStyle(color: Colors.white),
@@ -191,10 +191,13 @@ class _ProfilePageState extends State<ProfilePage> {
               TextButton(
                 child: Text('Reset Password', style: TextStyle(fontSize: 22)),
                 style: ButtonStyle(
-                  side: MaterialStateProperty.all<BorderSide>(
-                      BorderSide(width: 1.5, color: Colors.black54)),
-                  fixedSize: MaterialStateProperty.all<Size>(
-                      Size.fromWidth(200.0)),
+                  // side: MaterialStateProperty.all<BorderSide>(
+                  //     BorderSide(width: 1.5, color: Colors.black54, )),
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20.0), // Set desired border radius here
+                      )),
+                  fixedSize: MaterialStateProperty.all<Size>(Size.fromWidth(300.0)),
                   // backgroundColor:
                   //     MaterialStateProperty.all<Color>(Color(0xffff6961)),
                   backgroundColor:

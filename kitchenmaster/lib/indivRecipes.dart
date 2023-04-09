@@ -29,7 +29,7 @@ class _indivRecipePageState extends State<indivRecipePage> {
         home: Scaffold(
 
             appBar: AppBar(
-              backgroundColor: Colors.red,
+              backgroundColor: Color(0xffff6961), //Colors.red,
               title: Text(
                 widget.recipeName,
                 style: TextStyle(color: Colors.white),

@@ -119,6 +119,15 @@ class _MyHomePageState extends State<MyHomePage> {
                     fontWeight: FontWeight.normal,
                     height: 1),
               ),
+              style: ButtonStyle(
+                backgroundColor:
+                MaterialStateProperty.all<Color>(Colors.black),
+                shape: MaterialStateProperty.all(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(25),
+                  ),
+                ),
+              ),
             ),
           ),
           const SizedBox(height: 30),
@@ -140,6 +149,15 @@ class _MyHomePageState extends State<MyHomePage> {
                     letterSpacing: 0,
                     fontWeight: FontWeight.normal,
                     height: 1),
+              ),
+              style: ButtonStyle(
+                backgroundColor:
+                MaterialStateProperty.all<Color>(Colors.black),
+                shape: MaterialStateProperty.all(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(25),
+                  ),
+                ),
               ),
             ),
           ),

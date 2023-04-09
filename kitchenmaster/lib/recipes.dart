@@ -3,8 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:favorite_button/favorite_button.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'indivRecipes.dart';
 import 'package:filter_list/filter_list.dart';
@@ -70,14 +68,6 @@ class Recipe {
     });
   }
 
-  // Future<bool> checkSaved(String name) async {
-  //   if (savedRecipes.contains(name)) {
-  //     return true;
-  //   } else {
-  //     return false;
-  //   }
-  // }
-
   Future<List<List>> getRecipes(List<String> filterList) async {
     debugPrint('getting recipes');
     List<String> ingredientList = [];
@@ -88,15 +78,6 @@ class Recipe {
       ingredientList = docSnapshot.data()!['inventory'].keys.toList();
       // You can then retrieve the value from the Map like this:
     }
-    //fetchRecipesName();
-    //ingredients passed in are case and space sensitive
-    // List<String> smoothie1 = ["banana", "strawberry", "apple juice"];
-    // List<String> smoothie2 = ["kiwi", "banana", "mango", "pineapple juice"];
-    // List<String> smoothie3 = ["banana"];
-
-    // fetchMatchingRecipes(smoothie3);
-    // fetchMatchingRecipes(smoothie2);
-    // print(ingredientList);
     await fetchSavedRecipes();
     await fetchMatchingRecipes(ingredientList, filterList);
     return await recipeDetails;
@@ -184,6 +165,13 @@ class _RecipePageState extends State<RecipePage> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Color(0xffff6961), //Colors.red,
+          title: const Text(
+            "Recipes",
+            style: TextStyle(color: Colors.white),
+          ),
+        ),
         floatingActionButton: FloatingActionButton(
           onPressed: openFilterDialog,
           backgroundColor: Colors.black,
@@ -194,18 +182,11 @@ class _RecipePageState extends State<RecipePage> {
             mainAxisAlignment: MainAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              SizedBox(height: 50),
-              const Text('Recipes',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      color: Color.fromRGBO(0, 0, 0, 1),
-                      fontFamily: 'Inria Serif',
-                      fontSize: 35,
-                      fontWeight: FontWeight.normal,
-                      height: 1)),
               SizedBox(height: 30),
-              ElevatedButton(
-                child: Text('Generate Recipes'),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [ElevatedButton(
+                  child: Text('Generate Recipes', style: TextStyle(fontSize: 20),),
                 onPressed: () async {
                   //generatedRecipes = resetRecipes();
                   setState(() {});
@@ -219,7 +200,7 @@ class _RecipePageState extends State<RecipePage> {
                     ),
                   ),
                 ),
-              ),
+              ),]),
               Expanded(
                 child: FutureBuilder<List>(
                   future: test.getRecipes(selectedFilterList),
@@ -232,7 +213,6 @@ class _RecipePageState extends State<RecipePage> {
                       height: 50.0,
                       width: 50.0,
                     )
-
                         : SingleChildScrollView(
                       child: Wrap(
                         spacing: 18,
@@ -348,40 +328,3 @@ class _RecipePageState extends State<RecipePage> {
   }
 
 }
-//
-// new ListView.builder(
-// itemCount: generatedRecipes.length,
-// itemBuilder: (BuildContext context, int index) {
-// // return ListView(
-// //   children: snapshot.data!.docs.map((document) {
-// return Card(
-// elevation: 0,
-// color: Color.fromARGB(0, 255, 255, 255),
-// child: Center(
-// child: SizedBox(
-// width: 350,
-// height: 60,
-// child: Column(children: <Widget>[
-// Row(children: <Widget>[
-// TextButton(
-// child: Text(generatedRecipes[index]),
-// onPressed: () {
-// // navigate to indiv recipe page
-// },
-// ),
-// FavoriteButton(
-// valueChanged: (_isFavorite) {
-// if (_isFavorite) {
-// RecipePage.addFavourites(
-// generatedRecipes[index]);
-// print(RecipePage.getFavourites());
-// } else if (!_isFavorite) {
-// RecipePage.removeFavourites(
-// generatedRecipes[index]);
-// print(RecipePage.getFavourites());
-// }
-// },
-// )
-// ])
-// ]))));
-// }),
