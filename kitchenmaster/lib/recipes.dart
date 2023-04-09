@@ -3,10 +3,9 @@
 import 'package:flutter/material.dart';
 import 'package:favorite_button/favorite_button.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'indivRecipes.dart';
+import 'package:filter_list/filter_list.dart';
 
 class RecipePage extends StatefulWidget {
   RecipePage({Key? key}) : super(key: key);
@@ -42,9 +41,10 @@ class Recipe {
     }
   }
 
-  fetchMatchingRecipes(List<String> ingredients) async {
+  fetchMatchingRecipes(List<String> ingredients, List<String> filterList) async {
     QuerySnapshot querySnapshot = await recipes.get();
     List<dynamic> recipeDB;
+    List<dynamic> type;
     generated = [];
     recipeDetails = [];
     querySnapshot.docs.forEach((document) {
@@ -55,21 +55,20 @@ class Recipe {
         //prints the name of recipes that matches the food items in fridge
         generated.add(document.get("Name"));
         bool saved = savedRecipes.contains(document.get("Name"));
-        recipeDetails.add([document, saved]);
+        print(document.get("Name"));
+        print(filterList.isEmpty);
+        type = document.get("Type");
+        print(type.toSet().intersection(filterList.toSet()).length);
+        if (filterList.isEmpty | (type.toSet().intersection(filterList.toSet()).length == filterList.length)) {
+          // if (filterList.isEmpty | filterList.contains(document.get('Type'))) {
+          recipeDetails.add([document, saved]);
+        }
         // saved.add(checkSaved(document.get("Name")));
       } else {}
     });
   }
 
-  // Future<bool> checkSaved(String name) async {
-  //   if (savedRecipes.contains(name)) {
-  //     return true;
-  //   } else {
-  //     return false;
-  //   }
-  // }
-
-  Future<List<List>> getRecipes() async {
+  Future<List<List>> getRecipes(List<String> filterList) async {
     debugPrint('getting recipes');
     List<String> ingredientList = [];
     final uid = FirebaseAuth.instance.currentUser!.uid;
@@ -79,17 +78,8 @@ class Recipe {
       ingredientList = docSnapshot.data()!['inventory'].keys.toList();
       // You can then retrieve the value from the Map like this:
     }
-    //fetchRecipesName();
-    //ingredients passed in are case and space sensitive
-    // List<String> smoothie1 = ["banana", "strawberry", "apple juice"];
-    // List<String> smoothie2 = ["kiwi", "banana", "mango", "pineapple juice"];
-    // List<String> smoothie3 = ["banana"];
-
-    // fetchMatchingRecipes(smoothie3);
-    // fetchMatchingRecipes(smoothie2);
-    // print(ingredientList);
     await fetchSavedRecipes();
-    await fetchMatchingRecipes(ingredientList);
+    await fetchMatchingRecipes(ingredientList, filterList);
     return await recipeDetails;
   }
 }
@@ -97,10 +87,12 @@ class Recipe {
 class _RecipePageState extends State<RecipePage> {
   Recipe test = new Recipe();
   List<String> generatedRecipes = [];
+  List<String> filterList = ["vegetarian", "vegan", "halal", "no beef", "no dairy"];
+  List<String> selectedFilterList = [];
 
   List<String> resetRecipes() {
     // test.generated = [];
-    test.getRecipes();
+    test.getRecipes(selectedFilterList);
     setState(() {});
     return [];
   }
@@ -148,174 +140,191 @@ class _RecipePageState extends State<RecipePage> {
     return outputString;
   }
 
+  void openFilterDialog() async {
+    await FilterListDialog.display<String>(
+      context,
+      listData: filterList,
+      selectedListData: selectedFilterList,
+      choiceChipLabel: (filter) => filter,
+      validateSelectedItem: (filterList, filter) => filterList!.contains(filter),
+      onItemSearch: (filter, query) {
+        return filter.toLowerCase().contains(query.toLowerCase());
+      },
+      onApplyButtonClick: (list) {
+        // Navigator.pop(context);
+        selectedFilterList = List.from(list!);
+        print(selectedFilterList);
+        resetRecipes();
+        setState(() {});
+        Navigator.of(context, rootNavigator: true).pop();
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-
-        home: Scaffold(
-            appBar: AppBar(
-              backgroundColor: Color(0xffff6961), //Colors.red,
-              title: const Text(
-                "Recipes",
-                style: TextStyle(color: Colors.white),
-              ),
-              // leading: const BackButton(
-              //   color: Colors.white,
-              // ),
-              // centerTitle: true,
-            ),
-            body: Container(
-                child: Column(mainAxisAlignment: MainAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: <Widget>[
-      // SizedBox(height: 50),
-      // const Text('Recipes',
-      //     textAlign: TextAlign.center,
-      //     style: TextStyle(color: Color.fromRGBO(0, 0, 0, 1), fontFamily: 'Inria Serif', fontSize: 35, fontWeight: FontWeight.normal, height: 1)),
-      SizedBox(height: 30),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-          children: [ElevatedButton(
-        child: Text('Generate Recipes', style: TextStyle(fontSize: 20),),
-
-        onPressed: () async {
-          //generatedRecipes = resetRecipes();
-          setState(() {});
-        },
-        style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all<Color>(Colors.black),
-          shape: MaterialStateProperty.all(
-            RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(25),
-            ),
+      home: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Color(0xffff6961), //Colors.red,
+          title: const Text(
+            "Recipes",
+            style: TextStyle(color: Colors.white),
           ),
         ),
-      )]),
-      Flexible(
-        fit: FlexFit.tight,
-        // child: StreamBuilder(
-        //   stream:
-        //       FirebaseFirestore.instance.collection('Recipes').snapshots(),
-        //   builder:
-        //       (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        //     if (!snapshot.hasData) {
-        //       return Center(
-        //         child: CircularProgressIndicator(),
-        //       );
-        //     }
-        child: FutureBuilder<List>(
-          future: test.getRecipes(),
-          builder: (context, snapshot) {
-            return snapshot.connectionState == ConnectionState.waiting
-                ? const SizedBox(
-                    child: Align(alignment: Alignment.topCenter, child: CircularProgressIndicator()),
-                    height: 50.0,
-                    width: 50.0,
-                  )
-                : SingleChildScrollView(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: List.generate(
-                        snapshot.data!.length,
-                        (index) {
-                          return Card(
-                              elevation: 0,
-                              color: Color.fromARGB(0, 255, 255, 255),
-                              child: Center(
-                                  child: SizedBox(
-                                      width: 350,
-                                      height: 60,
-                                      child: Container(
-                                        padding: EdgeInsets.only(right: 5.0),
-                                        child: Row(
-                                            // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            children: <Widget>[
-                                              Expanded(
-                                                child: TextButton(
-                                                  style: TextButton.styleFrom(
-                                                    alignment: Alignment.centerLeft, // align text to left
-                                                    primary: Colors.lightBlue,
-                                                    textStyle: const TextStyle(
-                                                      fontSize: 20,
-                                                      fontWeight: FontWeight.bold,
-                                                    ),
-                                                  ),
-                                                  child: Text(snapshot.data?[index][0].get("Name") ?? "null"),
-                                                  onPressed: () {
-                                                    String recipeName = snapshot.data![index][0].get("Name");
-                                                    List<dynamic> ingredients = snapshot.data![index][0].get("Ingredients");
-                                                    String procedure = snapshot.data![index][0].get("Procedures");
-                                                    procedure = addNewlineAfterStar(procedure);
-                                                    String image = snapshot.data![index][0].get("Image");
-                                                    Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                            builder: (context) => indivRecipePage(
-                                                                recipeName: recipeName,
-                                                                ingredients: ingredients,
-                                                                procedure: procedure,
-                                                                image: image)));
-                                                  },
-                                                ),
-                                              ),
-                                              FavoriteButton(
-                                                isFavorite: snapshot.data![index][1],
-                                                valueChanged: (_isFavorite) {
-                                                  if (_isFavorite & !snapshot.data![index][1]) {
-                                                    var recipe =
-                                                        FirebaseFirestore.instance.collection("Recipes").doc(snapshot.data?[index][0].get("Name"));
-                                                    String id = UniqueKey().toString();
-                                                    addSaved(id, snapshot.data?[index][0].get("Name"), recipe);
-                                                  } else if (!_isFavorite) {
-                                                    removeSaved(snapshot.data?[index][0].get("Name"));
-                                                  }
-                                                },
-                                              )
-                                            ]),
-                                      ))));
-                        },
-                      ),
-                    ),
-                  );
-          },
+        floatingActionButton: FloatingActionButton(
+          onPressed: openFilterDialog,
+          backgroundColor: Colors.black,
+          child: Icon(Icons.filter_alt),
         ),
-      )
-    ]))));
+        body: Container(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              SizedBox(height: 30),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [ElevatedButton(
+                  child: Text('Generate Recipes', style: TextStyle(fontSize: 20),),
+                onPressed: () async {
+                  //generatedRecipes = resetRecipes();
+                  setState(() {});
+                },
+                style: ButtonStyle(
+                  backgroundColor:
+                  MaterialStateProperty.all<Color>(Colors.black),
+                  shape: MaterialStateProperty.all(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                  ),
+                ),
+              ),]),
+              Expanded(
+                child: FutureBuilder<List>(
+                  future: test.getRecipes(selectedFilterList),
+                  builder: (context, snapshot) {
+                    return snapshot.connectionState == ConnectionState.waiting
+                        ? const SizedBox(
+                      child: Align(
+                          alignment: Alignment.topCenter,
+                          child: CircularProgressIndicator()),
+                      height: 50.0,
+                      width: 50.0,
+                    )
+                        : SingleChildScrollView(
+                      child: Wrap(
+                        spacing: 18,
+                        runSpacing: 15,
+
+                        children: List.generate(
+                          snapshot.data!.length,
+                              (index) {
+                            return SizedBox(
+                              width:
+                              (MediaQuery.of(context).size.width - 32) /
+                                  2,
+                              child:Padding(
+                                padding: const EdgeInsets.only(left: 15.0),
+                              child: Stack(
+                                children: [
+                                  Container(
+                                    width: double.infinity,
+                                    height: 200,
+                                    child: ClipRRect(
+                                      borderRadius:
+                                      BorderRadius.circular(12),
+                                      child: Image.network(
+                                        snapshot.data![index][0]
+                                            .get("Image"),
+                                        fit: BoxFit.cover,
+                                        color: Colors.black.withOpacity(0.5),
+                                        colorBlendMode: BlendMode.darken,
+                                      ),
+                                    ),
+                                  ),
+                                  Positioned(
+                                    top: 16,
+                                    left: 16,
+                                    right: 16,
+                                    child: TextButton(
+                                      style: TextButton.styleFrom(
+                                        primary: Colors.white,
+                                        textStyle: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18,
+                                        ),
+                                      ),
+                                      child: Text(
+                                        snapshot.data![index][0].get("Name"),
+                                      ),
+                                      onPressed: () {
+                                        String recipeName = snapshot.data![index][0].get("Name");
+                                        List<dynamic> ingredients =
+                                        snapshot.data![index][0].get("Ingredients");
+                                        String procedure = snapshot.data![index][0].get("Procedures");
+                                        procedure = addNewlineAfterStar(procedure);
+                                        String image = snapshot.data![index][0].get("Image");
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => indivRecipePage(
+                                              recipeName: recipeName,
+                                              ingredients: ingredients,
+                                              procedure: procedure,
+                                              image: image,
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+
+                                  Positioned(
+                                    bottom: 16,
+                                    left: 16,
+                                    child: FavoriteButton(
+                                      isFavorite:
+                                      snapshot.data![index][1],
+                                      valueChanged: (_isFavorite) {
+                                        if (_isFavorite &
+                                        !snapshot.data![index][1]) {
+                                          var recipe = FirebaseFirestore
+                                              .instance
+                                              .collection("Recipes")
+                                              .doc(snapshot.data![index][0]
+                                              .get("Name"));
+                                          String id =
+                                          UniqueKey().toString();
+                                          addSaved(
+                                              id,
+                                              snapshot.data![index][0]
+                                                  .get("Name"),
+                                              recipe);
+                                        } else if (!_isFavorite) {
+                                          removeSaved(snapshot.data![index]
+                                          [0]
+                                              .get("Name"));
+                                        }
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              ), );
+                          },
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
+
 }
-//
-// new ListView.builder(
-// itemCount: generatedRecipes.length,
-// itemBuilder: (BuildContext context, int index) {
-// // return ListView(
-// //   children: snapshot.data!.docs.map((document) {
-// return Card(
-// elevation: 0,
-// color: Color.fromARGB(0, 255, 255, 255),
-// child: Center(
-// child: SizedBox(
-// width: 350,
-// height: 60,
-// child: Column(children: <Widget>[
-// Row(children: <Widget>[
-// TextButton(
-// child: Text(generatedRecipes[index]),
-// onPressed: () {
-// // navigate to indiv recipe page
-// },
-// ),
-// FavoriteButton(
-// valueChanged: (_isFavorite) {
-// if (_isFavorite) {
-// RecipePage.addFavourites(
-// generatedRecipes[index]);
-// print(RecipePage.getFavourites());
-// } else if (!_isFavorite) {
-// RecipePage.removeFavourites(
-// generatedRecipes[index]);
-// print(RecipePage.getFavourites());
-// }
-// },
-// )
-// ])
-// ]))));
-// }),

@@ -9,9 +9,6 @@ import 'package:timezone/timezone.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'dart:io' show Platform;
 import 'package:intl/intl.dart';
-// import 'package:shared_preferences/shared_preferences.dart';
-// import 'profile.dart';
-// import 'package:firebase_messaging/firebase_messaging.dart';
 
 class AlertsPage extends StatefulWidget {
   AlertsPage({Key? key}) : super(key: key);
@@ -38,14 +35,6 @@ class DynamicWidget extends StatefulWidget {
     intId = 0;
     flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
   }
-
-  // // Generate a unique integer value for a notification
-  // int generateUniqueId(String uniqueId) {
-  //   var now = DateTime.now();
-  //   var formatter = DateFormat('yyyyMMddHHmmss');
-  //   var formattedDate = formatter.format(now);
-  //   return int.parse(formattedDate + uniqueId.hashCode.toString());
-  // }
 
   void deleteNotifications() async {
     if (Platform.isAndroid) {
@@ -230,7 +219,6 @@ class _DynamicWidgetState extends State<DynamicWidget> {
   @override
   Widget build(BuildContext context) {
     return Card(
-
         child: Center(
             child: SizedBox(
                 width: 350,
@@ -255,7 +243,6 @@ class _DynamicWidgetState extends State<DynamicWidget> {
                     ),
                   ),
                 SizedBox(width: 5),
-
                 DropdownButtonHideUnderline(
                 child:DropdownButton<String>(
                     underline: null,
@@ -287,14 +274,12 @@ class _DynamicWidgetState extends State<DynamicWidget> {
                           widget.frequency,
                         );
                       });
-
                     },
                   ),),
                   IconButton(
                       icon: Icon(Icons.access_time_filled_sharp),
                       onPressed:  () => setTime(context)
                     ),
-
                 ]))));
   }
 }
@@ -460,10 +445,6 @@ class _AlertsPageState extends State<AlertsPage> {
                 "Alerts",
                 style: TextStyle(color: Colors.white),
               ),
-              // leading: const BackButton(
-              //   color: Colors.white,
-              // ),
-              // centerTitle: true,
             ),
             body: GestureDetector(
               onTap: () {
@@ -471,15 +452,6 @@ class _AlertsPageState extends State<AlertsPage> {
                 removeNoName();
               },
               child: Column(children: <Widget>[
-                // const SizedBox(height: 50),
-                // const Text('Grocery List',
-                //     textAlign: TextAlign.center,
-                //     style: TextStyle(
-                //         color: Color.fromRGBO(0, 0, 0, 1),
-                //         fontFamily: 'Inria Serif',
-                //         fontSize: 35,
-                //         fontWeight: FontWeight.normal,
-                //         height: 1)),
                 SizedBox(height: 20,),
                 Flexible(
                   fit: FlexFit.tight,
@@ -493,7 +465,6 @@ class _AlertsPageState extends State<AlertsPage> {
                               listCards[index].deleteNotifications();
                               listCards[index].deleteNotificationFirebase();
                               listCards.removeAt(index);
-
                             });
                           },
                           secondaryBackground: Container(
@@ -531,5 +502,4 @@ class _AlertsPageState extends State<AlertsPage> {
                   ),
                 ])));
   }
-
 }
