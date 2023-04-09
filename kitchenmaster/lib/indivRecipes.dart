@@ -160,6 +160,7 @@ class _indivRecipePageState extends State<indivRecipePage> {
                   //         fontWeight: FontWeight.normal,
                   //         height: 1)
                   // ))),
+
                       Row(children:[
                         SizedBox(width: 10),
                         Expanded(

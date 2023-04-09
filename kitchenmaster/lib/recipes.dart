@@ -182,7 +182,7 @@ class _RecipePageState extends State<RecipePage> {
             mainAxisAlignment: MainAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              SizedBox(height: 30),
+              SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [ElevatedButton(
@@ -201,6 +201,7 @@ class _RecipePageState extends State<RecipePage> {
                   ),
                 ),
               ),]),
+              SizedBox(height: 20),
               Expanded(
                 child: FutureBuilder<List>(
                   future: test.getRecipes(selectedFilterList),
@@ -215,7 +216,7 @@ class _RecipePageState extends State<RecipePage> {
                     )
                         : SingleChildScrollView(
                       child: Wrap(
-                        spacing: 18,
+                        spacing: 5,
                         runSpacing: 15,
 
                         children: List.generate(
@@ -223,10 +224,9 @@ class _RecipePageState extends State<RecipePage> {
                               (index) {
                             return SizedBox(
                               width:
-                              (MediaQuery.of(context).size.width - 32) /
-                                  2,
+                              (MediaQuery.of(context).size.width - 32) / 2,
                               child:Padding(
-                                padding: const EdgeInsets.only(left: 15.0),
+                                padding: const EdgeInsets.only(left: 10.0, right: 10.00),
                               child: Stack(
                                 children: [
                                   Container(
@@ -252,8 +252,9 @@ class _RecipePageState extends State<RecipePage> {
                                       style: TextButton.styleFrom(
                                         primary: Colors.white,
                                         textStyle: TextStyle(
+                                          fontFamily: 'Inria Serif',
                                           fontWeight: FontWeight.bold,
-                                          fontSize: 18,
+                                          fontSize: 20,
                                         ),
                                       ),
                                       child: Text(
@@ -268,13 +269,23 @@ class _RecipePageState extends State<RecipePage> {
                                         String image = snapshot.data![index][0].get("Image");
                                         Navigator.push(
                                           context,
-                                          MaterialPageRoute(
-                                            builder: (context) => indivRecipePage(
+                                          PageRouteBuilder(
+                                            transitionDuration: Duration(milliseconds: 300 ),
+                                            pageBuilder: (context, animation, secondaryAnimation) => indivRecipePage(
                                               recipeName: recipeName,
                                               ingredients: ingredients,
                                               procedure: procedure,
                                               image: image,
                                             ),
+                                            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                                              return ScaleTransition(
+                                                scale: Tween<double>(
+                                                  begin: 0.0,
+                                                  end: 1.0,
+                                                ).animate(animation),
+                                                child: child,
+                                              );
+                                            },
                                           ),
                                         );
                                       },

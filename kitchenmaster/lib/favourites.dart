@@ -95,7 +95,10 @@ class _FavouritesPageState extends State<FavouritesPage> {
                       // centerTitle: true,
                     ),
                     body: Container(
-                        child: Column(children: <Widget>[
+                        child: Column
+                          ( mainAxisAlignment: MainAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
                       // SizedBox(height: 50),
                       // const Text('Saved Recipes',
                       //     textAlign: TextAlign.center,
@@ -123,20 +126,23 @@ class _FavouritesPageState extends State<FavouritesPage> {
                                   savedRecipes.add((i.data() as Map)['name']);
                                 }
                                 print(savedRecipes);
-                                return ListView(
+                                return GridView.count(
+                                    crossAxisCount: 2, // set number of columns to 2
+                                    mainAxisSpacing: 30, // set spacing between rows
+                                    crossAxisSpacing: 10,
                                     children: snapshot.data!.docs.map((DocumentSnapshot document) {
                                   Map<String, dynamic> data = document.data()! as Map<String, dynamic>;
                                   print("name: ${data['name']}");
                                   print(savedRecipes.contains(data['name']));
 
                                   String name = data["name"];
-                                  return SingleChildScrollView(
-                                      child: Wrap(spacing: 18, runSpacing: 15, children: [
+                                  return Wrap(spacing: 0, runSpacing: 15, children: [
                                     SizedBox(
-                                        width: (MediaQuery.of(context).size.width - 32) / 2,
+                                        width: (MediaQuery.of(context).size.width - 5) / 2,
                                         child: Padding(
-                                            padding: const EdgeInsets.only(left: 15.0),
-                                            child: Stack(children: [
+                                            padding: const EdgeInsets.only(left: 10.0, right: 10.00),
+                                            child: Stack(
+                                                children: [
                                               Container(
                                                 width: double.infinity,
                                                 height: 200,
@@ -150,53 +156,71 @@ class _FavouritesPageState extends State<FavouritesPage> {
                                                   ),
                                                 ),
                                               ),
-                                              TextButton(
-                                                child: Text(data["name"] ?? "null",
-                                                    style: TextStyle(
-                                                      fontSize: 20,
-                                                      fontWeight: FontWeight.bold,
-                                                    )),
-                                                onPressed: () async {
-                                                  print(data['recipe'].path);
-                                                  var recipe = FirebaseFirestore.instance.doc(data['recipe'].path);
-                                                  print("Recipe::: $recipe");
-                                                  recipe.get().then((value) {
-                                                    String recipeName = value.get("Name");
-                                                    List<dynamic> ingredients = value.get("Ingredients");
-                                                    String procedure = value.get("Procedures");
-                                                    String image = value.get("Image");
-                                                    Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                            builder: (context) => indivRecipePage(
-                                                                recipeName: recipeName,
-                                                                ingredients: ingredients,
-                                                                procedure: procedure,
-                                                                image: image)));
-                                                  });
-                                                },
+                                              Positioned(
+                                                  top: 16,
+                                                  left: 16,
+                                                  right: 16,
+                                                child: TextButton(
+                                                  child: Text(data["name"] ?? "null",
+                                                      style: TextStyle(
+                                                        fontFamily: 'Inria Serif',
+                                                        color: Colors.white,
+
+                                                        fontSize: 20,
+                                                        fontWeight: FontWeight.bold,
+                                                      )),
+                                                  onPressed: () async {
+                                                    print(data['recipe'].path);
+                                                    var recipe = FirebaseFirestore.instance.doc(data['recipe'].path);
+                                                    print("Recipe::: $recipe");
+                                                    recipe.get().then((value) {
+                                                      String recipeName = value.get("Name");
+                                                      List<dynamic> ingredients = value.get("Ingredients");
+                                                      String procedure = value.get("Procedures");
+                                                      String image = value.get("Image");
+                                                      Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                              builder: (context) => indivRecipePage(
+                                                                  recipeName: recipeName,
+                                                                  ingredients: ingredients,
+                                                                  procedure: procedure,
+                                                                  image: image)));
+                                                    });
+                                                  },
+                                                ),
                                               ),
-                                              Spacer(),
-                                              FavoriteButton(
-                                                isFavorite: savedRecipes.contains(data["name"]),
-                                                valueChanged: (_isFavorite) async {
-                                                  setState(() {});
-                                                  print("_isFav: $_isFavorite");
-                                                  if (_isFavorite & !savedRecipes.contains(data["name"])) {
-                                                    var recipe = FirebaseFirestore.instance.collection("Recipes").doc(data["name"]);
-                                                    String id = UniqueKey().toString();
-                                                    print(id);
-                                                    addSaved(id, data["name"], recipe);
-                                                  } else if (!_isFavorite) {
-                                                    _isFavorite = true;
-                                                    savedRecipes.remove(data['name']);
-                                                    removeSaved(data["name"]);
-                                                  }
-                                                  print("do this?");
-                                                },
+
+                                              //Spacer(),
+                                              Positioned(
+                                                bottom: 16,
+                                                left: 16,
+                                                child: FavoriteButton(
+                                                  isFavorite: savedRecipes.contains(data["name"]),
+                                                  valueChanged: (_isFavorite) async {
+                                                    setState(() {});
+                                                    print("_isFav: $_isFavorite");
+                                                    if (_isFavorite & !savedRecipes.contains(data["name"])) {
+                                                      var recipe = FirebaseFirestore.instance.collection("Recipes").doc(data["name"]);
+                                                      String id = UniqueKey().toString();
+                                                      print(id);
+                                                      addSaved(id, data["name"], recipe);
+                                                    } else if (!_isFavorite) {
+                                                      _isFavorite = true;
+                                                      savedRecipes.remove(data['name']);
+                                                      removeSaved(data["name"]);
+                                                    }
+                                                    print("do this?");
+                                                  },
+                                                )
                                               )
-                                            ])))
-                                  ]));
+
+                                            ])
+                                        )),
+
+
+
+                                  ]);
                                 }).toList());
                               }
                             },

@@ -138,17 +138,20 @@ class _ProfilePageState extends State<ProfilePage> {
                   pickUploadProfileImage();
                 },
                 child: Container(
-                  margin: EdgeInsets.only(top: 80),
+                  margin: EdgeInsets.only(top: 40),
                   width: 120,
                   height: 120,
                   alignment: Alignment.center,
                   decoration: const BoxDecoration(
                     borderRadius: BorderRadius.all(Radius.circular(20))
                   ),
-                  child: Center(
+                    child: ClipOval(
                     child: imageUrl == "" ? const Icon(
                       Icons.person, size: 80, color: Colors.white,
-                      ) : Image.network(imageUrl),
+                      ) : Image.network(imageUrl,  width: 120,
+                      height: 120,
+                      fit: BoxFit.cover,),
+
                   ),
                 ),
               ),
@@ -197,7 +200,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20.0), // Set desired border radius here
                       )),
-                  fixedSize: MaterialStateProperty.all<Size>(Size.fromWidth(300.0)),
+                  fixedSize: MaterialStateProperty.all<Size>(Size.fromWidth(200.0)),
                   // backgroundColor:
                   //     MaterialStateProperty.all<Color>(Color(0xffff6961)),
                   backgroundColor:
