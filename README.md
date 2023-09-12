@@ -1,6 +1,6 @@
 # KitchenMaster
 
-<img width="135" alt="image" src="https://github.com/Nipun1212/KitchenMaster/assets/80609104/841a2c41-3319-4c54-a4da-a0f7b7a64d94">
+<img width="200" alt="image" src="https://github.com/Nipun1212/KitchenMaster/assets/80609104/841a2c41-3319-4c54-a4da-a0f7b7a64d94">
 
 
 ## Overview
@@ -17,9 +17,12 @@ This app streamlines the process by utilizing the user's current inventory to su
 - **Ingredient Reminder**: Set reminders to restock ingredients that you are running low on.
 - **Filtering Options**: Filter recipes based on dietary preferences such as vegetarian, vegan, halal, and more.
 
-![Kitchenmaster_login](https://github.com/Nipun1212/KitchenMaster/assets/80609104/fbb271ed-7609-42af-86ce-68795eea0816)
-![Kitchenmaster_main_page](https://github.com/Nipun1212/KitchenMaster/assets/80609104/01d79d65-8959-48fc-9b6e-ada91b471b85)
-![Kitchenmaster_recipes](https://github.com/Nipun1212/KitchenMaster/assets/80609104/ff2d26fd-3d1d-47bb-ba67-bcbe5116cdd0)
+<p align="center">
+  <img src="https://github.com/Nipun1212/KitchenMaster/assets/80609104/fbb271ed-7609-42af-86ce-68795eea0816" alt="Kitchenmaster_login" width="200">
+  <img src="https://github.com/Nipun1212/KitchenMaster/assets/80609104/01d79d65-8959-48fc-9b6e-ada91b471b85" alt="Kitchenmaster_main_page" width="200">
+  <img src="https://github.com/Nipun1212/KitchenMaster/assets/80609104/ff2d26fd-3d1d-47bb-ba67-bcbe5116cdd0" alt="Kitchenmaster_recipes" width="200">
+</p>
+
 
 <br />
 
