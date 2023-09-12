@@ -18,9 +18,9 @@ This app streamlines the process by utilizing the user's current inventory to su
 - **Filtering Options**: Filter recipes based on dietary preferences such as vegetarian, vegan, halal, and more.
 
 <p align="center">
-  <img src="https://github.com/Nipun1212/KitchenMaster/assets/80609104/fbb271ed-7609-42af-86ce-68795eea0816" alt="Kitchenmaster_login" width="200">
-  <img src="https://github.com/Nipun1212/KitchenMaster/assets/80609104/01d79d65-8959-48fc-9b6e-ada91b471b85" alt="Kitchenmaster_main_page" width="200">
-  <img src="https://github.com/Nipun1212/KitchenMaster/assets/80609104/ff2d26fd-3d1d-47bb-ba67-bcbe5116cdd0" alt="Kitchenmaster_recipes" width="200">
+  <img src="https://github.com/Nipun1212/KitchenMaster/assets/80609104/fbb271ed-7609-42af-86ce-68795eea0816" alt="Kitchenmaster_login" width="400">
+  <img src="https://github.com/Nipun1212/KitchenMaster/assets/80609104/01d79d65-8959-48fc-9b6e-ada91b471b85" alt="Kitchenmaster_main_page" width="400">
+  <img src="https://github.com/Nipun1212/KitchenMaster/assets/80609104/ff2d26fd-3d1d-47bb-ba67-bcbe5116cdd0" alt="Kitchenmaster_recipes" width="400">
 </p>
 
 
