@@ -1,6 +1,6 @@
 # KitchenMaster
 
-<img width="200" alt="image" src="https://github.com/Nipun1212/KitchenMaster/assets/80609104/841a2c41-3319-4c54-a4da-a0f7b7a64d94">
+<img width="100" alt="image" src="https://github.com/Nipun1212/KitchenMaster/assets/80609104/841a2c41-3319-4c54-a4da-a0f7b7a64d94">
 
 
 ## Overview
@@ -37,7 +37,7 @@ This app streamlines the process by utilizing the user's current inventory to su
 
 To run this project locally, follow these steps:
 
-1. Clone the repository: `git clone https://github.com/yourusername/KitchenMaster.git`
+1. Clone the repository: `git clone [https://github.com/yourusername/KitchenMaster.git](https://github.com/Nipun1212/KitchenMaster.git)`
 2. Navigate to the project directory: `cd KitchenMaster`
 3. Open the project in your preferred IDE or text editor.
 4. Run the application on your preferred emulator or device.
